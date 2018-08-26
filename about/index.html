@@ -3,20 +3,16 @@
 <head>
     <meta charset="utf-8">
     
-    <title>关于iframe跨域传输 | 梁友泽的博客</title>
+    <title>about | 梁友泽的博客</title>
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
-    <meta name="description" content="至于我为什么想写这篇文章是因为最近在项目中使用到了iframe，是的。生无可恋的又写上了一点js，可能是因为前端的人对单点登录啥的或者是页面跳转以及要和后端的逻辑处理起来不是很熟练吧。各大网站，包括淘宝，京东，这些大网站有很多自己的产品，至于前期是怎么样的不是很清楚，网易云至少是用的iframe。参考了一些博客，至于使用不使用iframe，我觉得能解决问题就好，而且如果考虑的多的话就考虑以后扩展以">
-<meta name="keywords" content="iframe,跨域">
-<meta property="og:type" content="article">
-<meta property="og:title" content="关于iframe跨域传输">
-<meta property="og:url" content="http://yzrds.github.io/2018/07/31/关于iframe跨域传输/index.html">
+    <meta property="og:type" content="website">
+<meta property="og:title" content="about">
+<meta property="og:url" content="http://yzrds.github.io/about/index.html">
 <meta property="og:site_name" content="梁友泽的博客">
-<meta property="og:description" content="至于我为什么想写这篇文章是因为最近在项目中使用到了iframe，是的。生无可恋的又写上了一点js，可能是因为前端的人对单点登录啥的或者是页面跳转以及要和后端的逻辑处理起来不是很熟练吧。各大网站，包括淘宝，京东，这些大网站有很多自己的产品，至于前期是怎么样的不是很清楚，网易云至少是用的iframe。参考了一些博客，至于使用不使用iframe，我觉得能解决问题就好，而且如果考虑的多的话就考虑以后扩展以">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2018-08-26T13:27:47.521Z">
+<meta property="og:updated_time" content="2018-08-26T15:45:16.186Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="关于iframe跨域传输">
-<meta name="twitter:description" content="至于我为什么想写这篇文章是因为最近在项目中使用到了iframe，是的。生无可恋的又写上了一点js，可能是因为前端的人对单点登录啥的或者是页面跳转以及要和后端的逻辑处理起来不是很熟练吧。各大网站，包括淘宝，京东，这些大网站有很多自己的产品，至于前期是怎么样的不是很清楚，网易云至少是用的iframe。参考了一些博客，至于使用不使用iframe，我觉得能解决问题就好，而且如果考虑的多的话就考虑以后扩展以">
+<meta name="twitter:title" content="about">
     
 
     
@@ -193,7 +189,7 @@
 </aside>
 
             
-            <section id="main"><article id="post-关于iframe跨域传输" class="article article-type-post" itemscope itemprop="blogPost">
+            <section id="main"><article id="page-" class="article article-type-page" itemscope itemprop="blogPost">
     <div class="article-inner">
         
         
@@ -201,29 +197,10 @@
                 
     
         <h1 class="article-title" itemprop="name">
-            关于iframe跨域传输
+            about
         </h1>
     
 
-                
-                    <div class="article-meta">
-                        
-    <div class="article-date">
-        <i class="fa fa-calendar"></i>
-        <a href="/2018/07/31/关于iframe跨域传输/">
-            <time datetime="2018-07-31T12:10:33.000Z" itemprop="datePublished">2018-07-31</time>
-        </a>
-    </div>
-
-
-                        
-                        
-    <div class="article-tag">
-        <i class="fa fa-tag"></i>
-        <a class="tag-link" href="/tags/iframe/">iframe</a>, <a class="tag-link" href="/tags/跨域/">跨域</a>
-    </div>
-
-                    </div>
                 
             </header>
         
@@ -231,19 +208,7 @@
         <div class="article-entry" itemprop="articleBody">
         
             
-            <p>至于我为什么想写这篇文章是因为最近在项目中使用到了iframe，是的。生无可恋的又写上了一点js，可能是因为前端的人对单点登录啥的或者是页面跳转以及要和后端的逻辑<br>处理起来不是很熟练吧。各大网站，包括淘宝，京东，这些大网站有很多自己的产品，至于前期是怎么样的不是很清楚，网易云至少是用的iframe。参考了一些博客，至于使用<br>不使用iframe，我觉得能解决问题就好，而且如果考虑的多的话就考虑以后扩展以及拆分啥的，毕竟前端又不像后端这样。</p>
-<p>因为要解决跨域问题。有很多方案，比如说iframe，jsonp(不过只支持get，对于一些铭感信息就不行了)</p>
-<p>原本需求是登录在一个站点，而注册是另外一个站点。因为要实时反馈到iframe子页面，子页面在进行相应。</p>
-<p>而在Windows对象下有个postMessage方法，是解决跨越问题的<br>假设有两个不同源的页面，iframe.html和index.html 其中前者是后者的子页面。<br><figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">&lt;!-- index.html --&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">body</span>&gt;</span></span><br><span class="line"></span><br><span class="line">  <span class="tag">&lt;<span class="name">h1</span>&gt;</span>this is index<span class="tag">&lt;/<span class="name">h1</span>&gt;</span></span><br><span class="line"></span><br><span class="line">  <span class="tag">&lt;<span class="name">iframe</span> <span class="attr">src</span>=<span class="string">"./iframePage.html"</span> <span class="attr">id</span>=<span class="string">'iframe'</span>&gt;</span><span class="tag">&lt;/<span class="name">iframe</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;/<span class="name">body</span>&gt;</span></span><br></pre></td></tr></table></figure></p>
-<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">&lt;!-- iframePage --&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">body</span>&gt;</span></span><br><span class="line"></span><br><span class="line">  <span class="tag">&lt;<span class="name">h1</span>&gt;</span>this is iframePage<span class="tag">&lt;/<span class="name">h1</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;/<span class="name">body</span>&gt;</span></span><br></pre></td></tr></table></figure>
-<p>现在这两个是无法通信的，因为是不同的站点，所以这个时候就要用到postMessage</p>
-<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">// idnex.html</span><br><span class="line"></span><br><span class="line">//获取iframe元素,当然也可以使用其他的js框架</span><br><span class="line">iFrame = document.getElementById('iframe')</span><br><span class="line"></span><br><span class="line">//iframe加载完毕后再发送消息，否则子页面接收不到message</span><br><span class="line">iFrame.onload = function()&#123;</span><br><span class="line"></span><br><span class="line">  //iframe加载完立即发送一条消息</span><br><span class="line">  iFrame.contentWindow.postMessage('MessageFromIndex1','*');</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>我们知道postMessage是挂载在window对象上的，所以等iframe加载完毕后，用iFrame.contentWindow获取到iframe的window对象，<br>然后调用postMessage方法，相当于给子页面发送了一条消息。</p>
-<p>postMessage方法第二个参数可以设置要发送到哪个url，如果当前子页面的url和设置的不一致，则会发送失败，因为没啥限制就设置为*，代表所有url都允许发送。</p>
-<p>消息发送到iframePage.html，我们来接收message</p>
-<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">// iframePage.html</span><br><span class="line"></span><br><span class="line">//回调函数</span><br><span class="line">function receiveMessageFromIndex ( event ) &#123;</span><br><span class="line">  console.log( 'receiveMessageFromIndex', event )</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">//监听message事件</span><br><span class="line">window.addEventListener("message", receiveMessageFromIndex, false);</span><br></pre></td></tr></table></figure>
-<p>然后设置好回调函数，就可以了，data中或许还有其他的数值，所以在接受的时候判断一下。</p>
-
+            
         
         </div>
         <footer class="article-footer">
@@ -253,7 +218,7 @@
 
 </div>
 
-    <a data-url="http://yzrds.github.io/2018/07/31/关于iframe跨域传输/" data-id="cjlb0zeiq0005ucw36ibapemy" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
+    <a data-url="http://yzrds.github.io/about/index.html" data-id="cjlb0zeif0001ucw3pgqufu5l" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
 <script>
     (function ($) {
         // Prevent duplicate binding
@@ -321,32 +286,13 @@
 
             
     
-        <a href="http://yzrds.github.io/2018/07/31/关于iframe跨域传输/#comments" class="article-comment-link disqus-comment-count" data-disqus-url="http://yzrds.github.io/2018/07/31/关于iframe跨域传输/">评论</a>
+        <a href="http://yzrds.github.io/about/index.html#comments" class="article-comment-link disqus-comment-count" data-disqus-url="http://yzrds.github.io/about/index.html">评论</a>
     
 
         </footer>
     </div>
     
         
-<nav id="article-nav">
-    
-        <a href="/2018/08/25/hello-world/" id="article-nav-newer" class="article-nav-link-wrap">
-            <strong class="article-nav-caption">上一篇</strong>
-            <div class="article-nav-title">
-                
-                    Hello World
-                
-            </div>
-        </a>
-    
-    
-        <a href="/2018/05/25/test/" id="article-nav-older" class="article-nav-link-wrap">
-            <strong class="article-nav-caption">下一篇</strong>
-            <div class="article-nav-title">w</div>
-        </a>
-    
-</nav>
-
 
     
 </article>
@@ -535,9 +481,9 @@
     <script>
     var disqus_config = function () {
         
-            this.page.url = 'http://yzrds.github.io/2018/07/31/关于iframe跨域传输/';
+            this.page.url = 'http://yzrds.github.io/about/index.html';
         
-        this.page.identifier = '关于iframe跨域传输';
+        this.page.identifier = '';
     };
     (function() { 
         var d = document, s = d.createElement('script');  
