@@ -151,7 +151,7 @@
         </div>
         <div class="article-info profile-block">
             <div class="article-info-block">
-                5
+                6
                 <span>文章</span>
             </div>
             <div class="article-info-block">
@@ -192,6 +192,138 @@
 
             
             <section id="main">
+    <article id="post-New Text Document" class="article article-type-post" itemscope itemprop="blogPost">
+    <div class="article-inner">
+        
+        
+        
+        <div class="article-entry" itemprop="articleBody">
+        
+            
+            <p>title: 关于生成订单号规则的一些思考<br>date: 2018-08-10 20:10:33<br>tags: [订单号,规则]<br>categorie: [业务]</p>
+<p>关于我为什么写这篇文章是因为今天在做订单模块的时候,看到之前的PRD上描述的订单生成规则是由 年月日＋用户id2位+企业id位<br>＋四位自增长数。然后竟被我反驳的突然改成了精确时间＋4位自增长数，于是我更失望了。</p>
+<p>我们考虑一下，据我所常见的订单基本都14-20位。(年月日时分秒和随机数)基本上就有14位了。虽然一般项目做不到淘宝双11这种<br>支付峰值达到每秒10万笔订单.但是我觉得至少事先可以考虑到，想必当初淘宝或许也没意识到以后发展<br>得这么好。</p>
+<h2 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h2><p>为了达到业务订单的生成。我觉得要至少要符合以下这三种,</p>
+<ol>
+<li>全局唯一 </li>
+<li>一定不能重复</li>
+</ol>
+<p>在复杂的分布式系统中，很多场景需要的都是全局唯一ID的场景，一般为了防止冲突可以考虑的有36<br>位的UUID,twitter的snowflake等。</p>
+<p>但是可以思考这些问题？</p>
+<ol>
+<li>是不是应该有一些其他意义的思考，比如说订单系统有买家的id(取固定几位)</li>
+<li>是否有商品的标识,方便熟悉业务的排查问题或者查询也通过不去系统查找可以有个初步的认识，但是业务量大的话感觉就可以排除这个人为的去辨识了。</li>
+<li>个人的看法是主要是唯一，其他关于业务方面的不是太太重要。</li>
+</ol>
+<p>查阅了相关资料，主要有以下这几种</p>
+<ol>
+<li><p>UUID,    组成：当前日期+时间+时钟序列+机器识别号（Mac地址或其他）没有mac网卡的话会有别的东西识别。</p>
+<pre><code>在分布式系统中，所有元素（WEB服务器）都不需要通过中央控制端来判断数据唯一性。几十年之内可以达到全球唯一性。
+</code></pre><p>snowflake的结构如下(每部分用-分开):</p>
+</li>
+<li><p>Mysql通过AUTO_INCREMENT实现、Oracle通过Sequence序列实现。<br>在数据库集群环境下，不同数据库节点可设置不同起步值、相同步长来实现集群下生产全局唯一、递增ID</p>
+</li>
+<li><p>Snowflake算法 雪花算法　<br>41位时间戳+10位机器ID+12位序列号（自增） 转化长度为18位的长整型。<br> Twitter为满足美秒上万条消息的创建，且ID需要趋势递增，方便客户端排序。<br> Snowflake虽然有同步锁，但是比uuid效率高。</p>
+</li>
+<li>Redis自增ID<br> 实现了incr(key)用于将key的值递增1，并返回结果。如果key不存在，创建默认并赋值为0。 具有原子性，保证在并发的时候。</li>
+</ol>
+<p>但是我在这主要想说的是雪花算法生成id,至于为什么，就测试了一下其他的，感觉这种生成方式个人比较喜欢。</p>
+<p>Snowflake算法<br>规则如下</p>
+<p>使用41bit作为毫秒数，10bit作为机器的ID（5个bit是数据中心，5个bit的机器ID），12bit作为毫秒内的流水号（意味着每个节点在每毫秒可以产生 4096 个 ID），最后还有一个符号位，永远是0。</p>
+<p>0 - 0000000000 0000000000 0000000000 0000000000 0 - 00000 - 00000 - 000000000000</p>
+<p>该算法实现基本是二进制操作。</p>
+<p>一共加起来刚好64位，为一个Long型。(转换成字符串长度为18)</p>
+<p>snowflake生成的ID整体上按照时间自增排序，并且整个分布式系统内不会产生ID碰撞（由datacenter和workerId作区分），并且效率较高。据说：snowflake每秒能够产生26万个ID。</p>
+<p>以下是代码<br>部分借鉴与网络<br>100万个ID 耗时２秒<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br></pre></td><td class="code"><pre><span class="line">/**</span><br><span class="line"> * Created by youze on 18-7-5</span><br><span class="line"> */</span><br><span class="line">public class IdWorker &#123;</span><br><span class="line"></span><br><span class="line">    /**</span><br><span class="line">     * 起始的时间戳</span><br><span class="line">     */</span><br><span class="line">    private final static long START_STMP = 1530795377086L;</span><br><span class="line"></span><br><span class="line">    /**</span><br><span class="line">     * 每一部分占用的位数</span><br><span class="line">     */</span><br><span class="line"></span><br><span class="line">    /**</span><br><span class="line">     * 序列号占用的位数</span><br><span class="line">     */</span><br><span class="line">    private final static long SEQUENCE_BIT = 12;</span><br><span class="line"></span><br><span class="line">    /**</span><br><span class="line">     * 机器标识占用的位数</span><br><span class="line">     */</span><br><span class="line">    private final static long MACHINE_BIT = 5;</span><br><span class="line"></span><br><span class="line">    /**</span><br><span class="line">     * 数据中心占用的位数</span><br><span class="line">     */</span><br><span class="line">    private final static long DATACENTER_BIT = 5;</span><br><span class="line"></span><br><span class="line">    /**</span><br><span class="line">     * 每一部分的最大值</span><br><span class="line">     */</span><br><span class="line">    private final static long MAX_DATACENTER_NUM = -1L ^ (-1L &lt;&lt; DATACENTER_BIT);</span><br><span class="line">    private final static long MAX_MACHINE_NUM = -1L ^ (-1L &lt;&lt; MACHINE_BIT);</span><br><span class="line">    private final static long MAX_SEQUENCE = -1L ^ (-1L &lt;&lt; SEQUENCE_BIT);</span><br><span class="line"></span><br><span class="line">    /**</span><br><span class="line">     * 每一部分向左的位移</span><br><span class="line">     */</span><br><span class="line">    private final static long MACHINE_LEFT = SEQUENCE_BIT;</span><br><span class="line">    private final static long DATACENTER_LEFT = SEQUENCE_BIT + MACHINE_BIT;</span><br><span class="line">    private final static long TIMESTMP_LEFT = DATACENTER_LEFT + DATACENTER_BIT;</span><br><span class="line"></span><br><span class="line">    /**</span><br><span class="line">     * 数据中心</span><br><span class="line">     */</span><br><span class="line">    private long datacenterId;</span><br><span class="line"></span><br><span class="line">    /**</span><br><span class="line">     * 机器标识</span><br><span class="line">     */</span><br><span class="line">    private long machineId;</span><br><span class="line">    /**</span><br><span class="line">     * 序列号</span><br><span class="line">     */</span><br><span class="line">    private long sequence = 0L;</span><br><span class="line"></span><br><span class="line">    /**</span><br><span class="line">     * 上一次时间戳</span><br><span class="line">     */</span><br><span class="line">    private long lastStmp = -1L;</span><br><span class="line"></span><br><span class="line">    public IdWorker(long datacenterId, long machineId) &#123;</span><br><span class="line">        if (datacenterId &gt; MAX_DATACENTER_NUM || datacenterId &lt; 0) &#123;</span><br><span class="line">            throw new IllegalArgumentException(&quot;datacenterId can&apos;t be greater than MAX_DATACENTER_NUM or less than 0&quot;);</span><br><span class="line">        &#125;</span><br><span class="line">        if (machineId &gt; MAX_MACHINE_NUM || machineId &lt; 0) &#123;</span><br><span class="line">            throw new IllegalArgumentException(&quot;machineId can&apos;t be greater than MAX_MACHINE_NUM or less than 0&quot;);</span><br><span class="line">        &#125;</span><br><span class="line">        this.datacenterId = datacenterId;</span><br><span class="line">        this.machineId = machineId;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    /**</span><br><span class="line">     * 产生下一个ID</span><br><span class="line">     * @return</span><br><span class="line">     */</span><br><span class="line">    public synchronized long nextId() &#123;</span><br><span class="line">        long currStmp = getNewstmp();</span><br><span class="line">        if (currStmp &lt; lastStmp) &#123;</span><br><span class="line">            throw new RuntimeException(&quot;Clock moved backwards.  Refusing to generate id&quot;);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        if (currStmp == lastStmp) &#123;</span><br><span class="line">            //相同毫秒内，序列号自增</span><br><span class="line">            sequence = (sequence + 1) &amp; MAX_SEQUENCE;</span><br><span class="line">            //同一毫秒的序列数已经达到最大</span><br><span class="line">            if (sequence == 0L) &#123;</span><br><span class="line">                currStmp = getNextMill();</span><br><span class="line">            &#125;</span><br><span class="line">        &#125; else &#123;</span><br><span class="line">            //不同毫秒内，序列号置为0</span><br><span class="line">            sequence = 0L;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        lastStmp = currStmp;</span><br><span class="line"></span><br><span class="line">        return (</span><br><span class="line">                //时间戳部分</span><br><span class="line">                currStmp - START_STMP) &lt;&lt; TIMESTMP_LEFT</span><br><span class="line">                //数据中心部分</span><br><span class="line">                | datacenterId &lt;&lt; DATACENTER_LEFT</span><br><span class="line">                //机器标识部分</span><br><span class="line">                | machineId &lt;&lt; MACHINE_LEFT</span><br><span class="line">                //序列号部分</span><br><span class="line">                | sequence;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    private long getNextMill() &#123;</span><br><span class="line">        long mill = getNewstmp();</span><br><span class="line">        while (mill &lt;= lastStmp) &#123;</span><br><span class="line">            mill = getNewstmp();</span><br><span class="line">        &#125;</span><br><span class="line">        return mill;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    private long getNewstmp() &#123;</span><br><span class="line">        return System.currentTimeMillis();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line">        IdWorker snowFlake = new IdWorker(2, 3);</span><br><span class="line">        long start = System.currentTimeMillis();</span><br><span class="line">        for (int i = 0; i &lt; 1000000; i++) &#123;</span><br><span class="line">            System.out.println(snowFlake.nextId());</span><br><span class="line">        &#125;</span><br><span class="line">        System.out.println(System.currentTimeMillis() - start);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>最后大家可以看<a href="https://tech.meituan.com/MT_Leaf.html" target="_blank" rel="noopener">这</a>也有更详细的解释</p>
+
+        
+        </div>
+        <footer class="article-footer">
+            <div class="share-container">
+
+
+
+</div>
+
+    <a data-url="http://www.liangyouze.com/2018/10/08/New Text Document/" data-id="cjmzobw7u0000aow3wbgtjkpa" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
+<script>
+    (function ($) {
+        // Prevent duplicate binding
+        if (typeof(__SHARE_BUTTON_BINDED__) === 'undefined' || !__SHARE_BUTTON_BINDED__) {
+            __SHARE_BUTTON_BINDED__ = true;
+        } else {
+            return;
+        }
+        $('body').on('click', function() {
+            $('.article-share-box.on').removeClass('on');
+        }).on('click', '.article-share-link', function(e) {
+            e.stopPropagation();
+
+            var $this = $(this),
+                url = $this.attr('data-url'),
+                encodedUrl = encodeURIComponent(url),
+                id = 'article-share-box-' + $this.attr('data-id'),
+                offset = $this.offset(),
+                box;
+
+            if ($('#' + id).length) {
+                box = $('#' + id);
+
+                if (box.hasClass('on')){
+                    box.removeClass('on');
+                    return;
+                }
+            } else {
+                var html = [
+                    '<div id="' + id + '" class="article-share-box">',
+                        '<input class="article-share-input" value="' + url + '">',
+                        '<div class="article-share-links">',
+                            '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="fa fa-twitter article-share-twitter" target="_blank" title="Twitter"></a>',
+                            '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="fa fa-facebook article-share-facebook" target="_blank" title="Facebook"></a>',
+                            '<a href="http://pinterest.com/pin/create/button/?url=' + encodedUrl + '" class="fa fa-pinterest article-share-pinterest" target="_blank" title="Pinterest"></a>',
+                            '<a href="https://plus.google.com/share?url=' + encodedUrl + '" class="fa fa-google article-share-google" target="_blank" title="Google+"></a>',
+                        '</div>',
+                    '</div>'
+                ].join('');
+
+              box = $(html);
+
+              $('body').append(box);
+            }
+
+            $('.article-share-box.on').hide();
+
+            box.css({
+                top: offset.top + 25,
+                left: offset.left
+            }).addClass('on');
+
+        }).on('click', '.article-share-box', function (e) {
+            e.stopPropagation();
+        }).on('click', '.article-share-box-input', function () {
+            $(this).select();
+        }).on('click', '.article-share-box-link', function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            window.open(this.href, 'article-share-box-window-' + Date.now(), 'width=500,height=450');
+        });
+    })(jQuery);
+</script>
+
+            
+    
+        <a href="http://www.liangyouze.com/2018/10/08/New Text Document/#comments" class="article-comment-link disqus-comment-count" data-disqus-url="http://www.liangyouze.com/2018/10/08/New Text Document/">评论</a>
+    
+
+        </footer>
+    </div>
+    
+</article>
+
+
+
     <article id="post-关于生成订单号规则的一些思考" class="article article-type-post" itemscope itemprop="blogPost">
     <div class="article-inner">
         
@@ -246,7 +378,7 @@
 
 </div>
 
-    <a data-url="http://www.liangyouze.com/2018/10/08/关于生成订单号规则的一些思考/" data-id="cjmzoatav00034sw3u7b4crr8" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
+    <a data-url="http://www.liangyouze.com/2018/10/08/关于生成订单号规则的一些思考/" data-id="cjmzobw900007aow3pbo1g1h7" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
 <script>
     (function ($) {
         // Prevent duplicate binding
@@ -344,7 +476,7 @@
 
 </div>
 
-    <a data-url="http://www.liangyouze.com/2018/10/05/分布式架构/" data-id="cjmzoatcn00084sw3olbxlwqo" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
+    <a data-url="http://www.liangyouze.com/2018/10/05/分布式架构/" data-id="cjmzobw9i0009aow30uteurjd" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
 <script>
     (function ($) {
         // Prevent duplicate binding
@@ -474,7 +606,7 @@
 
 </div>
 
-    <a data-url="http://www.liangyouze.com/2018/08/25/hello-world/" data-id="cjmzoatac00004sw3xxxd1s81" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
+    <a data-url="http://www.liangyouze.com/2018/08/25/hello-world/" data-id="cjmzobw8d0002aow3xt11uadr" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
 <script>
     (function ($) {
         // Prevent duplicate binding
@@ -612,7 +744,7 @@
 
 </div>
 
-    <a data-url="http://www.liangyouze.com/2018/07/31/关于iframe跨域传输/" data-id="cjmzoataq00024sw3ihw8vylq" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
+    <a data-url="http://www.liangyouze.com/2018/07/31/关于iframe跨域传输/" data-id="cjmzobw8u0006aow3urw6slfg" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
 <script>
     (function ($) {
         // Prevent duplicate binding
@@ -733,7 +865,7 @@
 
 </div>
 
-    <a data-url="http://www.liangyouze.com/2018/05/25/w/" data-id="cjmzoatam00014sw3pc9jojtc" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
+    <a data-url="http://www.liangyouze.com/2018/05/25/w/" data-id="cjmzobw8n0004aow31dqsrgb8" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
 <script>
     (function ($) {
         // Prevent duplicate binding
@@ -824,6 +956,25 @@
                     <li>
                         
                         <!-- <div class="item-thumbnail">
+                            <a href="/2018/10/08/New Text Document/" class="thumbnail">
+    
+    
+        <span class="thumbnail-image thumbnail-none"></span>
+    
+</a>
+
+                        </div> -->
+                        
+                        <div class="item-inner">
+                            <p class="item-category"></p>
+                            <p class="item-title"><a href="/2018/10/08/New Text Document/" class="title"></a></p>
+                            <p class="item-date"><time datetime="2018-10-08T02:25:02.677Z" itemprop="datePublished">2018-10-08</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <!-- <div class="item-thumbnail">
                             <a href="/2018/10/08/关于生成订单号规则的一些思考/" class="thumbnail">
     
     
@@ -897,25 +1048,6 @@
                         </div>
                     </li>
                 
-                    <li>
-                        
-                        <!-- <div class="item-thumbnail">
-                            <a href="/2018/05/25/w/" class="thumbnail">
-    
-    
-        <span class="thumbnail-image thumbnail-none"></span>
-    
-</a>
-
-                        </div> -->
-                        
-                        <div class="item-inner">
-                            <p class="item-category"></p>
-                            <p class="item-title"><a href="/2018/05/25/w/" class="title">w</a></p>
-                            <p class="item-date"><time datetime="2018-05-24T16:51:18.000Z" itemprop="datePublished">2018-05-25</time></p>
-                        </div>
-                    </li>
-                
             </ul>
         </div>
     </div>
@@ -927,7 +1059,7 @@
     <div class="widget-wrap">
         <h3 class="widget-title">归档</h3>
         <div class="widget">
-            <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/10/">十月 2018</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/08/">八月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/07/">七月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/05/">五月 2018</a><span class="archive-list-count">1</span></li></ul>
+            <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/10/">十月 2018</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/08/">八月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/07/">七月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/05/">五月 2018</a><span class="archive-list-count">1</span></li></ul>
         </div>
     </div>
 
