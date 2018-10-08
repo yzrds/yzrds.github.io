@@ -3,21 +3,20 @@
 <head>
     <meta charset="utf-8">
     
-    <title>梁友泽的博客</title>
+    <title>elasticsearch社区分享会 | 梁友泽的博客</title>
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
-    <meta name="description" content="梁友泽个人信息 梁友泽 籍贯 重庆 本科/通信工程 2014-2018 Github https://github.com/yzrds 技术博客 https://www.liangyouze.com wechat: lyz19951024 email: youzedev@gmail.com 工作年限 1年 技术方向 后端(未来想从事搜索方向)  工作经历新加坡艾克伦 (2018.03-至今)工作描">
-<meta property="og:type" content="website">
-<meta property="og:title" content="梁友泽的博客">
-<meta property="og:url" content="http://www.liangyouze.com/about/index.html">
+    <meta name="description" content="吧啦吧啦，今天在公司做算法题的时候，不仅就想写下了 String是不可变类，所以任何对String的操作都将引发新的String对象的生成。但是StringBuffer是可变类，任何对StringBuffer所指代的字符串改变都不会产生新的对象。 新引入的StingBuilder类不是线程安全，但其在单线程中的性能比StringBuffer高。">
+<meta name="keywords" content="字符串">
+<meta property="og:type" content="article">
+<meta property="og:title" content="elasticsearch社区分享会">
+<meta property="og:url" content="http://www.liangyouze.com/2017/11/23/String、StringBuffer、StringBuilder三者之间的区别/index.html">
 <meta property="og:site_name" content="梁友泽的博客">
-<meta property="og:description" content="梁友泽个人信息 梁友泽 籍贯 重庆 本科/通信工程 2014-2018 Github https://github.com/yzrds 技术博客 https://www.liangyouze.com wechat: lyz19951024 email: youzedev@gmail.com 工作年限 1年 技术方向 后端(未来想从事搜索方向)  工作经历新加坡艾克伦 (2018.03-至今)工作描">
+<meta property="og:description" content="吧啦吧啦，今天在公司做算法题的时候，不仅就想写下了 String是不可变类，所以任何对String的操作都将引发新的String对象的生成。但是StringBuffer是可变类，任何对StringBuffer所指代的字符串改变都不会产生新的对象。 新引入的StingBuilder类不是线程安全，但其在单线程中的性能比StringBuffer高。">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:image" content="https://note.youdao.com/yws/api/personal/file/1582784439BE4A9B858C319B643AFD7A?method=download&shareKey=7cca63afa498fe9c388538871533db3c">
-<meta property="og:updated_time" content="2018-10-07T13:56:45.820Z">
+<meta property="og:updated_time" content="2018-10-08T05:48:28.800Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="梁友泽的博客">
-<meta name="twitter:description" content="梁友泽个人信息 梁友泽 籍贯 重庆 本科/通信工程 2014-2018 Github https://github.com/yzrds 技术博客 https://www.liangyouze.com wechat: lyz19951024 email: youzedev@gmail.com 工作年限 1年 技术方向 后端(未来想从事搜索方向)  工作经历新加坡艾克伦 (2018.03-至今)工作描">
-<meta name="twitter:image" content="https://note.youdao.com/yws/api/personal/file/1582784439BE4A9B858C319B643AFD7A?method=download&shareKey=7cca63afa498fe9c388538871533db3c">
+<meta name="twitter:title" content="elasticsearch社区分享会">
+<meta name="twitter:description" content="吧啦吧啦，今天在公司做算法题的时候，不仅就想写下了 String是不可变类，所以任何对String的操作都将引发新的String对象的生成。但是StringBuffer是可变类，任何对StringBuffer所指代的字符串改变都不会产生新的对象。 新引入的StingBuilder类不是线程安全，但其在单线程中的性能比StringBuffer高。">
     
 
     
@@ -197,54 +196,54 @@
 </aside>
 
             
-            <section id="main"><article id="page-" class="article article-type-page" itemscope itemprop="blogPost">
+            <section id="main"><article id="post-String、StringBuffer、StringBuilder三者之间的区别" class="article article-type-post" itemscope itemprop="blogPost">
     <div class="article-inner">
         
+        
+            <header class="article-header">
+                
+    
+        <h1 class="article-title" itemprop="name">
+            elasticsearch社区分享会
+        </h1>
+    
+
+                
+                    <div class="article-meta">
+                        
+    <div class="article-date">
+        <i class="fa fa-calendar"></i>
+        <a href="/2017/11/23/String、StringBuffer、StringBuilder三者之间的区别/">
+            <time datetime="2017-11-23T14:38:31.000Z" itemprop="datePublished">2017-11-23</time>
+        </a>
+    </div>
+
+
+                        
+                        
+    <div class="article-tag">
+        <i class="fa fa-tag"></i>
+        <a class="tag-link" href="/tags/字符串/">字符串</a>
+    </div>
+
+                    </div>
+                
+            </header>
         
         
         <div class="article-entry" itemprop="articleBody">
         
             
-            <h3 id="梁友泽"><a href="#梁友泽" class="headerlink" title="梁友泽"></a>梁友泽</h3><h4 id="个人信息"><a href="#个人信息" class="headerlink" title="个人信息"></a>个人信息</h4><ul>
-<li>梁友泽</li>
-<li>籍贯 重庆</li>
-<li>本科/通信工程 2014-2018</li>
-<li>Github <a href="https://github.com/yzrds" target="_blank" rel="noopener">https://github.com/yzrds</a></li>
-<li>技术博客 <a href="https://www.liangyouze.com">https://www.liangyouze.com</a></li>
-<li>wechat: lyz19951024</li>
-<li>email: <a href="mailto:youzedev@gmail.com" target="_blank" rel="noopener">youzedev@gmail.com</a></li>
-<li>工作年限 1年</li>
-<li>技术方向 后端(未来想从事搜索方向)</li>
-</ul>
-<h4 id="工作经历"><a href="#工作经历" class="headerlink" title="工作经历"></a>工作经历</h4><h5 id="新加坡艾克伦-2018-03-至今"><a href="#新加坡艾克伦-2018-03-至今" class="headerlink" title="新加坡艾克伦 (2018.03-至今)"></a>新加坡艾克伦 (2018.03-至今)</h5><p>工作描述: 新加坡艾克伦是一家外企，公司主要对外输出在线教育，视频会议录播，云会议服务等。个人职责:负责开发AculearnOnline在线教育产品，管理后台、以及日常业务开发。</p>
-<p>主要技术:</p>
-<p>groovy,elasticsearch,mongodb,redis，kafka等互联网主流技术</p>
-<p>职责描述:</p>
-<ol>
-<li>参与整个在线教育平台从0到1的构建，微服务领域的划分。</li>
-<li>负责整个支付系统设计与开发，并与业务子系统集成。</li>
-<li>负责评价，kafka异步统计。部分单点登录与部分搜索。以及相关的订单模块。</li>
-<li>整个管理后台的开发。</li>
-</ol>
-<h5 id="重庆春之翼信息科技有限公司-2017-09-2018-01"><a href="#重庆春之翼信息科技有限公司-2017-09-2018-01" class="headerlink" title="重庆春之翼信息科技有限公司 (2017.09-2018.01)"></a>重庆春之翼信息科技有限公司 (2017.09-2018.01)</h5><p>合同管理系统</p>
-<p>项目描述:</p>
-<p>合同管理项目为上海春秋航空总部提供了从线下合同到线上合同管理的便捷服务。与ERP系统，人事管理系统集成。实现了可配置，<br>，支持合同信息查询、合同审批、合同预算管控等功能，实现合同信息从线下管理到线上管理的初步功能。 </p>
-<p>主要技术:<br>c#,bootstrap,oracle,jquery</p>
-<p>工作描述:<br>负责内部合同管理模块的研发实现工作，包括合同信息查询、合同审批、合同预算管控、文件上传、合同提示信息推送等功能，实现合同信息从线下管理到线上管理的初步功能。</p>
-<h4 id="技能清单"><a href="#技能清单" class="headerlink" title="技能清单"></a>技能清单</h4><ul>
-<li>编程语言: java groovy </li>
-<li>框架: SpringBoot/mybatis</li>
-<li>存储: mysql/redis/mongo</li>
-<li>中间件: kafka/elasticsearch</li>
-</ul>
-<h4 id="自我评价"><a href="#自我评价" class="headerlink" title="自我评价"></a>自我评价</h4><ul>
-<li>早已习惯各种英文工作环境，能够较为熟练阅读各类技术的官方文档</li>
-<li>有较强的学习能力和良好的学习习惯</li>
-<li>数学爱好者，在校期间自学各类数学知识，并获得大学生数学建模竞赛省二等奖，网络挑战赛优秀奖。能把数学当小说看，但不扣细节。</li>
-<li>热爱阅读，有长期维护的个人博客和微信公众号，喜欢交流与技术分享</li>
-<li>为人踏实，具有较强的团队意识和协作能力</li>
-</ul>
-<p><img src="https://note.youdao.com/yws/api/personal/file/1582784439BE4A9B858C319B643AFD7A?method=download&amp;shareKey=7cca63afa498fe9c388538871533db3c" alt="微信公众号"></p>
+            <p>吧啦吧啦，今天在公司做算法题的时候，不仅就想写下了</p>
+<p>String是不可变类，所以任何对String的操作都将引发新的String对象的生成。但是StringBuffer是可变类，任何对StringBuffer所指代的字符串改变都不会产生新的对象。</p>
+<p>新引入的StingBuilder类不是线程安全，但其在单线程中的性能比StringBuffer高。<a id="more"></a></p>
+<p>下面是一点小例子</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br></pre></td><td class="code"><pre><span class="line">import java.util.ArrayList;</span><br><span class="line">import java.util.Iterator;</span><br><span class="line">import java.util.List;</span><br><span class="line"></span><br><span class="line">/**</span><br><span class="line"> * 从JDK1.5中,有了StringBuilder。</span><br><span class="line"> */</span><br><span class="line">public class DifferenceStringBufferAndStringBuilder &#123;</span><br><span class="line">    private static final String base = &quot;String&quot;;</span><br><span class="line">    private static final int count = 3000000;</span><br><span class="line"></span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line">        stringTest();</span><br><span class="line">        stringBufferTest();</span><br><span class="line">        stringBuilderTest();</span><br><span class="line"></span><br><span class="line">        addToStringBuilder();</span><br><span class="line">        addToStringBuffer();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    /**</span><br><span class="line">     * string执行性能测试</span><br><span class="line">     */</span><br><span class="line">    public static void stringTest() &#123;</span><br><span class="line">        long begin, end;</span><br><span class="line">        begin = System.currentTimeMillis();</span><br><span class="line">        String test = new String(base);</span><br><span class="line">        // 在这里为什么要缩150，因为其实时间是很长的</span><br><span class="line">        for (int i = 0; i &lt; count / 150; i++) &#123;</span><br><span class="line">            test = test + &quot;add&quot;;</span><br><span class="line">        &#125;</span><br><span class="line">        end = System.currentTimeMillis();</span><br><span class="line">        System.out.println((end - begin) + &quot;millis has elapsed when used String&quot;);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    /**</span><br><span class="line">     * stringBuffer</span><br><span class="line">     */</span><br><span class="line">    public static void stringBufferTest() &#123;</span><br><span class="line">        long begin, end;</span><br><span class="line">        begin = System.currentTimeMillis();</span><br><span class="line">        StringBuffer stringBuffer = new StringBuffer(base);</span><br><span class="line">        for (int i = 0; i &lt; count; i++) &#123;</span><br><span class="line">            stringBuffer.append(&quot;add&quot;);</span><br><span class="line">        &#125;</span><br><span class="line">        end = System.currentTimeMillis();</span><br><span class="line">        System.out.println((end - begin) + &quot;millis has elapsed when used StringBuffer&quot;);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    /**</span><br><span class="line">     * stingBuilder</span><br><span class="line">     */</span><br><span class="line">    public static void stringBuilderTest() &#123;</span><br><span class="line">        long begin, end;</span><br><span class="line">        begin = System.currentTimeMillis();</span><br><span class="line">        StringBuilder stringBuilder = new StringBuilder(base);</span><br><span class="line">        for (int i = 0; i &lt; count; i++) &#123;</span><br><span class="line">            stringBuilder.append(&quot;add&quot;);</span><br><span class="line">        &#125;</span><br><span class="line">        end = System.currentTimeMillis();</span><br><span class="line">        System.out.println((end - begin) + &quot;mills has elapsed when used StringBuilder&quot;);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    /**</span><br><span class="line">     *转换为StringBuilder</span><br><span class="line">     */</span><br><span class="line"></span><br><span class="line">    public static String appendItemsToStringBuilder(List list)&#123;</span><br><span class="line">        StringBuilder stringBuilder = new StringBuilder();</span><br><span class="line">        for (Iterator i = list.iterator();i.hasNext();)&#123;</span><br><span class="line">            stringBuilder.append(i.next()).append(&quot;&quot;);</span><br><span class="line">        &#125;</span><br><span class="line">        return stringBuilder.toString();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    public static void addToStringBuilder()&#123;</span><br><span class="line">        List list = new ArrayList();</span><br><span class="line">        list.add(&quot;l&quot;);</span><br><span class="line">        list.add(&quot;y&quot;);</span><br><span class="line">        list.add(&quot;z&quot;);</span><br><span class="line">        System.out.println(DifferenceStringBufferAndStringBuilder.appendItemsToStringBuilder(list));</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    public static String appendItemsToStringBuffer(List list)&#123;</span><br><span class="line">        StringBuffer stringBuffer = new StringBuffer();</span><br><span class="line">        for (Iterator i = list.iterator();i.hasNext();)&#123;</span><br><span class="line">            stringBuffer.append(i.next()).append(&quot;&quot;);</span><br><span class="line">        &#125;</span><br><span class="line">        return stringBuffer.toString();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public static void addToStringBuffer()&#123;</span><br><span class="line">        List list = new ArrayList();</span><br><span class="line">        list.add(&quot;l&quot;);</span><br><span class="line">        list.add(&quot;y&quot;);</span><br><span class="line">        list.add(&quot;z&quot;);</span><br><span class="line">        System.out.println(DifferenceStringBufferAndStringBuilder.appendItemsToStringBuffer(list));</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>最后输出的是</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">1127millis has elapsed when used String</span><br><span class="line">86millis has elapsed when used StringBuffer</span><br><span class="line">35mills has elapsed when used StringBuilder</span><br><span class="line">lyz</span><br><span class="line">lyz</span><br></pre></td></tr></table></figure>
+<p>所以根据结果来看，采用String对象时，哪怕是次数是其他对象的1/150,执行时间上也比其他对象高很多，而采用StringBuffer对象和采用StringBuilder对象也有明显的差距。所以如果是在单线程下运行，就不必考虑到线程同步的问题，优先采用StringBuilder类，当然，如果是要保证线程安全的话，就要考虑到StringBuffer了。</p>
+<hr>
+<p>除了对多线程的支持不一样的话，其实这两个类没啥区别的，上面不就很好的说明了嘛。</p>
 
         
         </div>
@@ -255,7 +254,7 @@
 
 </div>
 
-    <a data-url="http://www.liangyouze.com/about/index.html" data-id="cjmzvlyw100010cw3pfrv2nd5" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
+    <a data-url="http://www.liangyouze.com/2017/11/23/String、StringBuffer、StringBuilder三者之间的区别/" data-id="cjmzvlyvj00000cw3zoea0r90" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
 <script>
     (function ($) {
         // Prevent duplicate binding
@@ -323,13 +322,27 @@
 
             
     
-        <a href="http://www.liangyouze.com/about/index.html#comments" class="article-comment-link disqus-comment-count" data-disqus-url="http://www.liangyouze.com/about/index.html">评论</a>
+        <a href="http://www.liangyouze.com/2017/11/23/String、StringBuffer、StringBuilder三者之间的区别/#comments" class="article-comment-link disqus-comment-count" data-disqus-url="http://www.liangyouze.com/2017/11/23/String、StringBuffer、StringBuilder三者之间的区别/">评论</a>
     
 
         </footer>
     </div>
     
         
+<nav id="article-nav">
+    
+        <a href="/2018/05/25/w/" id="article-nav-newer" class="article-nav-link-wrap">
+            <strong class="article-nav-caption">上一篇</strong>
+            <div class="article-nav-title">
+                
+                    w
+                
+            </div>
+        </a>
+    
+    
+</nav>
+
 
     
 </article>
@@ -518,9 +531,9 @@
     <script>
     var disqus_config = function () {
         
-            this.page.url = 'http://www.liangyouze.com/about/index.html';
+            this.page.url = 'http://www.liangyouze.com/2017/11/23/String、StringBuffer、StringBuilder三者之间的区别/';
         
-        this.page.identifier = '';
+        this.page.identifier = 'String、StringBuffer、StringBuilder三者之间的区别';
     };
     (function() { 
         var d = document, s = d.createElement('script');  
