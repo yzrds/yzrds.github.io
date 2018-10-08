@@ -13,7 +13,7 @@
 <meta property="og:site_name" content="梁友泽的博客">
 <meta property="og:description" content="至于我为什么想写这篇文章是因为最近在项目中使用到了iframe，是的。生无可恋的又写上了一点js，可能是因为前端的人对单点登录啥的或者是页面跳转以及要和后端的逻辑处理起来不是很熟练吧。各大网站，包括淘宝，京东，这些大网站有很多自己的产品，至于前期是怎么样的不是很清楚，网易云至少是用的iframe。参考了一些博客，至于使用不使用iframe，我觉得能解决问题就好，而且如果考虑的多的话就考虑以后扩展以">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2018-09-02T15:06:08.114Z">
+<meta property="og:updated_time" content="2018-10-08T05:52:24.997Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="关于iframe跨域传输">
 <meta name="twitter:description" content="至于我为什么想写这篇文章是因为最近在项目中使用到了iframe，是的。生无可恋的又写上了一点js，可能是因为前端的人对单点登录啥的或者是页面跳转以及要和后端的逻辑处理起来不是很熟练吧。各大网站，包括淘宝，京东，这些大网站有很多自己的产品，至于前期是怎么样的不是很清楚，网易云至少是用的iframe。参考了一些博客，至于使用不使用iframe，我觉得能解决问题就好，而且如果考虑的多的话就考虑以后扩展以">
@@ -234,7 +234,7 @@
         <div class="article-entry" itemprop="articleBody">
         
             
-            <p>至于我为什么想写这篇文章是因为最近在项目中使用到了iframe，是的。生无可恋的又写上了一点js，可能是因为前端的人对单点登录啥的或者是页面跳转以及要和后端的逻辑<br>处理起来不是很熟练吧。各大网站，包括淘宝，京东，这些大网站有很多自己的产品，至于前期是怎么样的不是很清楚，网易云至少是用的iframe。参考了一些博客，至于使用<br>不使用iframe，我觉得能解决问题就好，而且如果考虑的多的话就考虑以后扩展以及拆分啥的，毕竟前端又不像后端这样。</p>
+            <p>至于我为什么想写这篇文章是因为最近在项目中使用到了iframe，是的。生无可恋的又写上了一点js，可能是因为前端的人对单点登录啥的或者是页面跳转以及要和后端的逻辑<br>处理起来不是很熟练吧。各大网站，包括淘宝，京东，这些大网站有很多自己的产品，至于前期是怎么样的不是很清楚，网易云至少是用的iframe。参考了一些博客，至于使用<br>不使用iframe，我觉得能解决问题就好，而且如果考虑的多的话就考虑以后扩展以及拆分啥的，毕竟前端又不像后端这样。<a id="more"></a></p>
 <p>因为要解决跨域问题。有很多方案，比如说iframe，jsonp(不过只支持get，对于一些铭感信息就不行了)</p>
 <p>原本需求是登录在一个站点，而注册是另外一个站点。因为要实时反馈到iframe子页面，子页面在进行相应。</p>
 <p>而在Windows对象下有个postMessage方法，是解决跨越问题的<br>假设有两个不同源的页面，iframe.html和index.html 其中前者是后者的子页面。<br><figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">&lt;!-- index.html --&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">body</span>&gt;</span></span><br><span class="line"></span><br><span class="line">  <span class="tag">&lt;<span class="name">h1</span>&gt;</span>this is index<span class="tag">&lt;/<span class="name">h1</span>&gt;</span></span><br><span class="line"></span><br><span class="line">  <span class="tag">&lt;<span class="name">iframe</span> <span class="attr">src</span>=<span class="string">"./iframePage.html"</span> <span class="attr">id</span>=<span class="string">'iframe'</span>&gt;</span><span class="tag">&lt;/<span class="name">iframe</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;/<span class="name">body</span>&gt;</span></span><br></pre></td></tr></table></figure></p>
@@ -256,7 +256,7 @@
 
 </div>
 
-    <a data-url="http://www.liangyouze.com/2018/07/31/关于iframe跨域传输/" data-id="cjmzvn3a20007osw3yr5r49xp" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
+    <a data-url="http://www.liangyouze.com/2018/07/31/关于iframe跨域传输/" data-id="cjmzwg05x0005nsw30f6rvrvs" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
 <script>
     (function ($) {
         // Prevent duplicate binding
