@@ -3,19 +3,20 @@
 <head>
     <meta charset="utf-8">
     
-    <title>梁友泽的博客</title>
+    <title>初识Docker | 梁友泽的博客</title>
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
-    <meta name="description" content="分布式架构  在应用的迭代过程中，随着一些系统访问量高，用户数增多。业务复杂度提高，代码复杂度提高。应用逐渐从单体式架构面向服务的分布式架构转变。于是，RPC远程过程调用是分布式的核心。">
+    <meta name="description" content="关于dockerdocker是一款以容器虚拟化技术为基础的软件 那么什么是虚拟化技术 ？ 虚拟化技术是一种将计算机物理资源进行抽象、转换为虚拟的计算机资源提供给程序使用的技术。 因为要配置各种环境等，给开发造成了很多困扰。 虚拟化还有一种作用，就是将虚拟化应用于资源管理。 假想一下，你要装mysql，redis等等，跑起一个服务端就比较费资源，虚拟化就可以很好地解决这件事情。就会有一种效果，那就是">
+<meta name="keywords" content="Docker">
 <meta property="og:type" content="article">
-<meta property="og:title" content="梁友泽的博客">
-<meta property="og:url" content="http://www.liangyouze.com/2018/10/05/分布式架构/index.html">
+<meta property="og:title" content="初识Docker">
+<meta property="og:url" content="http://www.liangyouze.com/2018/05/11/关于docker/index.html">
 <meta property="og:site_name" content="梁友泽的博客">
-<meta property="og:description" content="分布式架构  在应用的迭代过程中，随着一些系统访问量高，用户数增多。业务复杂度提高，代码复杂度提高。应用逐渐从单体式架构面向服务的分布式架构转变。于是，RPC远程过程调用是分布式的核心。">
+<meta property="og:description" content="关于dockerdocker是一款以容器虚拟化技术为基础的软件 那么什么是虚拟化技术 ？ 虚拟化技术是一种将计算机物理资源进行抽象、转换为虚拟的计算机资源提供给程序使用的技术。 因为要配置各种环境等，给开发造成了很多困扰。 虚拟化还有一种作用，就是将虚拟化应用于资源管理。 假想一下，你要装mysql，redis等等，跑起一个服务端就比较费资源，虚拟化就可以很好地解决这件事情。就会有一种效果，那就是">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2018-10-05T14:08:51.000Z">
+<meta property="og:updated_time" content="2018-11-17T06:59:00.571Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="梁友泽的博客">
-<meta name="twitter:description" content="分布式架构  在应用的迭代过程中，随着一些系统访问量高，用户数增多。业务复杂度提高，代码复杂度提高。应用逐渐从单体式架构面向服务的分布式架构转变。于是，RPC远程过程调用是分布式的核心。">
+<meta name="twitter:title" content="初识Docker">
+<meta name="twitter:description" content="关于dockerdocker是一款以容器虚拟化技术为基础的软件 那么什么是虚拟化技术 ？ 虚拟化技术是一种将计算机物理资源进行抽象、转换为虚拟的计算机资源提供给程序使用的技术。 因为要配置各种环境等，给开发造成了很多困扰。 虚拟化还有一种作用，就是将虚拟化应用于资源管理。 假想一下，你要装mysql，redis等等，跑起一个服务端就比较费资源，虚拟化就可以很好地解决这件事情。就会有一种效果，那就是">
     
 
     
@@ -195,16 +196,84 @@
 </aside>
 
             
-            <section id="main"><article id="post-分布式架构" class="article article-type-post" itemscope itemprop="blogPost">
+            <section id="main"><article id="post-关于docker" class="article article-type-post" itemscope itemprop="blogPost">
     <div class="article-inner">
         
+        
+            <header class="article-header">
+                
+    
+        <h1 class="article-title" itemprop="name">
+            初识Docker
+        </h1>
+    
+
+                
+                    <div class="article-meta">
+                        
+    <div class="article-date">
+        <i class="fa fa-calendar"></i>
+        <a href="/2018/05/11/关于docker/">
+            <time datetime="2018-05-11T06:10:23.000Z" itemprop="datePublished">2018-05-11</time>
+        </a>
+    </div>
+
+
+                        
+                        
+    <div class="article-tag">
+        <i class="fa fa-tag"></i>
+        <a class="tag-link" href="/tags/Docker/">Docker</a>
+    </div>
+
+                    </div>
+                
+            </header>
         
         
         <div class="article-entry" itemprop="articleBody">
         
             
-            <p>分布式架构 </p>
-<p>在应用的迭代过程中，随着一些系统访问量高，用户数增多。业务复杂度提高，代码复杂度提高。<br>应用逐渐从单体式架构面向服务的分布式架构转变。于是，RPC远程过程调用是分布式的核心。</p>
+            <h3 id="关于docker"><a href="#关于docker" class="headerlink" title="关于docker"></a>关于docker</h3><p>docker是一款以容器虚拟化技术为基础的软件</p>
+<p>那么什么是虚拟化技术 ？</p>
+<p>虚拟化技术是一种将计算机物理资源进行抽象、转换为虚拟的计算机资源提供给程序使用的技术。</p>
+<p>因为要配置各种环境等，给开发造成了很多困扰。</p>
+<p>虚拟化还有一种作用，就是将虚拟化应用于资源管理。</p>
+<p>假想一下，你要装mysql，redis等等，跑起一个服务端就比较费资源，虚拟化就可以很好地解决这件事情。就会有一种效果，那就是1+1&lt;2.</p>
+<p>虚拟化技术通过资源隔离的方式，无形地也可以把这些程序隔离在不同的虚拟环境中，既然虚拟环境不同，自然运行在不同环境中的程序就不会互相干扰或争抢资源了。</p>
+<h4 id="docker的优势"><a href="#docker的优势" class="headerlink" title="docker的优势"></a>docker的优势</h4><ul>
+<li>基于容器技术的Docker拥有很高的跨平台性。Docker 的容器能够很轻松的运行在开发者本地的电脑，数据中心的物理机或虚拟机，云服务商提供的云服务器，甚至是混合环境中。 </li>
+<li>Docker 的轻量性和高可移植性能够很好的帮助我们完成应用的动态伸缩，我们可以通过一些手段近实时的对基于 Docker 运行的应用进行弹性伸缩，这能够大幅提高应用的健壮性。</li>
+<li>不管是交付市场时间， 增加开发生产力，提高开发效率，节约基础设施成本，提升运维效率，以及加速问题解决时间。docker都有一个很好的作用。</li>
+</ul>
+<h5 id="关于docker的技术实现"><a href="#关于docker的技术实现" class="headerlink" title="关于docker的技术实现"></a>关于docker的技术实现</h5><ul>
+<li>Docker的实现，主要归结于三大技术，命令空间，控制组以及联合文件系统。大家可以更深入的去了解下。<br>说到了Docker，就不得不先说说Docker的体系了。它有四个对象：镜像，容器，网络，数据卷。<ul>
+<li>镜像：大概可以理解为一个只读的文件包。其中包含了虚拟环境运行最原始文件系统的内容。镜像是对容器运行环境进行持久化存储的结果。</li>
+<li>容器：容器就是用来隔离虚拟环境的基础设施，而在 Docker 里，它也被引申为隔离出来的虚拟环境。如果把镜像理解为编程中的类，那么容器就可以理解为类的实例。镜像内存放的是不可变化的东西，当以它们为基础的容器启动后，容器内也就成为了一个“活”的空间。</li>
+</ul>
+</li>
+</ul>
+<hr>
+<p>用更官方的定义来讲，Docker容器应该有三项内容组成。</p>
+<ul>
+<li>一个Docker镜像</li>
+<li>一个程序运行环境</li>
+<li>一个指令集合</li>
+</ul>
+<ol>
+<li>网络<ul>
+<li>对于大部分程序来说，它们的运行都不会是孤立的，而是要与外界或者更准确的说是与其他程序进行交互的，这里的交互绝大多数情况下指的就是数据信息的交换。网络通讯是目前最常用的一种程序间的数据交换方式了。</li>
+<li>在 Docker 中，实现了强大的网络功能，我们不但能够十分轻松的对每个容器的网络进行配置，还能在容器间建立虚拟网络，将数个容器包裹其中，同时与其他网络环境隔离。</li>
+<li>利用一些技术，Docker 能够在容器中营造独立的域名解析环境，这使得我们可以在不修改代码和配置的前提下直接迁移容器，Docker 会为我们完成新环境的网络适配。对于这个功能，我们甚至能够在不同的物理服务器间实现，让处在两台物理机上的两个 Docker 所提供的容器，加入到同一个虚拟网络中，形成完全屏蔽硬件的效果。</li>
+</ul>
+</li>
+<li>数据卷<ul>
+<li>在以往的虚拟机中，我们通常直接采用虚拟机的文件系统作为应用数据等文件的存储位置。然而这种方式其实并非完全安全的，当虚拟机或者容器出现问题导致文件系统无法使用时，虽然我们可以很快的通过镜像重置文件系统使得应用快速恢复运行，但是之前存放的数据也就消失了。</li>
+<li>为了保证数据的独立性，我们通常会单独挂载一个文件系统来存放数据。这种操作在虚拟机中是繁琐的，因为我们不但要搞定挂载在不同宿主机中实现的方法，还要考虑挂载文件系统兼容性，虚拟操作系统配置等问题。值得庆幸的是，这些在 Docker 里都已经为我们轻松的实现了，我们只需要简单的一两个命令或参数，就能完成文件系统目录的挂载。</li>
+<li></li>
+</ul>
+</li>
+</ol>
 
         
         </div>
@@ -215,7 +284,7 @@
 
 </div>
 
-    <a data-url="http://www.liangyouze.com/2018/10/05/分布式架构/" data-id="cjol3r211000b3mx00umktiu8" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
+    <a data-url="http://www.liangyouze.com/2018/05/11/关于docker/" data-id="cjol3r20w00053mx09uc21tem" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
 <script>
     (function ($) {
         // Prevent duplicate binding
@@ -283,7 +352,7 @@
 
             
     
-        <a href="http://www.liangyouze.com/2018/10/05/分布式架构/#comments" class="article-comment-link disqus-comment-count" data-disqus-url="http://www.liangyouze.com/2018/10/05/分布式架构/">评论</a>
+        <a href="http://www.liangyouze.com/2018/05/11/关于docker/#comments" class="article-comment-link disqus-comment-count" data-disqus-url="http://www.liangyouze.com/2018/05/11/关于docker/">评论</a>
     
 
         </footer>
@@ -292,10 +361,19 @@
         
 <nav id="article-nav">
     
+        <a href="/2018/07/31/关于iframe跨域传输/" id="article-nav-newer" class="article-nav-link-wrap">
+            <strong class="article-nav-caption">上一篇</strong>
+            <div class="article-nav-title">
+                
+                    关于iframe跨域传输
+                
+            </div>
+        </a>
     
-        <a href="/2018/09/11/elasticsearch社区分享会/" id="article-nav-older" class="article-nav-link-wrap">
+    
+        <a href="/2017/11/23/String、StringBuffer、StringBuilder三者之间的区别/" id="article-nav-older" class="article-nav-link-wrap">
             <strong class="article-nav-caption">下一篇</strong>
-            <div class="article-nav-title">elasticsearch社区分享会</div>
+            <div class="article-nav-title">String、StringBuffer、StringBuilder三者之间的区别</div>
         </a>
     
 </nav>
@@ -492,9 +570,9 @@
     <script>
     var disqus_config = function () {
         
-            this.page.url = 'http://www.liangyouze.com/2018/10/05/分布式架构/';
+            this.page.url = 'http://www.liangyouze.com/2018/05/11/关于docker/';
         
-        this.page.identifier = '分布式架构';
+        this.page.identifier = '关于docker';
     };
     (function() { 
         var d = document, s = d.createElement('script');  
