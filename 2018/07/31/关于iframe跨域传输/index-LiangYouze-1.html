@@ -3,23 +3,20 @@
 <head>
     <meta charset="utf-8">
     
-    <title>elasticsearch社区分享会 | 梁友泽的博客</title>
+    <title>关于iframe跨域传输 | 梁友泽的博客</title>
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
-    <meta name="description" content="在前段时间加班的时候错过了两场我想去的技术会，这次终于没落空了。大佬也多，涨了不少姿势。特此记录一下分享，由于全凭记忆叙述，可能就没啥顺序而言的还原出之前的收获。">
-<meta name="keywords" content="elasticsearch">
+    <meta name="description" content="至于我为什么想写这篇文章是因为最近在项目中使用到了iframe，是的。生无可恋的又写上了一点js，可能是因为前端的人对单点登录啥的或者是页面跳转以及要和后端的逻辑处理起来不是很熟练吧。各大网站，包括淘宝，京东，这些大网站有很多自己的产品，至于前期是怎么样的不是很清楚，网易云至少是用的iframe。参考了一些博客，至于使用不使用iframe，我觉得能解决问题就好，而且如果考虑的多的话就考虑以后扩展以">
+<meta name="keywords" content="跨域,iframe">
 <meta property="og:type" content="article">
-<meta property="og:title" content="elasticsearch社区分享会">
-<meta property="og:url" content="http://www.liangyouze.com/2018/09/11/elasticsearch社区分享会/index.html">
+<meta property="og:title" content="关于iframe跨域传输">
+<meta property="og:url" content="http://www.liangyouze.com/2018/07/31/关于iframe跨域传输/index.html">
 <meta property="og:site_name" content="梁友泽的博客">
-<meta property="og:description" content="在前段时间加班的时候错过了两场我想去的技术会，这次终于没落空了。大佬也多，涨了不少姿势。特此记录一下分享，由于全凭记忆叙述，可能就没啥顺序而言的还原出之前的收获。">
+<meta property="og:description" content="至于我为什么想写这篇文章是因为最近在项目中使用到了iframe，是的。生无可恋的又写上了一点js，可能是因为前端的人对单点登录啥的或者是页面跳转以及要和后端的逻辑处理起来不是很熟练吧。各大网站，包括淘宝，京东，这些大网站有很多自己的产品，至于前期是怎么样的不是很清楚，网易云至少是用的iframe。参考了一些博客，至于使用不使用iframe，我觉得能解决问题就好，而且如果考虑的多的话就考虑以后扩展以">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:image" content="https://note.youdao.com/yws/api/personal/file/3CFBA64276584119816743278039B622?method=download&shareKey=06ad0e7b5775a493beb87ce827d0cd6a">
-<meta property="og:image" content="https://note.youdao.com/yws/api/personal/file/79225BF27FBA4B1C8728541C0198904A?method=download&shareKey=9c6fd462fa2ad6353fb780565db3c273">
-<meta property="og:updated_time" content="2018-10-08T05:46:01.000Z">
+<meta property="og:updated_time" content="2018-10-08T05:52:24.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="elasticsearch社区分享会">
-<meta name="twitter:description" content="在前段时间加班的时候错过了两场我想去的技术会，这次终于没落空了。大佬也多，涨了不少姿势。特此记录一下分享，由于全凭记忆叙述，可能就没啥顺序而言的还原出之前的收获。">
-<meta name="twitter:image" content="https://note.youdao.com/yws/api/personal/file/3CFBA64276584119816743278039B622?method=download&shareKey=06ad0e7b5775a493beb87ce827d0cd6a">
+<meta name="twitter:title" content="关于iframe跨域传输">
+<meta name="twitter:description" content="至于我为什么想写这篇文章是因为最近在项目中使用到了iframe，是的。生无可恋的又写上了一点js，可能是因为前端的人对单点登录啥的或者是页面跳转以及要和后端的逻辑处理起来不是很熟练吧。各大网站，包括淘宝，京东，这些大网站有很多自己的产品，至于前期是怎么样的不是很清楚，网易云至少是用的iframe。参考了一些博客，至于使用不使用iframe，我觉得能解决问题就好，而且如果考虑的多的话就考虑以后扩展以">
     
 
     
@@ -65,7 +62,7 @@
                 
                     <a class="main-nav-link" href="/archives/">分类</a>
                 
-                    <a class="main-nav-link" href="/categories/">归档</a>
+                    <a class="main-nav-link" href="/categories">归档</a>
                 
                     <a class="main-nav-link" href="/about">关于</a>
                 
@@ -128,7 +125,7 @@
                 
                     <td><a class="main-nav-link" href="/archives/">分类</a></td>
                 
-                    <td><a class="main-nav-link" href="/categories/">归档</a></td>
+                    <td><a class="main-nav-link" href="/categories">归档</a></td>
                 
                     <td><a class="main-nav-link" href="/about">关于</a></td>
                 
@@ -159,11 +156,11 @@
         </div>
         <div class="article-info profile-block">
             <div class="article-info-block">
-                7
+                5
                 <span>文章</span>
             </div>
             <div class="article-info-block">
-                8
+                6
                 <span>标签</span>
             </div>
         </div>
@@ -199,7 +196,7 @@
 </aside>
 
             
-            <section id="main"><article id="post-elasticsearch社区分享会" class="article article-type-post" itemscope itemprop="blogPost">
+            <section id="main"><article id="post-关于iframe跨域传输" class="article article-type-post" itemscope itemprop="blogPost">
     <div class="article-inner">
         
         
@@ -207,7 +204,7 @@
                 
     
         <h1 class="article-title" itemprop="name">
-            elasticsearch社区分享会
+            关于iframe跨域传输
         </h1>
     
 
@@ -216,8 +213,8 @@
                         
     <div class="article-date">
         <i class="fa fa-calendar"></i>
-        <a href="/2018/09/11/elasticsearch社区分享会/">
-            <time datetime="2018-09-11T06:10:23.000Z" itemprop="datePublished">2018-09-11</time>
+        <a href="/2018/07/31/关于iframe跨域传输/">
+            <time datetime="2018-07-31T12:10:33.000Z" itemprop="datePublished">2018-07-31</time>
         </a>
     </div>
 
@@ -226,7 +223,7 @@
                         
     <div class="article-tag">
         <i class="fa fa-tag"></i>
-        <a class="tag-link" href="/tags/elasticsearch/">elasticsearch</a>
+        <a class="tag-link" href="/tags/iframe/">iframe</a>, <a class="tag-link" href="/tags/跨域/">跨域</a>
     </div>
 
                     </div>
@@ -237,39 +234,18 @@
         <div class="article-entry" itemprop="articleBody">
         
             
-            <p>在前段时间加班的时候错过了两场我想去的技术会，这次终于没落空了。大佬也多，涨了不少姿势。特此记录一下分享，由于全凭记忆叙述，可能就没啥顺序而言的还原出之前的收获。<a id="more"></a></p>
-<p><img src="https://note.youdao.com/yws/api/personal/file/3CFBA64276584119816743278039B622?method=download&amp;shareKey=06ad0e7b5775a493beb87ce827d0cd6a" alt=""></p>
-<p>确实目前项目中目前涉及到了elasticsearch不多，索引都才几个。看到别人分享的都是2千，4-5千的索引量。而且数据量大的话才更能体现出elasticsearch的作用。</p>
-<p>周金阳  果壳网/在行 算法工程师</p>
-<p>算法果然是大佬，让es与深度学习结合起来在搜索这块已经走在很多公司的前面了吧。</p>
-<ol>
-<li>使用 ES 来构建一个简易却行之有效的个性化推荐系统，以及一些高级搜索排序的实践。</li>
-<li>搜索排序主要是分享一些机器学习工具与 ES 配合的实践心得。</li>
-</ol>
-<p><img src="https://note.youdao.com/yws/api/personal/file/79225BF27FBA4B1C8728541C0198904A?method=download&amp;shareKey=9c6fd462fa2ad6353fb780565db3c273" alt=""></p>
-<p>思考一个问题，如果是这样的你会选择怎么排序<br><figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">	"title":"引力波"</span><br><span class="line">	"content":"引力波引力波引力波"</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">	"title":"引力波,一个世纪的求索"</span><br><span class="line">	"content":"在物理学中，引力波是指时空弯曲中的涟漪，通过波的形式从辐射源向外传播，这种波以引力辐射的形式传输能量。在1916年，爱因斯坦基于广义相对论预言了引力波的存在。引力波的存在是广义相对论洛伦兹不变性的结果，因为它引入了相互作用的传播速度有限的概念。相比之下，引力波不能够存在于牛顿的经典引力理论当中，因为牛顿的经典理论假设物质的相互作用传播是速度无限的。"</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>若输入的值和被检索到的结果呈线性变化g(q,x)很明显，第一个是用户测试的或者是胡乱写的，当用户输入“引力波”的时候，如何控制类似于这种情况让正常的显示在前。<br>这种情况，就可以加一些其他的限制条件f(x),比如1得出来的期望值为15.42,2得出来的期望值为87.93，<br>这样关于g(q,x) -&gt; f(x)*g(q,x)</p>
-<p>当然如果要做的好的话需要优化的还有很多，比如用BiLSTM+CNN 期望后期会用到这些吧，毕竟我觉得这是偏离业务而且是和大数据接轨的之一。</p>
-<p>其中，在使用es的时候有一些规范和约束，</p>
-<ul>
-<li>业务索引尽量自定义id，数据敏感业务自备插入修改时间</li>
-<li>一个索引一个type</li>
-<li>控制单次搜索结果条数，总条数由es限制。控制请求超时时间</li>
-</ul>
-<p>关于es的使用也有在调用链日志</p>
-<ul>
-<li>一个节点一个主分片，0副本，</li>
-<li>批量写入，控制单批写入字节数</li>
-</ul>
-<p>在生产阶段，调用链日志写入慢，kafka会出现大量堆积等现象，关于如何解决。有以下方案，</p>
-<ol>
-<li>索引写入时会伴随着id校验，请求体解析，分词等操作，都会带来一定的cpu开销。原先的索引结构中存在部分多余字段，无需进行分词，取消后可以减轻cpu压力。</li>
-<li>使用es自动生成id，省去id检查步骤。调整translog合并时间，半小时一次，防止过多merge任务导致cpu开销过大。</li>
-</ol>
-<p>在业务索引随着场景变化，写入量逐渐增多，集群cpu load变高，原来单个主分片写入出现瓶颈<br>遇到这种情况 可以重建索引，主分片改为2个，分别分布在两台机器，达到负载均衡效果，数据需要迁移。</p>
-<p>在提及到es时，不得不说也是和spark相关。这里就不展开讲了，下次深入了解的时候再学习。</p>
-<h3 id="番外"><a href="#番外" class="headerlink" title="番外"></a>番外</h3><p>大公司都是搜索是一个团队，虽然我业务写的也不好，但是我更倾向于这种方向。分享者都很强，有开发相关的以及运维，技术演变快，找准自己的一个兴趣点，专研下去。</p>
+            <p>至于我为什么想写这篇文章是因为最近在项目中使用到了iframe，是的。生无可恋的又写上了一点js，可能是因为前端的人对单点登录啥的或者是页面跳转以及要和后端的逻辑<br>处理起来不是很熟练吧。各大网站，包括淘宝，京东，这些大网站有很多自己的产品，至于前期是怎么样的不是很清楚，网易云至少是用的iframe。参考了一些博客，至于使用<br>不使用iframe，我觉得能解决问题就好，而且如果考虑的多的话就考虑以后扩展以及拆分啥的，毕竟前端又不像后端这样。<a id="more"></a></p>
+<p>因为要解决跨域问题。有很多方案，比如说iframe，jsonp(不过只支持get，对于一些铭感信息就不行了)</p>
+<p>原本需求是登录在一个站点，而注册是另外一个站点。因为要实时反馈到iframe子页面，子页面在进行相应。</p>
+<p>而在Windows对象下有个postMessage方法，是解决跨越问题的<br>假设有两个不同源的页面，iframe.html和index.html 其中前者是后者的子页面。<br><figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">&lt;!-- index.html --&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">body</span>&gt;</span></span><br><span class="line"></span><br><span class="line">  <span class="tag">&lt;<span class="name">h1</span>&gt;</span>this is index<span class="tag">&lt;/<span class="name">h1</span>&gt;</span></span><br><span class="line"></span><br><span class="line">  <span class="tag">&lt;<span class="name">iframe</span> <span class="attr">src</span>=<span class="string">"./iframePage.html"</span> <span class="attr">id</span>=<span class="string">'iframe'</span>&gt;</span><span class="tag">&lt;/<span class="name">iframe</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;/<span class="name">body</span>&gt;</span></span><br></pre></td></tr></table></figure></p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">&lt;!-- iframePage --&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">body</span>&gt;</span></span><br><span class="line"></span><br><span class="line">  <span class="tag">&lt;<span class="name">h1</span>&gt;</span>this is iframePage<span class="tag">&lt;/<span class="name">h1</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;/<span class="name">body</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p>现在这两个是无法通信的，因为是不同的站点，所以这个时候就要用到postMessage</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">// idnex.html</span><br><span class="line"></span><br><span class="line">//获取iframe元素,当然也可以使用其他的js框架</span><br><span class="line">iFrame = document.getElementById('iframe')</span><br><span class="line"></span><br><span class="line">//iframe加载完毕后再发送消息，否则子页面接收不到message</span><br><span class="line">iFrame.onload = function()&#123;</span><br><span class="line"></span><br><span class="line">  //iframe加载完立即发送一条消息</span><br><span class="line">  iFrame.contentWindow.postMessage('MessageFromIndex1','*');</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>我们知道postMessage是挂载在window对象上的，所以等iframe加载完毕后，用iFrame.contentWindow获取到iframe的window对象，<br>然后调用postMessage方法，相当于给子页面发送了一条消息。</p>
+<p>postMessage方法第二个参数可以设置要发送到哪个url，如果当前子页面的url和设置的不一致，则会发送失败，因为没啥限制就设置为*，代表所有url都允许发送。</p>
+<p>消息发送到iframePage.html，我们来接收message</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">// iframePage.html</span><br><span class="line"></span><br><span class="line">//回调函数</span><br><span class="line">function receiveMessageFromIndex ( event ) &#123;</span><br><span class="line">  console.log( 'receiveMessageFromIndex', event )</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">//监听message事件</span><br><span class="line">window.addEventListener("message", receiveMessageFromIndex, false);</span><br></pre></td></tr></table></figure>
+<p>然后设置好回调函数，就可以了，data中或许还有其他的数值，所以在接受的时候判断一下。</p>
 
         
         </div>
@@ -280,7 +256,7 @@
 
 </div>
 
-    <a data-url="http://www.liangyouze.com/2018/09/11/elasticsearch社区分享会/" data-id="cjph3dolr00067mx0jxz9pogu" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
+    <a data-url="http://www.liangyouze.com/2018/07/31/关于iframe跨域传输/" data-id="cjnr03taq0004irx0hoc88ads" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
 <script>
     (function ($) {
         // Prevent duplicate binding
@@ -348,7 +324,7 @@
 
             
     
-        <a href="http://www.liangyouze.com/2018/09/11/elasticsearch社区分享会/#comments" class="article-comment-link disqus-comment-count" data-disqus-url="http://www.liangyouze.com/2018/09/11/elasticsearch社区分享会/">评论</a>
+        <a href="http://www.liangyouze.com/2018/07/31/关于iframe跨域传输/#comments" class="article-comment-link disqus-comment-count" data-disqus-url="http://www.liangyouze.com/2018/07/31/关于iframe跨域传输/">评论</a>
     
 
         </footer>
@@ -357,19 +333,19 @@
         
 <nav id="article-nav">
     
-        <a href="/2018/10/05/分布式架构/" id="article-nav-newer" class="article-nav-link-wrap">
+        <a href="/2018/08/10/关于生成订单号规则的一些思考/" id="article-nav-newer" class="article-nav-link-wrap">
             <strong class="article-nav-caption">上一篇</strong>
             <div class="article-nav-title">
                 
-                    (no title)
+                    关于生成订单号规则的一些思考
                 
             </div>
         </a>
     
     
-        <a href="/2018/08/10/关于生成订单号规则的一些思考/" id="article-nav-older" class="article-nav-link-wrap">
+        <a href="/2017/11/23/String、StringBuffer、StringBuilder三者之间的区别/" id="article-nav-older" class="article-nav-link-wrap">
             <strong class="article-nav-caption">下一篇</strong>
-            <div class="article-nav-title">关于生成订单号规则的一些思考</div>
+            <div class="article-nav-title">String、StringBuffer、StringBuilder三者之间的区别</div>
         </a>
     
 </nav>
@@ -398,25 +374,6 @@
         <h3 class="widget-title">最新文章</h3>
         <div class="widget">
             <ul id="recent-post" class="">
-                
-                    <li>
-                        
-                        <!-- <div class="item-thumbnail">
-                            <a href="/2018/10/10/我所读过的书/" class="thumbnail">
-    
-    
-        <span class="thumbnail-image thumbnail-none"></span>
-    
-</a>
-
-                        </div> -->
-                        
-                        <div class="item-inner">
-                            <p class="item-category"></p>
-                            <p class="item-title"><a href="/2018/10/10/我所读过的书/" class="title">我所读过的书</a></p>
-                            <p class="item-date"><time datetime="2018-10-10T12:10:33.000Z" itemprop="datePublished">2018-10-10</time></p>
-                        </div>
-                    </li>
                 
                     <li>
                         
@@ -494,25 +451,37 @@
                         </div>
                     </li>
                 
+                    <li>
+                        
+                        <!-- <div class="item-thumbnail">
+                            <a href="/2017/11/23/String、StringBuffer、StringBuilder三者之间的区别/" class="thumbnail">
+    
+    
+        <span class="thumbnail-image thumbnail-none"></span>
+    
+</a>
+
+                        </div> -->
+                        
+                        <div class="item-inner">
+                            <p class="item-category"></p>
+                            <p class="item-title"><a href="/2017/11/23/String、StringBuffer、StringBuilder三者之间的区别/" class="title">String、StringBuffer、StringBuilder三者之间的区别</a></p>
+                            <p class="item-date"><time datetime="2017-11-23T14:38:31.000Z" itemprop="datePublished">2017-11-23</time></p>
+                        </div>
+                    </li>
+                
             </ul>
         </div>
     </div>
 
     
         
-    <div class="widget-wrap">
-        <h3 class="widget-title">分类</h3>
-        <div class="widget">
-            <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/docker/">docker</a><span class="category-list-count">1</span></li></ul>
-        </div>
-    </div>
-
     
         
     <div class="widget-wrap">
         <h3 class="widget-title">归档</h3>
         <div class="widget">
-            <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/10/">十月 2018</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/09/">九月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/08/">八月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/07/">七月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/05/">五月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/11/">十一月 2017</a><span class="archive-list-count">1</span></li></ul>
+            <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/10/">十月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/09/">九月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/08/">八月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/07/">七月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/11/">十一月 2017</a><span class="archive-list-count">1</span></li></ul>
         </div>
     </div>
 
@@ -521,7 +490,7 @@
     <div class="widget-wrap">
         <h3 class="widget-title">标签</h3>
         <div class="widget">
-            <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Docker/">Docker</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/elasticsearch/">elasticsearch</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/iframe/">iframe</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/字符串/">字符串</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/规则/">规则</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/订单号/">订单号</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/读书/">读书</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/跨域/">跨域</a><span class="tag-list-count">1</span></li></ul>
+            <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/elasticsearch/">elasticsearch</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/iframe/">iframe</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/字符串/">字符串</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/规则/">规则</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/订单号/">订单号</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/跨域/">跨域</a><span class="tag-list-count">1</span></li></ul>
         </div>
     </div>
 
@@ -530,7 +499,7 @@
     <div class="widget-wrap">
         <h3 class="widget-title">标签云</h3>
         <div class="widget tagcloud">
-            <a href="/tags/Docker/" style="font-size: 10px;">Docker</a> <a href="/tags/elasticsearch/" style="font-size: 10px;">elasticsearch</a> <a href="/tags/iframe/" style="font-size: 10px;">iframe</a> <a href="/tags/字符串/" style="font-size: 10px;">字符串</a> <a href="/tags/规则/" style="font-size: 10px;">规则</a> <a href="/tags/订单号/" style="font-size: 10px;">订单号</a> <a href="/tags/读书/" style="font-size: 10px;">读书</a> <a href="/tags/跨域/" style="font-size: 10px;">跨域</a>
+            <a href="/tags/elasticsearch/" style="font-size: 10px;">elasticsearch</a> <a href="/tags/iframe/" style="font-size: 10px;">iframe</a> <a href="/tags/字符串/" style="font-size: 10px;">字符串</a> <a href="/tags/规则/" style="font-size: 10px;">规则</a> <a href="/tags/订单号/" style="font-size: 10px;">订单号</a> <a href="/tags/跨域/" style="font-size: 10px;">跨域</a>
         </div>
     </div>
 
@@ -573,9 +542,9 @@
     <script>
     var disqus_config = function () {
         
-            this.page.url = 'http://www.liangyouze.com/2018/09/11/elasticsearch社区分享会/';
+            this.page.url = 'http://www.liangyouze.com/2018/07/31/关于iframe跨域传输/';
         
-        this.page.identifier = 'elasticsearch社区分享会';
+        this.page.identifier = '关于iframe跨域传输';
     };
     (function() { 
         var d = document, s = d.createElement('script');  
