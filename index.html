@@ -234,62 +234,13 @@
         
         <div class="article-entry" itemprop="articleBody">
         
-            
-            <h4 id="defer的使用特点"><a href="#defer的使用特点" class="headerlink" title="defer的使用特点"></a>defer的使用特点</h4><p>其实其中一点特性我理解起来就有点像java中的finally的用法</p>
+            <p><h4 id="defer的使用特点"><a href="#defer的使用特点" class="headerlink" title="defer的使用特点"></a>defer的使用特点</h4><p>其实其中一点特性我理解起来就有点像java中的finally的用法</p>
 <p>关于<a href="https://blog.golang.org/defer-panic-and-recover" target="_blank" rel="noopener">官方</a>解释</p>
 <figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">A defer statement defers the execution of a function until the surrounding function returns.</span><br><span class="line"></span><br><span class="line">The deferred call's arguments are evaluated immediately, but the function call is not executed until the surrounding function returns.</span><br></pre></td></tr></table></figure>
 <p>这里提到了defer调用的参数会立即计算，但在周围函数返回之前不会执行函数调用。</p>
-<p>以及延迟函数调用被压入堆栈。当函数返回时，其延迟调用以后进先出顺序执行。</p>
-<p>它有如何特点</p>
-<ul>
-<li>所在的函数中，它在 return 或 panic 或 执行完毕 后被调用</li>
-<li>多个 defer，它们的被调用顺序，为栈的形式。先进后出，先定义的后被调用</li>
-</ul>
-<p>看下面几个例子：</p>
-<ol>
-<li>在计算defer语句时，将计算延迟函数的参数。在此示例中，在延迟Println调用时计算表达式“i”。函数返回后，延迟调用将打印“0”。</li>
-</ol>
-<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">a</span><span class="params">()</span></span> &#123;</span><br><span class="line">    i := <span class="number">0</span></span><br><span class="line">    <span class="keyword">defer</span> fmt.Println(i)</span><br><span class="line">    i++</span><br><span class="line">    <span class="keyword">return</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<ol start="2">
-<li>在周围函数返回后，延迟函数调用以后进先出顺序执行。</li>
-</ol>
-<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">b</span><span class="params">()</span></span> &#123;</span><br><span class="line">    <span class="keyword">for</span> i := <span class="number">0</span>; i &lt; <span class="number">4</span>; i++ &#123;</span><br><span class="line">        <span class="keyword">defer</span> fmt.Print(i)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;   <span class="comment">//将会打印3210</span></span><br></pre></td></tr></table></figure>
-<p>然后不免在使用过程中会遇到这些坑</p>
-<p><strong>坑1</strong>. defer在匿名返回值和命名返回值函数中的不同表现</p>
-<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">returnValues</span><span class="params">()</span> <span class="title">int</span></span> &#123;</span><br><span class="line">    <span class="keyword">var</span> result <span class="keyword">int</span></span><br><span class="line">    <span class="keyword">defer</span> <span class="function"><span class="keyword">func</span><span class="params">()</span></span> &#123;</span><br><span class="line">        result++</span><br><span class="line">        fmt.Println(<span class="string">"defer"</span>)</span><br><span class="line">    &#125;()</span><br><span class="line">    <span class="keyword">return</span> result</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">namedReturnValues</span><span class="params">()</span> <span class="params">(result <span class="keyword">int</span>)</span></span> &#123;</span><br><span class="line">    <span class="keyword">defer</span> <span class="function"><span class="keyword">func</span><span class="params">()</span></span> &#123;</span><br><span class="line">        result++</span><br><span class="line">        fmt.Println(<span class="string">"defer"</span>)</span><br><span class="line">    &#125;()</span><br><span class="line">    <span class="keyword">return</span> result</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>&nbsp;&nbsp;上面的方法会输出0，下面的方法输出1。上面的方法使用了匿名返回值，下面的使用了命名返回值，除此之外其他的逻辑均相同，为什么输出的结果会有区别呢？</p>
-<p>&nbsp;&nbsp;要搞清这个问题首先需要了解defer的执行逻辑，defer语句在方法返回“时”触发，也就是说return和defer是“同时”执行的。以匿名返回值方法举例，过程如下。</p>
-<ul>
-<li>将result赋值给返回值（可以理解成Go自动创建了一个返回值retValue，相当于执行retValue = result）</li>
-<li>然后检查是否有defer，如果有则执行</li>
-<li>返回刚才创建的返回值（retValue）</li>
-</ul>
-<p>在这种情况下，defer中的修改是对result执行的，而不是retValue，所以defer返回的依然是retValue。在命名返回值方法中，由于返回值在方法定义时已经被定义，所以没有创建retValue的过程，result就是retValue，defer对于result的修改也会被直接返回。</p>
-<p><strong>坑2</strong>. 判断执行没有err之后，再defer释放资源</p>
-<p>一些获取资源的操作可能会返回err参数，我们可以选择忽略返回的err参数，但是如果要使用defer进行延迟释放的的话，需要在使用defer之前先判断是否存在err，如果资源没有获取成功，即没有必要也不应该再对资源执行释放操作。如果不判断获取资源是否成功就执行释放操作的话，还有可能导致释放方法执行错误。</p>
-<p>正确做法</p>
-<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">resp, err := http.Get(url)</span><br><span class="line"><span class="comment">// 先判断操作是否成功</span></span><br><span class="line"><span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">    <span class="keyword">return</span> err</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">// 如果操作成功，再进行Close操作</span></span><br><span class="line"><span class="keyword">defer</span> resp.Body.Close()</span><br></pre></td></tr></table></figure>
-<p><strong>坑3</strong>. 调用os.Exit时defer不会被执行<br>当发生panic时，所在goroutine的所有defer会被执行，但是当调用os.Exit()方法退出程序时，defer并不会被执行。</p>
-<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">deferExit</span><span class="params">()</span></span> &#123;</span><br><span class="line">    <span class="keyword">defer</span> <span class="function"><span class="keyword">func</span><span class="params">()</span></span> &#123;</span><br><span class="line">        fmt.Println(<span class="string">"defer"</span>)</span><br><span class="line">    &#125;()</span><br><span class="line">    os.Exit(<span class="number">0</span>)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>上面的defer并不会输出。</p>
-<p><strong>坑4</strong>.非引用传参给defer调用的函数，且为非闭包函数，值不会受后面的改变影响</p>
-<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">defer0</span><span class="params">()</span></span> &#123;</span><br><span class="line">	a := <span class="number">1</span>  <span class="comment">// a 作为演示的参数</span></span><br><span class="line">	<span class="keyword">defer</span> fmt.Println(a) <span class="comment">// 非引用传参，非闭包函数中，a 的值 不会 受后面的改变影响</span></span><br><span class="line">	a = a + <span class="number">2</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">// 控制台输出 1</span></span><br></pre></td></tr></table></figure>
-<p><strong>坑5</strong>. 传递引用给defer调用的函数，即使不使用闭包函数，值也会受后面的改变影响</p>
-<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">func myPrintln(point *int)  &#123;</span><br><span class="line">	fmt.Println(*point) // 输出引用所指向的值</span><br><span class="line">&#125;</span><br><span class="line">func defer1() &#123;</span><br><span class="line">	a := 3</span><br><span class="line">	// &amp;a 是 a 的引用。内存中的形式： 0x .... ---&gt; 3</span><br><span class="line">	defer myPrintln(&amp;a) // 传递引用给函数，即使不使用闭包函数，值 会 受后面的改变影响</span><br><span class="line">	a = a + 2</span><br><span class="line">&#125;</span><br><span class="line">// 控制台输出 5</span><br></pre></td></tr></table></figure>
-<p><strong>坑6</strong>. 传递值给defer调用的函数，且非闭包函数，值不会受后面的改变影响</p>
-<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">p</span><span class="params">(a <span class="keyword">int</span>)</span></span>  &#123;</span><br><span class="line">	fmt.Println(a)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">defer2</span><span class="params">()</span></span> &#123;</span><br><span class="line">	a := <span class="number">3</span></span><br><span class="line">	<span class="keyword">defer</span> p(a) <span class="comment">// 传递值给函数，且非闭包函数，值 不会 受后面的改变影响</span></span><br><span class="line">	a = a + <span class="number">2</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">// 控制台输出： 3</span></span><br></pre></td></tr></table></figure>
-<p><strong>坑7</strong>. defer调用闭包函数，且内调用外部非传参进来的变量，值会受后面的改变影响</p>
-<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 闭包函数内，事实是该值的引用</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">defer3</span><span class="params">()</span></span> &#123;</span><br><span class="line">	a := <span class="number">3</span></span><br><span class="line">	<span class="keyword">defer</span> <span class="function"><span class="keyword">func</span><span class="params">()</span></span> &#123;</span><br><span class="line">		fmt.Println(a) <span class="comment">// 闭包函数内调用外部非传参进来的变量，事实是该值的引用，值 会 受后面的改变影响</span></span><br><span class="line">	&#125;()</span><br><span class="line">	a = a + <span class="number">2</span>  <span class="comment">// 3 + 2 = 5</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">// 控制台输出： 5</span></span><br></pre></td></tr></table></figure>
-<p><strong>坑8</strong>. defer调用闭包函数，若内部使用了传参参数的值。使用的是值</p>
-<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">defer5</span><span class="params">()</span></span> &#123;</span><br><span class="line">	a := []<span class="keyword">int</span>&#123;<span class="number">1</span>,<span class="number">2</span>,<span class="number">3</span>&#125;</span><br><span class="line">	<span class="keyword">for</span> i:=<span class="number">0</span>;i&lt;<span class="built_in">len</span>(a);i++ &#123;</span><br><span class="line">		<span class="comment">// 闭包函数内部使用传参参数的值。内部的值为传参的值。同时引用是不同的</span></span><br><span class="line">		<span class="keyword">defer</span> <span class="function"><span class="keyword">func</span><span class="params">(index <span class="keyword">int</span>)</span></span> &#123;</span><br><span class="line">		        <span class="comment">// index 有一个新地址指向它</span></span><br><span class="line">			fmt.Println(a[index]) <span class="comment">// index == i</span></span><br><span class="line">		&#125;(i)</span><br><span class="line">		<span class="comment">// 后进先出，3 2 1</span></span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">// 控制台输出： </span></span><br><span class="line"><span class="comment">//     3</span></span><br><span class="line"><span class="comment">//     2</span></span><br><span class="line"><span class="comment">//     1</span></span><br></pre></td></tr></table></figure>
-<p><strong>坑9</strong>. defer所调用的非闭包函数，参数如果是函数，会按顺序先执行（函数参数）</p>
-<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">calc</span><span class="params">(index <span class="keyword">string</span>, a, b <span class="keyword">int</span>)</span> <span class="title">int</span></span> &#123;</span><br><span class="line">	ret := a + b</span><br><span class="line">	fmt.Println(index, a, b, ret)</span><br><span class="line">	<span class="keyword">return</span> ret</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">defer6</span><span class="params">()</span></span>  &#123;</span><br><span class="line">	a := <span class="number">1</span></span><br><span class="line">	b := <span class="number">2</span></span><br><span class="line">	<span class="comment">// calc 充当了函数中的函数参数。即使在 defer 的函数中，它作为函数参数，定义的时候也会首先调用函数进行求值</span></span><br><span class="line">	<span class="comment">// 按照正常的顺序，calc("10", a, b) 首先被调用求值。calc("122", a, b) 排第二被调用</span></span><br><span class="line">	<span class="keyword">defer</span> calc(<span class="string">"1"</span>, a, calc(<span class="string">"10"</span>, a, b))</span><br><span class="line">	<span class="keyword">defer</span> calc(<span class="string">"12"</span>,a, calc(<span class="string">"122"</span>, a, b))</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">// 控制台输出：</span></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">10 1 2 3   // 第一个函数参数</span></span><br><span class="line"><span class="comment">122 1 2 3  // 第二个函数参数</span></span><br><span class="line"><span class="comment">12 1 3 4   // 倒数第一个 calc</span></span><br><span class="line"><span class="comment">1 1 3 4    // 倒数第二个 calc</span></span><br><span class="line"><span class="comment">*/</span></span><br></pre></td></tr></table></figure>
-<h4 id="注意"><a href="#注意" class="headerlink" title="注意"></a>注意</h4><ul>
-<li>defer 不影响 return的值</li>
-</ul>
-<p><a href="https://www.simpleapples.com/2018/09/14/how-to-use-defer-in-go/" target="_blank" rel="noopener">参考</a></p>
-<p><a href="https://juejin.im/post/5c964437e51d456d6d4fae46" target="_blank" rel="noopener">参考</a></p>
-
+            <p class="article-more-link">
+                <a href="/2019/01/11/defer/#more">查看更多</a>
+            </p>
         
         </div>
         <footer class="article-footer">
@@ -299,7 +250,7 @@
 
 </div>
 
-    <a data-url="http://www.liangyouze.com/2019/01/11/defer/" data-id="cjtpso28z0008qsx0xo6zkd00" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
+    <a data-url="http://www.liangyouze.com/2019/01/11/defer/" data-id="cjtpt6oqs0000grx0zadtoin3" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
 <script>
     (function ($) {
         // Prevent duplicate binding
@@ -432,7 +383,7 @@
 
 </div>
 
-    <a data-url="http://www.liangyouze.com/2018/12/31/2018总结/" data-id="cjtpso28x0006qsx0p0tnpjf2" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
+    <a data-url="http://www.liangyouze.com/2018/12/31/2018总结/" data-id="cjtpt6orj0007grx00w7m7246" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
 <script>
     (function ($) {
         // Prevent duplicate binding
@@ -560,7 +511,7 @@
 
 </div>
 
-    <a data-url="http://www.liangyouze.com/2018/10/10/我所读过的书/" data-id="cjtpso29a000kqsx0a0wu25ny" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
+    <a data-url="http://www.liangyouze.com/2018/10/10/我所读过的书/" data-id="cjtpt6oru000mgrx0dcevritu" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
 <script>
     (function ($) {
         // Prevent duplicate binding
@@ -658,7 +609,7 @@
 
 </div>
 
-    <a data-url="http://www.liangyouze.com/2018/10/05/分布式架构/" data-id="cjtpso294000eqsx0430jbm3r" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
+    <a data-url="http://www.liangyouze.com/2018/10/05/分布式架构/" data-id="cjtpt6ort000kgrx0qppfpgui" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
 <script>
     (function ($) {
         // Prevent duplicate binding
@@ -786,7 +737,7 @@
 
 </div>
 
-    <a data-url="http://www.liangyouze.com/2018/09/11/elasticsearch社区分享会/" data-id="cjtpso2880001qsx0b628z18a" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
+    <a data-url="http://www.liangyouze.com/2018/09/11/elasticsearch社区分享会/" data-id="cjtpt6orh0005grx0nwu3h6kw" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
 <script>
     (function ($) {
         // Prevent duplicate binding
@@ -915,7 +866,7 @@
 
 </div>
 
-    <a data-url="http://www.liangyouze.com/2018/08/10/关于生成订单号规则的一些思考/" data-id="cjtpso29b000lqsx0x1z7kcvv" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
+    <a data-url="http://www.liangyouze.com/2018/08/10/关于生成订单号规则的一些思考/" data-id="cjtpt6orq000fgrx0p14e7k62" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
 <script>
     (function ($) {
         // Prevent duplicate binding
@@ -1043,7 +994,7 @@
 
 </div>
 
-    <a data-url="http://www.liangyouze.com/2018/07/31/关于iframe跨域传输/" data-id="cjtpso298000gqsx0q6a3k5vm" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
+    <a data-url="http://www.liangyouze.com/2018/07/31/关于iframe跨域传输/" data-id="cjtpt6orr000igrx04h5jmoh4" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
 <script>
     (function ($) {
         // Prevent duplicate binding
@@ -1179,7 +1130,7 @@
 
 </div>
 
-    <a data-url="http://www.liangyouze.com/2018/05/11/关于docker/" data-id="cjtpso292000cqsx0mfeo22kh" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
+    <a data-url="http://www.liangyouze.com/2018/05/11/关于docker/" data-id="cjtpt6orn000dgrx0i1z1le1g" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
 <script>
     (function ($) {
         // Prevent duplicate binding
@@ -1309,7 +1260,7 @@
 
 </div>
 
-    <a data-url="http://www.liangyouze.com/2017/11/23/String、StringBuffer、StringBuilder三者之间的区别/" data-id="cjtpso2840000qsx0d929zqu6" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
+    <a data-url="http://www.liangyouze.com/2017/11/23/String、StringBuffer、StringBuilder三者之间的区别/" data-id="cjtpt6orl000agrx0gresg47o" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
 <script>
     (function ($) {
         // Prevent duplicate binding

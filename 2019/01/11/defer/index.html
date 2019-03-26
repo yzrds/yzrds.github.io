@@ -13,7 +13,7 @@
 <meta property="og:site_name" content="梁友泽的博客">
 <meta property="og:description" content="defer的使用特点其实其中一点特性我理解起来就有点像java中的finally的用法 关于官方解释 123A defer statement defers the execution of a function until the surrounding function returns.The deferred call&apos;s arguments are evaluated immediatel">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2019-03-25T09:16:49.000Z">
+<meta property="og:updated_time" content="2019-03-26T13:21:06.729Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="golang-defer">
 <meta name="twitter:description" content="defer的使用特点其实其中一点特性我理解起来就有点像java中的finally的用法 关于官方解释 123A defer statement defers the execution of a function until the surrounding function returns.The deferred call&apos;s arguments are evaluated immediatel">
@@ -242,7 +242,7 @@
             <h4 id="defer的使用特点"><a href="#defer的使用特点" class="headerlink" title="defer的使用特点"></a>defer的使用特点</h4><p>其实其中一点特性我理解起来就有点像java中的finally的用法</p>
 <p>关于<a href="https://blog.golang.org/defer-panic-and-recover" target="_blank" rel="noopener">官方</a>解释</p>
 <figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">A defer statement defers the execution of a function until the surrounding function returns.</span><br><span class="line"></span><br><span class="line">The deferred call's arguments are evaluated immediately, but the function call is not executed until the surrounding function returns.</span><br></pre></td></tr></table></figure>
-<p>这里提到了defer调用的参数会立即计算，但在周围函数返回之前不会执行函数调用。</p>
+<p>这里提到了defer调用的参数会立即计算，但在周围函数返回之前不会执行函数调用。<a id="more"></a></p>
 <p>以及延迟函数调用被压入堆栈。当函数返回时，其延迟调用以后进先出顺序执行。</p>
 <p>它有如何特点</p>
 <ul>
@@ -303,7 +303,7 @@
 
 </div>
 
-    <a data-url="http://www.liangyouze.com/2019/01/11/defer/" data-id="cjtpso28z0008qsx0xo6zkd00" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
+    <a data-url="http://www.liangyouze.com/2019/01/11/defer/" data-id="cjtpt6oqs0000grx0zadtoin3" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
 <script>
     (function ($) {
         // Prevent duplicate binding
