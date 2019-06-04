@@ -1,0 +1,672 @@
+<!DOCTYPE html>
+<html lang=zh>
+<head>
+    <meta charset="utf-8">
+    
+    <title>合适以及为何使用最少使用(LFU)缓存与Golang中的实现 | 梁友泽的博客</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+    <meta name="description" content="[译]合适以及为何使用最少使用(LFU)缓存与Golang中的实现在过去的这些年，参与计算机科学和工程师的人们一直在努力优化各种性质。我们生活在一个资源有限的世界里，人们一直致力于优化成本和速度的方法。 在软件工程方面而言，我认为，最流行的改善性能的就是缓存了。在许多app都有缓存，依赖于软件方面的存储，缓存背后的想法非常简单。为了加载较快，存储数据经常被用到。">
+<meta name="keywords" content="golang">
+<meta property="og:type" content="article">
+<meta property="og:title" content="合适以及为何使用最少使用(LFU)缓存与Golang中的实现">
+<meta property="og:url" content="http://www.liangyouze.com/2019/06/04/[译]合适以及为何使用最少使用(LFU)缓存与Golang中的实现/index.html">
+<meta property="og:site_name" content="梁友泽的博客">
+<meta property="og:description" content="[译]合适以及为何使用最少使用(LFU)缓存与Golang中的实现在过去的这些年，参与计算机科学和工程师的人们一直在努力优化各种性质。我们生活在一个资源有限的世界里，人们一直致力于优化成本和速度的方法。 在软件工程方面而言，我认为，最流行的改善性能的就是缓存了。在许多app都有缓存，依赖于软件方面的存储，缓存背后的想法非常简单。为了加载较快，存储数据经常被用到。">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="https://note.youdao.com/yws/api/personal/file/WEB48033598bbd758abb243c66d1618e4c6?method=download&shareKey=a77c7002cae7853b07252075d3ac698d">
+<meta property="og:image" content="https://note.youdao.com/yws/api/personal/file/WEB7cf646a14b6c9e281bc34420acad4614?method=download&shareKey=f77bdc8c45d7e59d39c263a3800fa5cc">
+<meta property="og:image" content="https://note.youdao.com/yws/api/personal/file/WEB768fdc19ec5f6567f979d4793f5366a0?method=download&shareKey=6d2f2d1fe4a1b17b82dbc5e2479564f6">
+<meta property="og:image" content="https://note.youdao.com/yws/api/personal/file/WEB2b5b7b63839f27f60f1494aca67ae059?method=download&shareKey=f3208f6dcaddf26c5f801a374088b54f">
+<meta property="og:image" content="https://note.youdao.com/yws/api/personal/file/WEB80756d942d94d51e375ee972a6361c47?method=download&shareKey=2f23e775d7adc806978e7d12a4931798">
+<meta property="og:image" content="https://note.youdao.com/yws/api/personal/file/WEB474454a89ec8c49a6d7e2646726147d9?method=download&shareKey=a7d1f109c6c21247bf30849bc494170f">
+<meta property="og:updated_time" content="2019-06-04T15:29:03.332Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="合适以及为何使用最少使用(LFU)缓存与Golang中的实现">
+<meta name="twitter:description" content="[译]合适以及为何使用最少使用(LFU)缓存与Golang中的实现在过去的这些年，参与计算机科学和工程师的人们一直在努力优化各种性质。我们生活在一个资源有限的世界里，人们一直致力于优化成本和速度的方法。 在软件工程方面而言，我认为，最流行的改善性能的就是缓存了。在许多app都有缓存，依赖于软件方面的存储，缓存背后的想法非常简单。为了加载较快，存储数据经常被用到。">
+<meta name="twitter:image" content="https://note.youdao.com/yws/api/personal/file/WEB48033598bbd758abb243c66d1618e4c6?method=download&shareKey=a77c7002cae7853b07252075d3ac698d">
+    
+
+    
+
+    
+
+    <link rel="stylesheet" href="/libs/font-awesome/css/font-awesome.min.css">
+    <link rel="stylesheet" href="/libs/open-sans/styles.css">
+    <link rel="stylesheet" href="/libs/source-code-pro/styles.css">
+
+    <link rel="stylesheet" href="/css/style.css">
+
+    <script src="/libs/jquery/2.1.3/jquery.min.js"></script>
+    
+    
+        <link rel="stylesheet" href="/libs/lightgallery/css/lightgallery.min.css">
+    
+    
+        <link rel="stylesheet" href="/libs/justified-gallery/justifiedGallery.min.css">
+    
+    
+    
+    
+
+
+</head>
+
+<script async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+<body>
+    <div id="container">
+        <header id="header">
+    <div id="header-main" class="header-inner">
+        <div class="outer">
+            <a href="/" id="logo">
+                <i class="logo"></i>
+                <span class="site-title">梁友泽的博客</span>
+            </a>
+            <nav id="main-nav">
+                
+                    <a class="main-nav-link" href="/.">主页</a>
+                
+                    <a class="main-nav-link" href="/archives/">分类</a>
+                
+                    <a class="main-nav-link" href="/categories/">归档</a>
+                
+                    <a class="main-nav-link" href="/about">关于</a>
+                
+            </nav>
+            
+                
+                <nav id="sub-nav">
+                    <div class="profile" id="profile-nav">
+                        <a id="profile-anchor" href="javascript:;">
+                            <img class="avatar" src="/css/images/rolle.png" />
+                            <i class="fa fa-caret-down"></i>
+                        </a>
+                    </div>
+                </nav>
+            
+            <div id="search-form-wrap">
+
+    <form class="search-form">
+        <input type="text" class="ins-search-input search-form-input" placeholder="搜索" />
+        <button type="submit" class="search-form-submit"></button>
+    </form>
+    <div class="ins-search">
+    <div class="ins-search-mask"></div>
+    <div class="ins-search-container">
+        <div class="ins-input-wrapper">
+            <input type="text" class="ins-search-input" placeholder="想要查找什么..." />
+            <span class="ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: '文章',
+            PAGES: '页面',
+            CATEGORIES: '分类',
+            TAGS: '标签',
+            UNTITLED: '(未命名)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+<script src="/js/insight.js"></script>
+
+</div>
+        </div>
+    </div>
+    <div id="main-nav-mobile" class="header-sub header-inner">
+        <table class="menu outer">
+            <tr>
+                
+                    <td><a class="main-nav-link" href="/.">主页</a></td>
+                
+                    <td><a class="main-nav-link" href="/archives/">分类</a></td>
+                
+                    <td><a class="main-nav-link" href="/categories/">归档</a></td>
+                
+                    <td><a class="main-nav-link" href="/about">关于</a></td>
+                
+                <td>
+                    
+    <div class="search-form">
+        <input type="text" class="ins-search-input search-form-input" placeholder="搜索" />
+    </div>
+
+                </td>
+            </tr>
+        </table>
+    </div>
+</header>
+
+        <div class="outer">
+            
+                
+
+<aside id="profile" class="profile-fixed">
+    <div class="inner profile-inner">
+        <div class="base-info profile-block">
+            <img id="avatar" src="/css/images/rolle.png" />
+            <h2 id="name">梁友泽</h2>
+            <h3 id="title">Developer</h3>
+            <span id="location"><i class="fa fa-map-marker"></i>BeiJing, China</span>
+            <a id="follow" target="_blank" href="https://github.com/yzrds">关注我</a>
+        </div>
+        <div class="article-info profile-block">
+            <div class="article-info-block">
+                11
+                <span>文章</span>
+            </div>
+            <div class="article-info-block">
+                11
+                <span>标签</span>
+            </div>
+        </div>
+        
+        <div class="profile-block social-links">
+            <table>
+                <tr>
+                    
+                    
+                    <td>
+                        <a href="http://github.com/yzrds" target="_blank" title="github" class=tooltip>
+                            <i class="fa fa-github"></i>
+                        </a>
+                    </td>
+                    
+                    <td>
+                        <a href="/youzedev@gmail.com" target="_blank" title="email" class=tooltip>
+                            <i class="fa fa-email"></i>
+                        </a>
+                    </td>
+                    
+                    <td>
+                        <a href="/css/images/rolle_wechat.jpg" target="_blank" title="wechat" class=tooltip>
+                            <i class="fa fa-wechat"></i>
+                        </a>
+                    </td>
+                    
+                </tr>
+            </table>
+        </div>
+        
+    </div>
+</aside>
+
+            
+            <section id="main"><article id="post-[译]合适以及为何使用最少使用(LFU)缓存与Golang中的实现" class="article article-type-post" itemscope itemprop="blogPost">
+    <div class="article-inner">
+        
+        
+            <header class="article-header">
+                
+    
+        <h1 class="article-title" itemprop="name">
+            合适以及为何使用最少使用(LFU)缓存与Golang中的实现
+        </h1>
+    
+
+                
+                    <div class="article-meta">
+                        
+    <div class="article-date">
+        <i class="fa fa-calendar"></i>
+        <a href="/2019/06/04/[译]合适以及为何使用最少使用(LFU)缓存与Golang中的实现/">
+            <time datetime="2019-06-04T12:10:33.000Z" itemprop="datePublished">2019-06-04</time>
+        </a>
+    </div>
+
+
+                        
+                        
+    <div class="article-tag">
+        <i class="fa fa-tag"></i>
+        <a class="tag-link" href="/tags/golang/">golang</a>
+    </div>
+
+                    </div>
+                
+            </header>
+        
+        
+        <div class="article-entry" itemprop="articleBody">
+        
+            
+            <h3 id="译-合适以及为何使用最少使用-LFU-缓存与Golang中的实现"><a href="#译-合适以及为何使用最少使用-LFU-缓存与Golang中的实现" class="headerlink" title="[译]合适以及为何使用最少使用(LFU)缓存与Golang中的实现"></a>[译]合适以及为何使用最少使用(LFU)缓存与Golang中的实现</h3><p>在过去的这些年，参与计算机科学和工程师的人们一直在努力优化各种性质。我们生活在一个资源有限的世界里，人们一直致力于优化成本和速度的方法。</p>
+<p>在软件工程方面而言，我认为，最流行的改善性能的就是缓存了。在许多app都有缓存，依赖于软件方面的存储，缓存背后的想法非常简单。为了加载较快，存储数据经常被用到。<a id="more"></a></p>
+<p>事实上，缓存必须在两个方面很快</p>
+<ol>
+<li>确保尽可能多的文件请求(缓存命中)，而不是通过网络或者主内存(没有命中)</li>
+<li>使用它的开销应该比较小，测试人员决定何时更换文件</li>
+</ol>
+<p>在这篇文章中，我们将会关注第二部分。对最不常用的缓存采取特定的实现方法，并使成员资格测试和驱逐算法具有良好的性能。并且，我们还将介绍基础知识并探究这种缓存方案可用的地方。</p>
+<h3 id="基础"><a href="#基础" class="headerlink" title="基础"></a>基础</h3><p>LFU是一种缓存算法。只要达到缓存的容量限制，就会删除缓存中最不常用项。这意味着对于缓存中的每个项目，我们必须跟踪它的使用频率。一旦超过了容量，讲运用驱逐算法，从缓存中挑选和过期（移除）项目。</p>
+<p>如果你之前实现过LFU缓存，你可能已经考虑使用最小堆数据结构。因为它对数时间复杂度处理插入，删除和更新。在这篇文章中，我们将介绍另一种实现它的方法。</p>
+<p>但在我们进入实施之前，让我们看看LFU在哪些情况下比替代品更好。</p>
+<h3 id="LFU闪耀点"><a href="#LFU闪耀点" class="headerlink" title="LFU闪耀点"></a>LFU闪耀点</h3><p>想象一下CDN上的资产缓存，其中资产根据使用模式进行缓存。因此，当用户在网页上请求加载一些图片时，此CDN会将其添加到缓存中，以便其他用户更快获取它。</p>
+<p>例如,一个这样的图像(资产)是网站的标志，你能想象一天有多少次谷歌的标识被要求在他们的所有产品上。我真的很想找到这个数字，但就目前而言，我们可能会认同这个数字是庞大的。</p>
+<p>这种资产缓存是LFU缓存的完美用例。LFU缓存逐出算法永远不会驱逐频繁访问的资产。事实上，在这样的缓存中，谷歌的微标几乎将永远缓存，相比之下。如果由于Reddit，Slashdot和Hackernews首页上的新产品的新登录页面而有任何图像将会访问，一旦超级风暴过去，资产将被驱逐得更快，因为访问频率将急剧下降，尽管在过去几天他们已经被访问过很多次。</p>
+<p>正如你可能已经注意到的那样，在缓存对象的访问模式不经常更改的情况下。这种缓存逐出的方法非常有效。虽然LRU缓存将驱逐最近无法访问的资产，但LFU驱逐方法将在炒作结束后逐出不再需要的资产。</p>
+<h3 id="实现LFU缓存"><a href="#实现LFU缓存" class="headerlink" title="实现LFU缓存"></a>实现LFU缓存</h3><p>现在，让我们来了解它，如我们之前所说的。我们不是将min-heap视为可能支持LFU缓存的可能数据结构，而是考虑采用更好的方法。</p>
+<p>事实上，在2010年，一组研究人员Ketan Shah教授，Anirban Mitra和Dhruv Matani发表了一篇题为“用户实现LFU缓存驱逐方案的O(1)算法”的文章（你可以点击<a href="http://dhruvbird.com/lfu.pdf" target="_blank" rel="noopener">这里</a>查看），在这文章中他们解释LFU缓存的实现，其运行的时间复杂度为O（1）,用于其所有操作，包括插入，访问，和删除(驱逐)。</p>
+<p>在此，我将向你展示如何实现此缓存并引导你完成实现。</p>
+<h3 id="数据结构"><a href="#数据结构" class="headerlink" title="数据结构"></a>数据结构</h3><p>不，它不会是某种科学怪人的红黑树，事实上，它是两个双向链表和一个哈希表。是的，就是这样。</p>
+<p>为了能够理解LFU实现的基本原理，让我们将链表和哈希表看做图形。在我们查看实际图形之前，我们需要了解如何使用哈希表和链接列表。</p>
+<p>哈希表将使用通过哈希算法处理的密匙存储所有项目(为了我们的目的，我们 可以保持简单)，值将是实际项目。</p>
+<p><img src="https://note.youdao.com/yws/api/personal/file/WEB48033598bbd758abb243c66d1618e4c6?method=download&amp;shareKey=a77c7002cae7853b07252075d3ac698d" alt="key"></p>
+<p>链表有点复杂，第一个将是”频率列表“，它将具有所有访问频率。此列表中的每一个节点都有一个项目列表。该列表将包含已使用相应频率访问的所有项目。此外，项目列表中的每一个项目都会在频率列表中指向其祖先。</p>
+<p><img src="https://note.youdao.com/yws/api/personal/file/WEB7cf646a14b6c9e281bc34420acad4614?method=download&amp;shareKey=f77bdc8c45d7e59d39c263a3800fa5cc" alt="item"></p>
+<p>如果我们查看上面的图形例子，我们可以注意到项A，B，C和D已被访问过一次。E和F项已被访问过4次，依据类推。蓝线是项列表中的每个项都与频率列表中的祖先有关的指针。</p>
+<p>那么，如果再次访问项E会发生会发生什么？让我们完成以下步奏：1. 从哈希表中检索项很容易（并且很好地扩展）O（1）。 2. 我们将访问项的frequencyParent指针，从中我们可以检查列表中的下一个频率是什么。3. 如果存在新频率(列如8)，我们将其作为频率节点8下的项目列表的第一项。4. 如果新频率不存在，我们将创建频率节点8并将节点8添加E到项列表中.</p>
+<p>就是这样，检索项并刷新项的频率是O（1）,在我们开始实现访问算法前，让我们首先建立我们需要的基本类型。</p>
+<h3 id="类型"><a href="#类型" class="headerlink" title="类型"></a>类型</h3><p>如我们之前所说，我们需要对所需的类型进行建模，这些类型将成为我们缓存的主干。</p>
+<p>第一个结构将是CacheItem,这将是将存储在缓存中的实际项目。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="keyword">type</span> CacheItem <span class="keyword">struct</span> &#123;</span><br><span class="line">	key      	<span class="keyword">string</span>        <span class="comment">// Key of entry</span></span><br><span class="line">	value    	<span class="keyword">interface</span>&#123;&#125;   <span class="comment">// Value of item</span></span><br><span class="line">	frequencyParent *list.Element <span class="comment">// Pointer to parent in cacheList</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>它包含我们可以在哈希表中查找它的键，值是实际的缓存项，以及指向频率列表中的frequencyParent指针。</p>
+<p>下一个结构是FrequencyItem，它表示频率列表中的每一个项。它包含一组条目，这些条目将是一组CacheItem指针，我们将使用map来存储它，以便我们可以将其视为一个集合，它只包含唯一的项。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="keyword">type</span> FrequencyItem <span class="keyword">struct</span> &#123;</span><br><span class="line">	entries <span class="keyword">map</span>[*CacheItem]<span class="keyword">byte</span> <span class="comment">// Set of entries</span></span><br><span class="line">	freq    <span class="keyword">int</span>                  <span class="comment">// Access frequency</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>我们需要具有平滑运行缓存的最后一个结构就是Cache本身。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="keyword">type</span> Cache <span class="keyword">struct</span> &#123;</span><br><span class="line">	bykey       <span class="keyword">map</span>[<span class="keyword">string</span>]*CacheItem <span class="comment">// Hashmap containing *CacheItems for O(1) access</span></span><br><span class="line">	freqs       *list.List            <span class="comment">// Linked list of frequencies</span></span><br><span class="line">	capacity    <span class="keyword">int</span>                   <span class="comment">// Max number of items</span></span><br><span class="line">	size        <span class="keyword">int</span>                   <span class="comment">// Current size of cache</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>Cache将包含hash键，称为bykey(命名来自上面链接的文件)，频率列表称为freqs，缓存的最大容量称为容量，缓存的大小表示任何给定缓存的项目数时刻。</p>
+<h3 id="New-set-amp-get"><a href="#New-set-amp-get" class="headerlink" title="New, set &amp; get"></a>New, set &amp; get</h3><p>让我们看看使缓存工作所需的前三个函数。第一个是一个小构造函数：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">New</span><span class="params">()</span> *<span class="title">Cache</span></span> &#123;</span><br><span class="line">	cache := <span class="built_in">new</span>(Cache)</span><br><span class="line">	cache.bykey = <span class="built_in">make</span>(<span class="keyword">map</span>[<span class="keyword">string</span>]*CacheItem)</span><br><span class="line">	cache.freqs = list.New()</span><br><span class="line">	cache.size = <span class="number">0</span></span><br><span class="line">	cache.capacity = <span class="number">100</span></span><br><span class="line"></span><br><span class="line">	<span class="keyword">return</span> &amp;c</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>构造函数New将创建一个新的Cache结构，并将所有默认值设置为它。如果你想知道list.New（）是如何工作的：对于频率列表，我们将使用Go的容器/列表包，其中包含一个整洁的链表实现。你可以查看其文档以获取更多详细信息。</p>
+<p>将在Cache上实现的第二个函数是Set函数：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(cache *Cache)</span> <span class="title">Set</span><span class="params">(key <span class="keyword">string</span>, value <span class="keyword">interface</span>&#123;&#125;)</span></span> &#123;</span><br><span class="line">	<span class="keyword">if</span> item, ok := cache.bykey[key]; ok &#123;</span><br><span class="line">		item.value = value</span><br><span class="line">		<span class="comment">// Increment item access frequency here</span></span><br><span class="line">	&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">		item := <span class="built_in">new</span>(CacheItem)</span><br><span class="line">		item.key = key</span><br><span class="line">		item.value = value</span><br><span class="line">		cache.bykey[key] = item</span><br><span class="line">		cache.size++</span><br><span class="line">		<span class="comment">// Eviction, if needed</span></span><br><span class="line">		<span class="comment">// Increment item access frequency</span></span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>该函数将缓存键和实际值/项缓存为参数。然后，它检查项目是否已经缓存。如果它被缓存，它只会更新项目的值。否则，它将创建一个新的CacheItem，它将封装实际值，它将设置密钥，它将把项添加到bykey哈希表，它将增加缓存的大小。</p>
+<p>现在，在两个逻辑分支中，我为缺失的部分添加了一些注释：1。缓存必须知道如何增加aCacheItem的访问频率，但我们还没有实现它; 2.如果大小达到容量，缓存必须知道如何根据访问频率逐出项目。</p>
+<p>我们将保留这些注释，直到我们实现增量和逐出函数。</p>
+<p>Cache将接收的第三个函数是Get  - 通过哈希表中的键访问项目并返回它：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(cache *Cache)</span> <span class="title">Get</span><span class="params">(key <span class="keyword">string</span>)</span> <span class="title">interface</span></span>&#123;&#125; &#123;</span><br><span class="line">	<span class="keyword">if</span> e, ok := cache.bykey[key]; ok &#123;</span><br><span class="line">		<span class="comment">// Increment acess frequency here</span></span><br><span class="line">		<span class="keyword">return</span> e.value</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">return</span> <span class="literal">nil</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这里也没有魔法 - 我们检查bykey散列表是否包含带有key参数的值，如果存在则返回它。否则，我们返回零。在这里，就像在Set中一样，我们将保留占位符注释，一旦我们实现它就必须添加频率增量函数调用。</p>
+<h3 id="更新访问频率"><a href="#更新访问频率" class="headerlink" title="更新访问频率"></a>更新访问频率</h3><p>正如我们已经看到的，对于缓存的每个访问操作，我们必须更新所访问项的访问频率。</p>
+<p>让我们看一下我们的Increment函数必须采取的步骤。首先，对于要过期的项目，我们将不得不决定该项目是否已经是哈希表和频率列表的一部分。如果是，我们将不得不在频率列表中找到它的新频率值和下一个频率位置（节点）。</p>
+<p>其次，我们必须弄清楚对于新频率，频率列表中是否已经存在节点。如果有，我们将不得不将该项添加到其条目列表中并分配其新的访问频率（即当前访问频率+ 1）。如果没有，我们将不得不在频率列表中创建一个新的频率节点（并设置其所有合理的默认值），然后将该项添加到其条目列表中</p>
+<p>第三，一旦我们检测到FrequencyParent，我们的函数就必须将新的父项设置为正在递增的项，并将其添加到父项的列表中。</p>
+<p>作为最后一步，增量函数将从旧频率节点（frequencyParent）的条目中删除该项目。</p>
+<p>这是Golang代码：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(cache *Cache)</span> <span class="title">increment</span><span class="params">(item *CacheItem)</span></span> &#123;</span><br><span class="line">	currentFrequency := item.frequencyParent</span><br><span class="line">	<span class="keyword">var</span> nextFrequencyAmount <span class="keyword">int</span></span><br><span class="line">	<span class="keyword">var</span> nextFrequency *list.Element</span><br><span class="line"></span><br><span class="line">	<span class="keyword">if</span> currentFrequency == <span class="literal">nil</span> &#123;</span><br><span class="line">		nextFrequencyAmount = <span class="number">1</span></span><br><span class="line">		nextFrequency = cache.freqs.Front()</span><br><span class="line">	&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">		nextFrequencyAmount = currentFrequency.Value.(*FrequencyItem).freq + <span class="number">1</span></span><br><span class="line">		nextFrequency = currentFrequency.Next()</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">if</span> nextFrequency == <span class="literal">nil</span> || nextFrequency.Value.(*FrequencyItem).freq != nextFrequencyAmount &#123;</span><br><span class="line">		newFrequencyItem := <span class="built_in">new</span>(FrequencyItem)</span><br><span class="line">		newFrequencyItem.freq = nextFrequencyAmount</span><br><span class="line">		newFrequencyItem.entries = <span class="built_in">make</span>(<span class="keyword">map</span>[*CacheItem]<span class="keyword">byte</span>)</span><br><span class="line">		<span class="keyword">if</span> currentFrequency == <span class="literal">nil</span> &#123;</span><br><span class="line">			nextFrequency = cache.freqs.PushFront(newFrequencyItem)</span><br><span class="line">		&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">			nextFrequency = cache.freqs.InsertAfter(newFrequencyItem, currentFrequency)</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	item.frequencyParent = nextFrequency</span><br><span class="line">	nextFrequency.Value.(*FrequencyItem).entries[item] = <span class="number">1</span></span><br><span class="line">	<span class="keyword">if</span> currentFrequency != <span class="literal">nil</span> &#123;</span><br><span class="line">		cache.remove(currentFrequency, item)</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>让我们回顾一下频率和条目列表的原始图表，并逐步增加E项目。</p>
+<p><img src="https://note.youdao.com/yws/api/personal/file/WEB768fdc19ec5f6567f979d4793f5366a0?method=download&amp;shareKey=6d2f2d1fe4a1b17b82dbc5e2479564f6" alt="E"></p>
+<p>我们的增量函数将采用的第一步是分配一个指向节点4（frequencyParent）及其值（即4）的指针。由于节点4存在于列表中，它将在频率列表中找到下一个节点，在我们的例子中是节点7。</p>
+<p>一旦它确定E节点的新频率应为5而不是7，它将在节点4和7之间的列表中追加一个新的频率节点：</p>
+<p><img src="https://note.youdao.com/yws/api/personal/file/WEB2b5b7b63839f27f60f1494aca67ae059?method=download&amp;shareKey=f3208f6dcaddf26c5f801a374088b54f" alt="new"></p>
+<p>将5节点添加到列表后，该函数将设置节点正常运行所需的默认值。然后它会将E的指针设置为新的frequencyParent（5节点）：</p>
+<p><img src="https://note.youdao.com/yws/api/personal/file/WEB80756d942d94d51e375ee972a6361c47?method=download&amp;shareKey=2f23e775d7adc806978e7d12a4931798" alt="parent"></p>
+<p>作为最后一步，它将采用具有指针* CacheItem类型的项目，并将其添加到条目列表，同时从先前的frequencyParent的条目列表中删除它：</p>
+<p><img src="https://note.youdao.com/yws/api/personal/file/WEB474454a89ec8c49a6d7e2646726147d9?method=download&amp;shareKey=a7d1f109c6c21247bf30849bc494170f" alt=""></p>
+<p>让我们看看从FrequencyItem的条目列表中删除CacheItem的步骤是什么。</p>
+<h3 id="删除条目"><a href="#删除条目" class="headerlink" title="删除条目"></a>删除条目</h3><p>一旦我们知道列表中我们想要删除它的节点，我们就可以从条目列表中删除该项，如果条目变空，还可以从频率列表中完全删除FrequencyItem：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(cache *Cache)</span> <span class="title">Remove</span><span class="params">(listItem *list.Element, item *CacheItem)</span></span> &#123;</span><br><span class="line">	frequencyItem := listItem.Value.(*FrequencyItem)</span><br><span class="line">	<span class="built_in">delete</span>(frequencyItem.entries, item)</span><br><span class="line">	<span class="keyword">if</span> <span class="built_in">len</span>(frequencyItem.entries) == <span class="number">0</span> &#123;</span><br><span class="line">		cache.freqs.Remove(listItem)</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="驱逐"><a href="#驱逐" class="headerlink" title="驱逐"></a>驱逐</h3><p>拼图的最后一部分是逐出，或者换句话说，一旦缓存达到其最大容量，就删除最不常用的项目。</p>
+<p>我们必须知道我们想要驱逐多少项。通常，我们的缓存将具有低限和高限，因此当达到上限时，我们将删除项目直到下限。在我们的例子中，我们将驱逐任意数量的项目，Evict函数将作为参数。</p>
+<p>该功能将从开始到结束开始“遍历”频率列表。由于频率列表是按升序排列的，因此它将开始从第一个频率节点开始删除条目，直到它删除与传入的任意数字一样多的项目。</p>
+<p>如果频率节点由于逐出而不包含条目，则Evict函数也必须从频率列表中移除频率节点。它将通过调用Remove函数来实现。这样，驱逐就不会留下任何垃圾。</p>
+<p>这是我们上面描述的代码：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(cache *Cache)</span> <span class="title">Evict</span><span class="params">(count <span class="keyword">int</span>)</span></span> &#123;</span><br><span class="line">	<span class="keyword">for</span> i := <span class="number">0</span>; i &lt; count; &#123;</span><br><span class="line">		<span class="keyword">if</span> item := cache.freqs.Front(); item != <span class="literal">nil</span> &#123;</span><br><span class="line">			<span class="keyword">for</span> entry, _ := <span class="keyword">range</span> item.Value.(*FrequencyItem).entries &#123;</span><br><span class="line">				<span class="keyword">if</span> i &lt; count &#123;</span><br><span class="line">					<span class="built_in">delete</span>(cache.bykey, entry.key)</span><br><span class="line">					cache.Remove(item, entry)</span><br><span class="line">					cache.size--</span><br><span class="line">					i++</span><br><span class="line">				&#125;</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="回到Set-and-Get"><a href="#回到Set-and-Get" class="headerlink" title="回到Set and Get"></a>回到Set and Get</h3><p>在本文开头，我们实现了Set和Get函数。那时我们没有的东西是Evict和increment函数，所以我们可以相应地使用它们。让我们添加他们的调用。</p>
+<h3 id="增加访问频率"><a href="#增加访问频率" class="headerlink" title="增加访问频率"></a>增加访问频率</h3><p>在Get函数中，如果我们在bykey哈希表中找到一个项目，我们需要在继续返回其值之前增加它的访问频率：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(cache *Cache)</span> <span class="title">Get</span><span class="params">(key <span class="keyword">string</span>)</span> <span class="title">interface</span></span>&#123;&#125; &#123;</span><br><span class="line">	<span class="keyword">if</span> e, ok := cache.bykey[key]; ok &#123;</span><br><span class="line">		cache.increment(e)</span><br><span class="line">		<span class="keyword">return</span> e.value</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">return</span> <span class="literal">nil</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="string">``</span></span><br><span class="line"></span><br><span class="line">通过此更改，Cache将在返回之前增加该特定项的频率。但是，我们忘了什么吗？此外，Set函数在实际缓存它们时访问缓存的项目。这意味着当一个项被缓存时，它将立即被添加到频率列表中，值为<span class="number">1</span>的节点下：</span><br><span class="line"></span><br><span class="line"><span class="string">``</span><span class="string">`go</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">func (cache *Cache) Set(key string, value interface&#123;&#125;) &#123;</span></span><br><span class="line"><span class="string">	if item, ok := cache.bykey[key]; ok &#123;</span></span><br><span class="line"><span class="string">		item.value = value</span></span><br><span class="line"><span class="string">                cache.increment(item)</span></span><br><span class="line"><span class="string">	&#125; else &#123;</span></span><br><span class="line"><span class="string">		item := new(CacheItem)</span></span><br><span class="line"><span class="string">		item.key = key</span></span><br><span class="line"><span class="string">		item.value = value</span></span><br><span class="line"><span class="string">		cache.bykey[key] = item</span></span><br><span class="line"><span class="string">		cache.size++</span></span><br><span class="line"><span class="string">		// Eviction, if needed</span></span><br><span class="line"><span class="string">                cache.increment(item)</span></span><br><span class="line"><span class="string">	&#125;</span></span><br><span class="line"><span class="string">&#125;</span></span><br></pre></td></tr></table></figure>
+<h3 id="在驱逐后"><a href="#在驱逐后" class="headerlink" title="在驱逐后"></a>在驱逐后</h3><p>Set函数允许我们的LFU Cache用户在其中缓存更多项目。任何缓存的一个关键组件是，当新项目添加到缓存时，它应该知道如何逐出项目（释放空间）。对于LFU缓存，当缓存达到容量时，需要删除最不常用的项。</p>
+<p>让我们首先添加一个函数，如果缓存达到其最大容量，它将返回一个bool：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(cache *Cache)</span> <span class="title">atCapacity</span><span class="params">()</span> <span class="title">bool</span></span> &#123;</span><br><span class="line">	<span class="keyword">return</span> cache.size &gt;= cache.capacity</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>功能很简单：检查Cache的当前大小是大于还是等于容量。</p>
+<p>现在，让我们在Set函数中使用它。一旦我们在缓存中设置了新项目，我们就必须检查缓存是否已达到其容量，然后从中删除多个项目。</p>
+<p>为简单起见，我们每次达到最大容量时只会删除10个项目：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(cache *Cache)</span> <span class="title">Set</span><span class="params">(key <span class="keyword">string</span>, value <span class="keyword">interface</span>&#123;&#125;)</span></span> &#123;</span><br><span class="line">	<span class="keyword">if</span> item, ok := cache.bykey[key]; ok &#123;</span><br><span class="line">		item.value = value</span><br><span class="line">		cache.increment(item)</span><br><span class="line">	&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">		item := <span class="built_in">new</span>(CacheItem)</span><br><span class="line">		item.key = key</span><br><span class="line">		item.value = value</span><br><span class="line">		cache.bykey[key] = item</span><br><span class="line">		cache.size++</span><br><span class="line">		<span class="keyword">if</span> cache.atCapacity() &#123;</span><br><span class="line">			cache.Evict(<span class="number">10</span>)</span><br><span class="line">		&#125;</span><br><span class="line">		cache.increment(item)</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>通过此更改，如果在任何时候添加项目达到缓存的容量，缓存将驱逐最不常用的项目。</p>
+<p>通过此更改，如果在任何时候添加项目达到缓存的容量，缓存将驱逐最不常用的项目。</p>
+<p>如果您想查看本文的完整代码，可以查看<a href="https://gist.github.com/fteem/ff1ef56f4ee83700f052b308e2fc6ba6" target="_blank" rel="noopener">这</a></p>
+<h3 id="关于缩放和时间复杂性的评论"><a href="#关于缩放和时间复杂性的评论" class="headerlink" title="关于缩放和时间复杂性的评论"></a>关于缩放和时间复杂性的评论</h3><p>LFU是一个有趣的驱逐计划，特别是与LRU相比，在我看来，由于其非常规性质。虽然其应用受到限制，但由于该方法的扩展能力，本文中使用的论文中解释的算法和后备数据结构非常吸引人。</p>
+<p>如果我们重新阅读本文开头提到的论文，我们将看到虽然LFU不是新闻，但它传统上是使用min-heap实现的，它具有插入，查找和删除的对数时间。有趣的是，在本文中，作者解释说，他们提出的方法对于每个操作（插入，查找和删除）都具有O（1）时间复杂度，因为操作基于哈希表。此外，链接列表不会增加任何时间复杂度，因为我们不会在任何时候遍历列表 - 我们只是在需要时添加或删除其中的节点（这是一个O（1）操作）。</p>
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p>在本文中，我们了解了LFU缓存的基础知识。我们确定了最重要的绩效指标（命中率，成员资格和驱逐速度）。我们看到虽然它不是最广泛使用的缓存方案，但在某些用例中肯定会非常高效。</p>
+<p>然后我们继续实施它，使用一种在时间复杂度方面可以很好地扩展的方法。我们看到了实施驱逐和频率增量算法的复杂性。最后，我们进一步探讨了我们用于实现它的方法如何扩展。</p>
+<p>如果您想阅读有关该主题的更多信息，请参阅以下几个链接，以丰富您对LFU缓存和缓存的了解：</p>
+<ul>
+<li><a href="http://dhruvbird.com/lfu.pdf" target="_blank" rel="noopener">“An O(1) algorithm for implementing the LFU cache eviction scheme”</a>- Prof. Ketan Shah, Anirban Mitra, Dhruv Matani</li>
+<li><a href="https://blogs.dropbox.com/tech/2012/10/caching-in-theory-and-practice/" target="_blank" rel="noopener">“Caching in theory and practice”</a>- Pavel Panchekha</li>
+<li><a href="https://www.geeksforgeeks.org/lfu-least-frequently-used-cache-implementation/" target="_blank" rel="noopener">“LFU (Least Frequently Used) Cache Implementation”</a>- Geeks for Geeks</li>
+</ul>
+<p>本文翻译自–<a href="https://ieftimov.com/post/when-why-least-frequently-used-cache-implementation-golang/" target="_blank" rel="noopener">原文</a></p>
+
+        
+        </div>
+        <footer class="article-footer">
+            <div class="share-container">
+
+
+
+</div>
+
+    <a data-url="http://www.liangyouze.com/2019/06/04/[译]合适以及为何使用最少使用(LFU)缓存与Golang中的实现/" data-id="cjwhykm1d0000i3u3gyl7yyuk" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
+<script>
+    (function ($) {
+        // Prevent duplicate binding
+        if (typeof(__SHARE_BUTTON_BINDED__) === 'undefined' || !__SHARE_BUTTON_BINDED__) {
+            __SHARE_BUTTON_BINDED__ = true;
+        } else {
+            return;
+        }
+        $('body').on('click', function() {
+            $('.article-share-box.on').removeClass('on');
+        }).on('click', '.article-share-link', function(e) {
+            e.stopPropagation();
+
+            var $this = $(this),
+                url = $this.attr('data-url'),
+                encodedUrl = encodeURIComponent(url),
+                id = 'article-share-box-' + $this.attr('data-id'),
+                offset = $this.offset(),
+                box;
+
+            if ($('#' + id).length) {
+                box = $('#' + id);
+
+                if (box.hasClass('on')){
+                    box.removeClass('on');
+                    return;
+                }
+            } else {
+                var html = [
+                    '<div id="' + id + '" class="article-share-box">',
+                        '<input class="article-share-input" value="' + url + '">',
+                        '<div class="article-share-links">',
+                            '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="fa fa-twitter article-share-twitter" target="_blank" title="Twitter"></a>',
+                            '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="fa fa-facebook article-share-facebook" target="_blank" title="Facebook"></a>',
+                            '<a href="http://pinterest.com/pin/create/button/?url=' + encodedUrl + '" class="fa fa-pinterest article-share-pinterest" target="_blank" title="Pinterest"></a>',
+                            '<a href="https://plus.google.com/share?url=' + encodedUrl + '" class="fa fa-google article-share-google" target="_blank" title="Google+"></a>',
+                        '</div>',
+                    '</div>'
+                ].join('');
+
+              box = $(html);
+
+              $('body').append(box);
+            }
+
+            $('.article-share-box.on').hide();
+
+            box.css({
+                top: offset.top + 25,
+                left: offset.left
+            }).addClass('on');
+
+        }).on('click', '.article-share-box', function (e) {
+            e.stopPropagation();
+        }).on('click', '.article-share-box-input', function () {
+            $(this).select();
+        }).on('click', '.article-share-box-link', function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            window.open(this.href, 'article-share-box-window-' + Date.now(), 'width=500,height=450');
+        });
+    })(jQuery);
+</script>
+
+            
+    
+        <a href="http://www.liangyouze.com/2019/06/04/[译]合适以及为何使用最少使用(LFU)缓存与Golang中的实现/#comments" class="article-comment-link disqus-comment-count" data-disqus-url="http://www.liangyouze.com/2019/06/04/[译]合适以及为何使用最少使用(LFU)缓存与Golang中的实现/">评论</a>
+    
+
+        </footer>
+    </div>
+    
+        
+<nav id="article-nav">
+    
+    
+        <a href="/2019/06/01/vim 技巧/" id="article-nav-older" class="article-nav-link-wrap">
+            <strong class="article-nav-caption">下一篇</strong>
+            <div class="article-nav-title">vim技巧</div>
+        </a>
+    
+</nav>
+
+
+    
+</article>
+
+
+    
+    
+        <section id="comments">
+    <div id="disqus_thread">
+        <noscript>Please enable JavaScript to view the <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+    </div>
+</section>
+    
+
+</section>
+            
+                
+<aside id="sidebar">
+   
+        
+    <div class="widget-wrap">
+        <h3 class="widget-title">最新文章</h3>
+        <div class="widget">
+            <ul id="recent-post" class="">
+                
+                    <li>
+                        
+                        <!-- <div class="item-thumbnail">
+                            <a href="/2019/06/04/[译]合适以及为何使用最少使用(LFU)缓存与Golang中的实现/" class="thumbnail">
+    
+    
+        <span class="thumbnail-image thumbnail-none"></span>
+    
+</a>
+
+                        </div> -->
+                        
+                        <div class="item-inner">
+                            <p class="item-category"></p>
+                            <p class="item-title"><a href="/2019/06/04/[译]合适以及为何使用最少使用(LFU)缓存与Golang中的实现/" class="title">合适以及为何使用最少使用(LFU)缓存与Golang中的实现</a></p>
+                            <p class="item-date"><time datetime="2019-06-04T12:10:33.000Z" itemprop="datePublished">2019-06-04</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <!-- <div class="item-thumbnail">
+                            <a href="/2019/06/01/vim 技巧/" class="thumbnail">
+    
+    
+        <span class="thumbnail-image thumbnail-none"></span>
+    
+</a>
+
+                        </div> -->
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/vim/">vim</a></p>
+                            <p class="item-title"><a href="/2019/06/01/vim 技巧/" class="title">vim技巧</a></p>
+                            <p class="item-date"><time datetime="2019-06-01T06:10:23.000Z" itemprop="datePublished">2019-06-01</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <!-- <div class="item-thumbnail">
+                            <a href="/2019/01/11/defer/" class="thumbnail">
+    
+    
+        <span class="thumbnail-image thumbnail-none"></span>
+    
+</a>
+
+                        </div> -->
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/golang/">golang</a></p>
+                            <p class="item-title"><a href="/2019/01/11/defer/" class="title">golang-defer</a></p>
+                            <p class="item-date"><time datetime="2019-01-11T06:10:23.000Z" itemprop="datePublished">2019-01-11</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <!-- <div class="item-thumbnail">
+                            <a href="/2018/12/31/2018总结/" class="thumbnail">
+    
+    
+        <span class="thumbnail-image thumbnail-none"></span>
+    
+</a>
+
+                        </div> -->
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/杂谈/">杂谈</a></p>
+                            <p class="item-title"><a href="/2018/12/31/2018总结/" class="title">2018年总结</a></p>
+                            <p class="item-date"><time datetime="2018-12-30T17:10:23.000Z" itemprop="datePublished">2018-12-31</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <!-- <div class="item-thumbnail">
+                            <a href="/2018/10/10/我所读过的书/" class="thumbnail">
+    
+    
+        <span class="thumbnail-image thumbnail-none"></span>
+    
+</a>
+
+                        </div> -->
+                        
+                        <div class="item-inner">
+                            <p class="item-category"></p>
+                            <p class="item-title"><a href="/2018/10/10/我所读过的书/" class="title">我所读过的书</a></p>
+                            <p class="item-date"><time datetime="2018-10-10T12:10:33.000Z" itemprop="datePublished">2018-10-10</time></p>
+                        </div>
+                    </li>
+                
+            </ul>
+        </div>
+    </div>
+
+    
+        
+    <div class="widget-wrap">
+        <h3 class="widget-title">分类</h3>
+        <div class="widget">
+            <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/docker/">docker</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/golang/">golang</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/vim/">vim</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/杂谈/">杂谈</a><span class="category-list-count">1</span></li></ul>
+        </div>
+    </div>
+
+    
+        
+    <div class="widget-wrap">
+        <h3 class="widget-title">归档</h3>
+        <div class="widget">
+            <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/06/">六月 2019</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/01/">一月 2019</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/12/">十二月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/10/">十月 2018</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/09/">九月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/08/">八月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/07/">七月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/05/">五月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/11/">十一月 2017</a><span class="archive-list-count">1</span></li></ul>
+        </div>
+    </div>
+
+    
+        
+    <div class="widget-wrap">
+        <h3 class="widget-title">标签</h3>
+        <div class="widget">
+            <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Docker/">Docker</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/elasticsearch/">elasticsearch</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/golang/">golang</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/iframe/">iframe</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/vim/">vim</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/字符串/">字符串</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/杂谈/">杂谈</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/规则/">规则</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/订单号/">订单号</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/读书/">读书</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/跨域/">跨域</a><span class="tag-list-count">1</span></li></ul>
+        </div>
+    </div>
+
+    
+        
+    <div class="widget-wrap">
+        <h3 class="widget-title">标签云</h3>
+        <div class="widget tagcloud">
+            <a href="/tags/Docker/" style="font-size: 10px;">Docker</a> <a href="/tags/elasticsearch/" style="font-size: 10px;">elasticsearch</a> <a href="/tags/golang/" style="font-size: 20px;">golang</a> <a href="/tags/iframe/" style="font-size: 10px;">iframe</a> <a href="/tags/vim/" style="font-size: 10px;">vim</a> <a href="/tags/字符串/" style="font-size: 10px;">字符串</a> <a href="/tags/杂谈/" style="font-size: 10px;">杂谈</a> <a href="/tags/规则/" style="font-size: 10px;">规则</a> <a href="/tags/订单号/" style="font-size: 10px;">订单号</a> <a href="/tags/读书/" style="font-size: 10px;">读书</a> <a href="/tags/跨域/" style="font-size: 10px;">跨域</a>
+        </div>
+    </div>
+
+    
+        
+    <div class="widget-wrap widget-list">
+        <h3 class="widget-title">链接</h3>
+        <div class="widget">
+            <ul>
+                
+                    <li>
+                        <a href="http://www.liangyongrui.com">梁永锐</a>
+                    </li>
+                
+            </ul>
+        </div>
+    </div>
+
+
+    
+    <div id="toTop" class="fa fa-angle-up"></div>
+</aside>
+
+            
+        </div>
+        <footer id="footer">
+    <div class="outer">
+        <div id="footer-info" class="inner">
+			<!--不蒜子统计-->
+           <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+            <span id="busuanzi_container_site_pv">本站总访问量:<span id="busuanzi_value_site_pv"></span>&nbsp;本站总访次数:<span id="busuanzi_value_site_uv"></span></span><br>
+		
+            &copy; 2019 梁友泽<br>
+            Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>. Theme by <a href="http://github.com/ppoffice">PPOffice</a>
+        </div>
+    </div>
+</footer>
+        
+    
+    <script>
+    var disqus_config = function () {
+        
+            this.page.url = 'http://www.liangyouze.com/2019/06/04/[译]合适以及为何使用最少使用(LFU)缓存与Golang中的实现/';
+        
+        this.page.identifier = '[译]合适以及为何使用最少使用(LFU)缓存与Golang中的实现';
+    };
+    (function() { 
+        var d = document, s = d.createElement('script');  
+        s.src = '//' + 'hexo-theme-icarus' + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+
+
+
+
+    
+        <script src="/libs/lightgallery/js/lightgallery.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-thumbnail.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-pager.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-autoplay.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-fullscreen.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-zoom.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-hash.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-share.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-video.min.js"></script>
+    
+    
+        <script src="/libs/justified-gallery/jquery.justifiedGallery.min.js"></script>
+    
+    
+
+
+
+<!-- Custom Scripts -->
+<script src="/js/main.js"></script>
+
+    </div>
+</body>
+</html>

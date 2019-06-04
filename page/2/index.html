@@ -3,11 +3,11 @@
 <head>
     <meta charset="utf-8">
     
-    <title>标签: 规则 | 梁友泽的博客</title>
+    <title>梁友泽的博客</title>
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
     <meta property="og:type" content="website">
 <meta property="og:title" content="梁友泽的博客">
-<meta property="og:url" content="http://www.liangyouze.com/tags/规则/index.html">
+<meta property="og:url" content="http://www.liangyouze.com/page/2/index.html">
 <meta property="og:site_name" content="梁友泽的博客">
 <meta property="og:locale" content="zh-CN">
 <meta name="twitter:card" content="summary">
@@ -192,44 +192,139 @@
 
             
             <section id="main">
-<div class="timeline timeline-wrap">
-    <div class="timeline-row timeline-row-major">
-        <span class="node"><i class="fa fa-tag"></i></span>
-        <h1 class="title">#规则</h1>
-    </div>
-    
-        <div class="timeline-row">
-            <span class="node"></span>
-            <div class="content">
+    <article id="post-String、StringBuffer、StringBuilder三者之间的区别" class="article article-type-post" itemscope itemprop="blogPost">
+    <div class="article-inner">
+        
+        
+            <header class="article-header">
                 
     
         <h1 itemprop="name">
-            <a class="timeline-article-title" href="/2018/08/10/关于生成订单号规则的一些思考/">关于生成订单号规则的一些思考</a>
+            <a class="article-title" href="/2017/11/23/String、StringBuffer、StringBuilder三者之间的区别/">String、StringBuffer、StringBuilder三者之间的区别</a>
         </h1>
     
 
-                <div class="article-meta">
-                    
+                
+                    <div class="article-meta">
+                        
     <div class="article-date">
         <i class="fa fa-calendar"></i>
-        <a href="/2018/08/10/关于生成订单号规则的一些思考/">
-            <time datetime="2018-08-10T12:10:33.000Z" itemprop="datePublished">2018-08-10</time>
+        <a href="/2017/11/23/String、StringBuffer、StringBuilder三者之间的区别/">
+            <time datetime="2017-11-23T14:38:31.000Z" itemprop="datePublished">2017-11-23</time>
         </a>
     </div>
 
 
-                    
-                    
+                        
+                        
     <div class="article-tag">
         <i class="fa fa-tag"></i>
-        <a class="tag-link" href="/tags/规则/">规则</a>, <a class="tag-link" href="/tags/订单号/">订单号</a>
+        <a class="tag-link" href="/tags/字符串/">字符串</a>
     </div>
 
-                </div>
-            </div>
+                    </div>
+                
+            </header>
+        
+        
+        <div class="article-entry" itemprop="articleBody">
+        
+            <p><p>吧啦吧啦，今天在公司做算法题的时候，不仅就想写下了</p>
+<p>String是不可变类，所以任何对String的操作都将引发新的String对象的生成。但是StringBuffer是可变类，任何对StringBuffer所指代的字符串改变都不会产生新的对象。</p>
+<p>新引入的StingBuilder类不是线程安全，但其在单线程中的性能比StringBuffer高。</p>
+            <p class="article-more-link">
+                <a href="/2017/11/23/String、StringBuffer、StringBuilder三者之间的区别/#more">查看更多</a>
+            </p>
+        
         </div>
-    
+        <footer class="article-footer">
+            <div class="share-container">
+
+
+
 </div>
+
+    <a data-url="http://www.liangyouze.com/2017/11/23/String、StringBuffer、StringBuilder三者之间的区别/" data-id="cjwhyavq10002fgu32j5rugl2" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
+<script>
+    (function ($) {
+        // Prevent duplicate binding
+        if (typeof(__SHARE_BUTTON_BINDED__) === 'undefined' || !__SHARE_BUTTON_BINDED__) {
+            __SHARE_BUTTON_BINDED__ = true;
+        } else {
+            return;
+        }
+        $('body').on('click', function() {
+            $('.article-share-box.on').removeClass('on');
+        }).on('click', '.article-share-link', function(e) {
+            e.stopPropagation();
+
+            var $this = $(this),
+                url = $this.attr('data-url'),
+                encodedUrl = encodeURIComponent(url),
+                id = 'article-share-box-' + $this.attr('data-id'),
+                offset = $this.offset(),
+                box;
+
+            if ($('#' + id).length) {
+                box = $('#' + id);
+
+                if (box.hasClass('on')){
+                    box.removeClass('on');
+                    return;
+                }
+            } else {
+                var html = [
+                    '<div id="' + id + '" class="article-share-box">',
+                        '<input class="article-share-input" value="' + url + '">',
+                        '<div class="article-share-links">',
+                            '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="fa fa-twitter article-share-twitter" target="_blank" title="Twitter"></a>',
+                            '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="fa fa-facebook article-share-facebook" target="_blank" title="Facebook"></a>',
+                            '<a href="http://pinterest.com/pin/create/button/?url=' + encodedUrl + '" class="fa fa-pinterest article-share-pinterest" target="_blank" title="Pinterest"></a>',
+                            '<a href="https://plus.google.com/share?url=' + encodedUrl + '" class="fa fa-google article-share-google" target="_blank" title="Google+"></a>',
+                        '</div>',
+                    '</div>'
+                ].join('');
+
+              box = $(html);
+
+              $('body').append(box);
+            }
+
+            $('.article-share-box.on').hide();
+
+            box.css({
+                top: offset.top + 25,
+                left: offset.left
+            }).addClass('on');
+
+        }).on('click', '.article-share-box', function (e) {
+            e.stopPropagation();
+        }).on('click', '.article-share-box-input', function () {
+            $(this).select();
+        }).on('click', '.article-share-box-link', function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            window.open(this.href, 'article-share-box-window-' + Date.now(), 'width=500,height=450');
+        });
+    })(jQuery);
+</script>
+
+            
+    
+        <a href="http://www.liangyouze.com/2017/11/23/String、StringBuffer、StringBuilder三者之间的区别/#comments" class="article-comment-link disqus-comment-count" data-disqus-url="http://www.liangyouze.com/2017/11/23/String、StringBuffer、StringBuilder三者之间的区别/">评论</a>
+    
+
+        </footer>
+    </div>
+    
+</article>
+
+
+
+    <nav id="page-nav">
+        <a class="extend prev" rel="prev" href="/">&laquo; 上一页</a><a class="page-number" href="/">1</a><span class="page-number current">2</span>
+    </nav>
 </section>
             
                 
