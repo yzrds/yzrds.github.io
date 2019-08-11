@@ -3,23 +3,20 @@
 <head>
     <meta charset="utf-8">
     
-    <title>elasticsearch社区分享会 | 梁友泽的博客</title>
+    <title>golang 中获取字符串个数 | 梁友泽的博客</title>
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
-    <meta name="description" content="在前段时间加班的时候错过了两场我想去的技术会，这次终于没落空了。大佬也多，涨了不少姿势。特此记录一下分享，由于全凭记忆叙述，可能就没啥顺序而言的还原出之前的收获。">
-<meta name="keywords" content="elasticsearch">
+    <meta name="description" content="golang 中获取字符串个数在 golang 中不能直接用 len 函数来统计字符串长度，查看了下源码发现字符串是以 UTF-8 为格式存储的，说明 len 函数是取得包含 byte 的个数">
+<meta name="keywords" content="字符串">
 <meta property="og:type" content="article">
-<meta property="og:title" content="elasticsearch社区分享会">
-<meta property="og:url" content="http://www.liangyouze.com/2018/09/11/elasticsearch社区分享会/index.html">
+<meta property="og:title" content="golang 中获取字符串个数">
+<meta property="og:url" content="http://www.liangyouze.com/2018/04/01/golang 中获取字符串个数/index.html">
 <meta property="og:site_name" content="梁友泽的博客">
-<meta property="og:description" content="在前段时间加班的时候错过了两场我想去的技术会，这次终于没落空了。大佬也多，涨了不少姿势。特此记录一下分享，由于全凭记忆叙述，可能就没啥顺序而言的还原出之前的收获。">
+<meta property="og:description" content="golang 中获取字符串个数在 golang 中不能直接用 len 函数来统计字符串长度，查看了下源码发现字符串是以 UTF-8 为格式存储的，说明 len 函数是取得包含 byte 的个数">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:image" content="https://note.youdao.com/yws/api/personal/file/3CFBA64276584119816743278039B622?method=download&shareKey=06ad0e7b5775a493beb87ce827d0cd6a">
-<meta property="og:image" content="https://note.youdao.com/yws/api/personal/file/79225BF27FBA4B1C8728541C0198904A?method=download&shareKey=9c6fd462fa2ad6353fb780565db3c273">
-<meta property="og:updated_time" content="2018-10-08T05:46:01.000Z">
+<meta property="og:updated_time" content="2019-08-11T03:21:34.614Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="elasticsearch社区分享会">
-<meta name="twitter:description" content="在前段时间加班的时候错过了两场我想去的技术会，这次终于没落空了。大佬也多，涨了不少姿势。特此记录一下分享，由于全凭记忆叙述，可能就没啥顺序而言的还原出之前的收获。">
-<meta name="twitter:image" content="https://note.youdao.com/yws/api/personal/file/3CFBA64276584119816743278039B622?method=download&shareKey=06ad0e7b5775a493beb87ce827d0cd6a">
+<meta name="twitter:title" content="golang 中获取字符串个数">
+<meta name="twitter:description" content="golang 中获取字符串个数在 golang 中不能直接用 len 函数来统计字符串长度，查看了下源码发现字符串是以 UTF-8 为格式存储的，说明 len 函数是取得包含 byte 的个数">
     
 
     
@@ -199,7 +196,7 @@
 </aside>
 
             
-            <section id="main"><article id="post-elasticsearch社区分享会" class="article article-type-post" itemscope itemprop="blogPost">
+            <section id="main"><article id="post-golang 中获取字符串个数" class="article article-type-post" itemscope itemprop="blogPost">
     <div class="article-inner">
         
         
@@ -207,7 +204,7 @@
                 
     
         <h1 class="article-title" itemprop="name">
-            elasticsearch社区分享会
+            golang 中获取字符串个数
         </h1>
     
 
@@ -216,17 +213,22 @@
                         
     <div class="article-date">
         <i class="fa fa-calendar"></i>
-        <a href="/2018/09/11/elasticsearch社区分享会/">
-            <time datetime="2018-09-11T06:10:23.000Z" itemprop="datePublished">2018-09-11</time>
+        <a href="/2018/04/01/golang 中获取字符串个数/">
+            <time datetime="2018-04-01T06:10:23.000Z" itemprop="datePublished">2018-04-01</time>
         </a>
     </div>
 
 
                         
+    <div class="article-category">
+    	<i class="fa fa-folder"></i>
+        <a class="article-category-link" href="/categories/golang/">golang</a>
+    </div>
+
                         
     <div class="article-tag">
         <i class="fa fa-tag"></i>
-        <a class="tag-link" href="/tags/elasticsearch/">elasticsearch</a>
+        <a class="tag-link" href="/tags/字符串/">字符串</a>
     </div>
 
                     </div>
@@ -237,39 +239,19 @@
         <div class="article-entry" itemprop="articleBody">
         
             
-            <p>在前段时间加班的时候错过了两场我想去的技术会，这次终于没落空了。大佬也多，涨了不少姿势。特此记录一下分享，由于全凭记忆叙述，可能就没啥顺序而言的还原出之前的收获。<a id="more"></a></p>
-<p><img src="https://note.youdao.com/yws/api/personal/file/3CFBA64276584119816743278039B622?method=download&amp;shareKey=06ad0e7b5775a493beb87ce827d0cd6a" alt=""></p>
-<p>确实目前项目中目前涉及到了elasticsearch不多，索引都才几个。看到别人分享的都是2千，4-5千的索引量。而且数据量大的话才更能体现出elasticsearch的作用。</p>
-<p>周金阳  果壳网/在行 算法工程师</p>
-<p>算法果然是大佬，让es与深度学习结合起来在搜索这块已经走在很多公司的前面了吧。</p>
-<ol>
-<li>使用 ES 来构建一个简易却行之有效的个性化推荐系统，以及一些高级搜索排序的实践。</li>
-<li>搜索排序主要是分享一些机器学习工具与 ES 配合的实践心得。</li>
-</ol>
-<p><img src="https://note.youdao.com/yws/api/personal/file/79225BF27FBA4B1C8728541C0198904A?method=download&amp;shareKey=9c6fd462fa2ad6353fb780565db3c273" alt=""></p>
-<p>思考一个问题，如果是这样的你会选择怎么排序<br><figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">	"title":"引力波"</span><br><span class="line">	"content":"引力波引力波引力波"</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">	"title":"引力波,一个世纪的求索"</span><br><span class="line">	"content":"在物理学中，引力波是指时空弯曲中的涟漪，通过波的形式从辐射源向外传播，这种波以引力辐射的形式传输能量。在1916年，爱因斯坦基于广义相对论预言了引力波的存在。引力波的存在是广义相对论洛伦兹不变性的结果，因为它引入了相互作用的传播速度有限的概念。相比之下，引力波不能够存在于牛顿的经典引力理论当中，因为牛顿的经典理论假设物质的相互作用传播是速度无限的。"</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>若输入的值和被检索到的结果呈线性变化g(q,x)很明显，第一个是用户测试的或者是胡乱写的，当用户输入“引力波”的时候，如何控制类似于这种情况让正常的显示在前。<br>这种情况，就可以加一些其他的限制条件f(x),比如1得出来的期望值为15.42,2得出来的期望值为87.93，<br>这样关于g(q,x) -&gt; f(x)*g(q,x)</p>
-<p>当然如果要做的好的话需要优化的还有很多，比如用BiLSTM+CNN 期望后期会用到这些吧，毕竟我觉得这是偏离业务而且是和大数据接轨的之一。</p>
-<p>其中，在使用es的时候有一些规范和约束，</p>
-<ul>
-<li>业务索引尽量自定义id，数据敏感业务自备插入修改时间</li>
-<li>一个索引一个type</li>
-<li>控制单次搜索结果条数，总条数由es限制。控制请求超时时间</li>
-</ul>
-<p>关于es的使用也有在调用链日志</p>
-<ul>
-<li>一个节点一个主分片，0副本，</li>
-<li>批量写入，控制单批写入字节数</li>
-</ul>
-<p>在生产阶段，调用链日志写入慢，kafka会出现大量堆积等现象，关于如何解决。有以下方案，</p>
-<ol>
-<li>索引写入时会伴随着id校验，请求体解析，分词等操作，都会带来一定的cpu开销。原先的索引结构中存在部分多余字段，无需进行分词，取消后可以减轻cpu压力。</li>
-<li>使用es自动生成id，省去id检查步骤。调整translog合并时间，半小时一次，防止过多merge任务导致cpu开销过大。</li>
-</ol>
-<p>在业务索引随着场景变化，写入量逐渐增多，集群cpu load变高，原来单个主分片写入出现瓶颈<br>遇到这种情况 可以重建索引，主分片改为2个，分别分布在两台机器，达到负载均衡效果，数据需要迁移。</p>
-<p>在提及到es时，不得不说也是和spark相关。这里就不展开讲了，下次深入了解的时候再学习。</p>
-<h3 id="番外"><a href="#番外" class="headerlink" title="番外"></a>番外</h3><p>大公司都是搜索是一个团队，虽然我业务写的也不好，但是我更倾向于这种方向。分享者都很强，有开发相关的以及运维，技术演变快，找准自己的一个兴趣点，专研下去。</p>
+            <h4 id="golang-中获取字符串个数"><a href="#golang-中获取字符串个数" class="headerlink" title="golang 中获取字符串个数"></a>golang 中获取字符串个数</h4><p>在 golang 中不能直接用 len 函数来统计字符串长度，查看了下源码发现字符串是以 UTF-8 为格式存储的，说明 len 函数是取得包含 byte 的个数 <a id="more"></a> </p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// string is the set of all strings of 8-bit bytes, conventionally but not</span></span><br><span class="line"><span class="comment">// necessarily representing UTF-8-encoded text. A string may be empty, but</span></span><br><span class="line"><span class="comment">// not nil. Values of string type are immutable.</span></span><br></pre></td></tr></table></figure>
+<p>举个例子，”Hello, 世界“(因为，对比所以用了中文)</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">s := <span class="string">"Hello, 世界"</span></span><br><span class="line">fmt.Println(<span class="built_in">len</span>(s)) <span class="comment">// 13</span></span><br><span class="line">fmt.Println([]<span class="keyword">byte</span>(s)) <span class="comment">// [72 101 108 108 111 44 32 228 184 150 231 149 140]</span></span><br></pre></td></tr></table></figure>
+<p>既然是以 byte 存储的，那自然就想到了取 byte 的长度</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">- bytes.Count() </span><br><span class="line">- strings.Count() </span><br><span class="line">- 将字符串转换为 []runee 后调用 <span class="built_in">len</span> 函数</span><br><span class="line">- 使用 utf8.RuneCountInString()</span><br></pre></td></tr></table></figure>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> main</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">	<span class="string">"bytes"</span></span><br><span class="line">	<span class="string">"fmt"</span></span><br><span class="line">	<span class="string">"strings"</span></span><br><span class="line">	<span class="string">"testing"</span></span><br><span class="line">	<span class="string">"unicode/utf8"</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment">在 golang 中不能直接用 len 函数来统计字符串长度，查看了下源码发现字符串是以 UTF-8 为格式存储的，说明 len 函数是取得包含 byte 的个数</span></span><br><span class="line"><span class="comment"></span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line"></span><br><span class="line">	s := <span class="string">"hello, 世界"</span></span><br><span class="line">	fmt.Println(<span class="built_in">len</span>(s))    <span class="comment">// 13</span></span><br><span class="line">	fmt.Println([]<span class="keyword">byte</span>(s)) <span class="comment">// [72 101 108 108 111 44 32 228 184 150 231 149 140]</span></span><br><span class="line"></span><br><span class="line">	fmt.Print(f1(s))</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">f1</span><span class="params">(s <span class="keyword">string</span>)</span> <span class="title">int</span></span> &#123;</span><br><span class="line">	<span class="keyword">return</span> bytes.Count([]<span class="keyword">byte</span>(s), <span class="literal">nil</span>) - <span class="number">1</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">f2</span><span class="params">(s <span class="keyword">string</span>)</span> <span class="title">int</span></span> &#123;</span><br><span class="line">	<span class="keyword">return</span> strings.Count(s, <span class="string">""</span>) - <span class="number">1</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">f3</span><span class="params">(s <span class="keyword">string</span>)</span> <span class="title">int</span></span> &#123;</span><br><span class="line">	<span class="keyword">return</span> <span class="built_in">len</span>([]<span class="keyword">rune</span>(s))</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">f4</span><span class="params">(s <span class="keyword">string</span>)</span> <span class="title">int</span></span> &#123;</span><br><span class="line">	<span class="keyword">return</span> utf8.RuneCountInString(s)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> s = <span class="string">"Hello, 世界"</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">Benchmark1</span><span class="params">(b *testing.B)</span></span> &#123;</span><br><span class="line">	<span class="keyword">for</span> i := <span class="number">0</span>; i &lt; b.N; i++ &#123;</span><br><span class="line">		f1(s)</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">Benchmark2</span><span class="params">(b *testing.B)</span></span> &#123;</span><br><span class="line">	<span class="keyword">for</span> i := <span class="number">0</span>; i &lt; b.N; i++ &#123;</span><br><span class="line">		f2(s)</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">Benchmark3</span><span class="params">(b *testing.B)</span></span> &#123;</span><br><span class="line">	<span class="keyword">for</span> i := <span class="number">0</span>; i &lt; b.N; i++ &#123;</span><br><span class="line">		f3(s)</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">Benchmark4</span><span class="params">(b *testing.B)</span></span> &#123;</span><br><span class="line">	<span class="keyword">for</span> i := <span class="number">0</span>; i &lt; b.N; i++ &#123;</span><br><span class="line">		f4(s)</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>在 golang ldea配置中我没有看到 benchamark配置，总说包不对，在命令行中输入</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">go</span> test stringCount_test.<span class="keyword">go</span> -bench <span class="string">".*"</span></span><br></pre></td></tr></table></figure>
+<p>得到以下结果</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">Benchmark1<span class="number">-12</span>           <span class="number">100000000</span>               <span class="number">17.7</span> ns/op</span><br><span class="line">Benchmark2<span class="number">-12</span>           <span class="number">100000000</span>               <span class="number">14.0</span> ns/op</span><br><span class="line">Benchmark3<span class="number">-12</span>           <span class="number">100000000</span>               <span class="number">14.5</span> ns/op</span><br><span class="line">Benchmark4<span class="number">-12</span>           <span class="number">100000000</span>               <span class="number">13.1</span> ns/op</span><br></pre></td></tr></table></figure>
+<p>最快的是utf8.RuneCountInString()</p>
+<p><a href="http://mengqi.info/html/2015/201506012300-using-golang-to-count-the-number-of-characters.html" target="_blank" rel="noopener">参考</a></p>
 
         
         </div>
@@ -280,7 +262,7 @@
 
 </div>
 
-    <a data-url="http://www.liangyouze.com/2018/09/11/elasticsearch社区分享会/" data-id="cjz6ek2ut000153u343vy9wte" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
+    <a data-url="http://www.liangyouze.com/2018/04/01/golang 中获取字符串个数/" data-id="cjz6ek2ux000453u31husgbq9" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
 <script>
     (function ($) {
         // Prevent duplicate binding
@@ -348,7 +330,7 @@
 
             
     
-        <a href="http://www.liangyouze.com/2018/09/11/elasticsearch社区分享会/#comments" class="article-comment-link disqus-comment-count" data-disqus-url="http://www.liangyouze.com/2018/09/11/elasticsearch社区分享会/">评论</a>
+        <a href="http://www.liangyouze.com/2018/04/01/golang 中获取字符串个数/#comments" class="article-comment-link disqus-comment-count" data-disqus-url="http://www.liangyouze.com/2018/04/01/golang 中获取字符串个数/">评论</a>
     
 
         </footer>
@@ -357,19 +339,19 @@
         
 <nav id="article-nav">
     
-        <a href="/2018/10/05/分布式架构/" id="article-nav-newer" class="article-nav-link-wrap">
+        <a href="/2018/05/11/关于docker/" id="article-nav-newer" class="article-nav-link-wrap">
             <strong class="article-nav-caption">上一篇</strong>
             <div class="article-nav-title">
                 
-                    (no title)
+                    初识Docker
                 
             </div>
         </a>
     
     
-        <a href="/2018/08/10/关于生成订单号规则的一些思考/" id="article-nav-older" class="article-nav-link-wrap">
+        <a href="/2017/11/23/String、StringBuffer、StringBuilder三者之间的区别/" id="article-nav-older" class="article-nav-link-wrap">
             <strong class="article-nav-caption">下一篇</strong>
-            <div class="article-nav-title">关于生成订单号规则的一些思考</div>
+            <div class="article-nav-title">String、StringBuffer、StringBuilder三者之间的区别</div>
         </a>
     
 </nav>
@@ -573,9 +555,9 @@
     <script>
     var disqus_config = function () {
         
-            this.page.url = 'http://www.liangyouze.com/2018/09/11/elasticsearch社区分享会/';
+            this.page.url = 'http://www.liangyouze.com/2018/04/01/golang 中获取字符串个数/';
         
-        this.page.identifier = 'elasticsearch社区分享会';
+        this.page.identifier = 'golang 中获取字符串个数';
     };
     (function() { 
         var d = document, s = d.createElement('script');  
