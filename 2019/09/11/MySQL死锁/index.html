@@ -3,15 +3,20 @@
 <head>
     <meta charset="utf-8">
     
-    <title>标签: golang | 梁友泽的博客</title>
+    <title>记一次MySQL死锁排查过程 | 梁友泽的博客</title>
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
-    <meta property="og:type" content="website">
-<meta property="og:title" content="梁友泽的博客">
-<meta property="og:url" content="https://www.liangyouze.com/tags/golang/index.html">
+    <meta name="description" content="背景大概说一下业务场景，需要定时计算一些数据，从其他系统、接口拉取达到的数据比较多，然后经计算后的值存储在本系统中。拉取的数据量可能有万左右，然后以主键存在的数据是需要更新的。不存在则插入。每次做全量更新/插入。 起因最开始采用的方法是先查询，数据存在则更新数据，不存在则插入数据。但是数据要求的时效性比较高。于是定时任务在做任务处理的时候频率就比较高了。就出现了单位时间内对数据库的读写高，于是就换">
+<meta name="keywords" content="MySQL">
+<meta property="og:type" content="article">
+<meta property="og:title" content="记一次MySQL死锁排查过程">
+<meta property="og:url" content="https://www.liangyouze.com/2019/09/11/MySQL死锁/index.html">
 <meta property="og:site_name" content="梁友泽的博客">
+<meta property="og:description" content="背景大概说一下业务场景，需要定时计算一些数据，从其他系统、接口拉取达到的数据比较多，然后经计算后的值存储在本系统中。拉取的数据量可能有万左右，然后以主键存在的数据是需要更新的。不存在则插入。每次做全量更新/插入。 起因最开始采用的方法是先查询，数据存在则更新数据，不存在则插入数据。但是数据要求的时效性比较高。于是定时任务在做任务处理的时候频率就比较高了。就出现了单位时间内对数据库的读写高，于是就换">
 <meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2019-10-13T08:35:03.047Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="梁友泽的博客">
+<meta name="twitter:title" content="记一次MySQL死锁排查过程">
+<meta name="twitter:description" content="背景大概说一下业务场景，需要定时计算一些数据，从其他系统、接口拉取达到的数据比较多，然后经计算后的值存储在本系统中。拉取的数据量可能有万左右，然后以主键存在的数据是需要更新的。不存在则插入。每次做全量更新/插入。 起因最开始采用的方法是先查询，数据存在则更新数据，不存在则插入数据。但是数据要求的时效性比较高。于是定时任务在做任务处理的时候频率就比较高了。就出现了单位时间内对数据库的读写高，于是就换">
     
 
     
@@ -191,81 +196,173 @@
 </aside>
 
             
-            <section id="main">
-<div class="timeline timeline-wrap">
-    <div class="timeline-row timeline-row-major">
-        <span class="node"><i class="fa fa-tag"></i></span>
-        <h1 class="title">#golang</h1>
-    </div>
-    
-        <div class="timeline-row">
-            <span class="node"></span>
-            <div class="content">
+            <section id="main"><article id="post-MySQL死锁" class="article article-type-post" itemscope itemprop="blogPost">
+    <div class="article-inner">
+        
+        
+            <header class="article-header">
                 
     
-        <h1 itemprop="name">
-            <a class="timeline-article-title" href="/2019/06/04/[译]合适以及为何使用最少使用(LFU)缓存与Golang中的实现/">合适以及为何使用最少使用(LFU)缓存与Golang中的实现</a>
+        <h1 class="article-title" itemprop="name">
+            记一次MySQL死锁排查过程
         </h1>
     
 
-                <div class="article-meta">
-                    
+                
+                    <div class="article-meta">
+                        
     <div class="article-date">
         <i class="fa fa-calendar"></i>
-        <a href="/2019/06/04/[译]合适以及为何使用最少使用(LFU)缓存与Golang中的实现/">
-            <time datetime="2019-06-04T12:10:33.000Z" itemprop="datePublished">2019-06-04</time>
+        <a href="/2019/09/11/MySQL死锁/">
+            <time datetime="2019-09-11T06:10:23.000Z" itemprop="datePublished">2019-09-11</time>
         </a>
     </div>
 
 
-                    
-                    
-    <div class="article-tag">
-        <i class="fa fa-tag"></i>
-        <a class="tag-link" href="/tags/golang/">golang</a>
-    </div>
-
-                </div>
-            </div>
-        </div>
-    
-        <div class="timeline-row">
-            <span class="node"></span>
-            <div class="content">
-                
-    
-        <h1 itemprop="name">
-            <a class="timeline-article-title" href="/2019/01/11/defer/">golang-defer</a>
-        </h1>
-    
-
-                <div class="article-meta">
-                    
-    <div class="article-date">
-        <i class="fa fa-calendar"></i>
-        <a href="/2019/01/11/defer/">
-            <time datetime="2019-01-11T06:10:23.000Z" itemprop="datePublished">2019-01-11</time>
-        </a>
-    </div>
-
-
-                    
+                        
     <div class="article-category">
     	<i class="fa fa-folder"></i>
-        <a class="article-category-link" href="/categories/golang/">golang</a>
+        <a class="article-category-link" href="/categories/MySQL/">MySQL</a>
     </div>
 
-                    
+                        
     <div class="article-tag">
         <i class="fa fa-tag"></i>
-        <a class="tag-link" href="/tags/golang/">golang</a>
+        <a class="tag-link" href="/tags/MySQL/">MySQL</a>
     </div>
 
-                </div>
-            </div>
+                    </div>
+                
+            </header>
+        
+        
+        <div class="article-entry" itemprop="articleBody">
+        
+            
+            <h2 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h2><p>大概说一下业务场景，需要定时计算一些数据，从其他系统、接口拉取达到的数据比较多，然后经计算后的值存储在本系统中。拉取的数据量可能有万左右，然后以主键存在的数据是需要更新的。不存在则插入。每次做全量更新/插入。</p>
+<h2 id="起因"><a href="#起因" class="headerlink" title="起因"></a>起因</h2><p>最开始采用的方法是先查询，数据存在则更新数据，不存在则插入数据。但是数据要求的时效性比较高。于是定时任务在做任务处理的时候频率就比较高了。就出现了单位时间内对数据库的读写高，于是就换了一个方法。用INSERT … ON DUPLICATE KEY UPDATE。</p>
+<p>对数据库的读写次数虽然比之前少了，但是又引发了一个新的问题，因为更新、插入的数据量多，所以导致与一条INSERT … ON DUPLICATE KEY UPDATE的执行时间有点长，大概5s，去研究了下。实际上一次批量插入几千条条数据。为了解决这个问题，就分组批量查询，分为了每 50 条数据一组，这样每条sql 执行的时间也就短了。</p>
+<p>随之又出现了另外一个问题，随着数据量的增加，一次循环拉取的数据经计算,写入,更新等。时间大于定时任务所处理的时间，这样就导致与上一个定时任务还没处理完的时候，下一个定时任务又进来处理数据了。</p>
+<p>于是选择的做法是在每处理一组数据的时候，把 redis 的key 延长一点时间。然后整组数据处理完的时候，再删除 redis 的 值。等下一次定时任务抢到锁了再进来处理。</p>
+<p>想到的第二个方案是，直接插入数据库，主键冲突就抛错，根据指定的错来更新值</p>
+
+        
         </div>
-    
+        <footer class="article-footer">
+            <div class="share-container">
+
+
+
 </div>
+
+    <a data-url="https://www.liangyouze.com/2019/09/11/MySQL死锁/" data-id="ck1oqh8t30002g1u3dzl2rryp" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
+<script>
+    (function ($) {
+        // Prevent duplicate binding
+        if (typeof(__SHARE_BUTTON_BINDED__) === 'undefined' || !__SHARE_BUTTON_BINDED__) {
+            __SHARE_BUTTON_BINDED__ = true;
+        } else {
+            return;
+        }
+        $('body').on('click', function() {
+            $('.article-share-box.on').removeClass('on');
+        }).on('click', '.article-share-link', function(e) {
+            e.stopPropagation();
+
+            var $this = $(this),
+                url = $this.attr('data-url'),
+                encodedUrl = encodeURIComponent(url),
+                id = 'article-share-box-' + $this.attr('data-id'),
+                offset = $this.offset(),
+                box;
+
+            if ($('#' + id).length) {
+                box = $('#' + id);
+
+                if (box.hasClass('on')){
+                    box.removeClass('on');
+                    return;
+                }
+            } else {
+                var html = [
+                    '<div id="' + id + '" class="article-share-box">',
+                        '<input class="article-share-input" value="' + url + '">',
+                        '<div class="article-share-links">',
+                            '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="fa fa-twitter article-share-twitter" target="_blank" title="Twitter"></a>',
+                            '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="fa fa-facebook article-share-facebook" target="_blank" title="Facebook"></a>',
+                            '<a href="http://pinterest.com/pin/create/button/?url=' + encodedUrl + '" class="fa fa-pinterest article-share-pinterest" target="_blank" title="Pinterest"></a>',
+                            '<a href="https://plus.google.com/share?url=' + encodedUrl + '" class="fa fa-google article-share-google" target="_blank" title="Google+"></a>',
+                        '</div>',
+                    '</div>'
+                ].join('');
+
+              box = $(html);
+
+              $('body').append(box);
+            }
+
+            $('.article-share-box.on').hide();
+
+            box.css({
+                top: offset.top + 25,
+                left: offset.left
+            }).addClass('on');
+
+        }).on('click', '.article-share-box', function (e) {
+            e.stopPropagation();
+        }).on('click', '.article-share-box-input', function () {
+            $(this).select();
+        }).on('click', '.article-share-box-link', function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            window.open(this.href, 'article-share-box-window-' + Date.now(), 'width=500,height=450');
+        });
+    })(jQuery);
+</script>
+
+            
+    
+        <a href="https://www.liangyouze.com/2019/09/11/MySQL死锁/#comments" class="article-comment-link disqus-comment-count" data-disqus-url="https://www.liangyouze.com/2019/09/11/MySQL死锁/">评论</a>
+    
+
+        </footer>
+    </div>
+    
+        
+<nav id="article-nav">
+    
+        <a href="/2019/10/11/分析MySQL中隐式转换导致查询结果错误及索引不可用/" id="article-nav-newer" class="article-nav-link-wrap">
+            <strong class="article-nav-caption">上一篇</strong>
+            <div class="article-nav-title">
+                
+                    分析MySQL中隐式转换导致查询结果错误及索引不可用
+                
+            </div>
+        </a>
+    
+    
+        <a href="/2019/06/04/[译]合适以及为何使用最少使用(LFU)缓存与Golang中的实现/" id="article-nav-older" class="article-nav-link-wrap">
+            <strong class="article-nav-caption">下一篇</strong>
+            <div class="article-nav-title">合适以及为何使用最少使用(LFU)缓存与Golang中的实现</div>
+        </a>
+    
+</nav>
+
+
+    
+</article>
+
+
+    
+    
+        <section id="comments">
+    <div id="disqus_thread">
+        <noscript>Please enable JavaScript to view the <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+    </div>
+</section>
+    
+
 </section>
             
                 
@@ -451,11 +548,13 @@
     <script>
     var disqus_config = function () {
         
-        this.page.identifier = '';
+            this.page.url = 'https://www.liangyouze.com/2019/09/11/MySQL死锁/';
+        
+        this.page.identifier = 'MySQL死锁';
     };
     (function() { 
         var d = document, s = d.createElement('script');  
-        s.src = '//' + 'hexo-theme-icarus' + '.disqus.com/count.js';
+        s.src = '//' + 'hexo-theme-icarus' + '.disqus.com/embed.js';
         s.setAttribute('data-timestamp', +new Date());
         (d.head || d.body).appendChild(s);
     })();
