@@ -199,29 +199,14 @@
         
         <div class="article-entry" itemprop="articleBody">
         
-            
-            <p>分析MySQL中隐式转换导致查询结果错误及索引不可用</p>
+            <p><p>分析MySQL中隐式转换导致查询结果错误及索引不可用</p>
 <p>以下是例子</p>
 <figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> * <span class="keyword">FROM</span> <span class="keyword">TABLE</span> <span class="keyword">WHERE</span> xxx = <span class="number">11</span></span><br></pre></td></tr></table></figure>
 <p>如果列xxx确实只有11的，你是否就认为筛选出来的就一定只有xxx=11的呢？</p>
-<p>以下也均为测试数据</p>
-<p><img src="https://note.youdao.com/yws/api/personal/file/WEBb5e550ac80953bc46e628a9768e9022e?method=download&amp;shareKey=5c192c95070cd857c8009d43922961ce" alt="mysql数据转换图"></p>
-<p>在过滤字段为数值类型的时候，数值类型有一种隐式转换，如果是以数字开头的，包含有字符，后面的字符会被截断，只取前面的数字值</p>
-<p>当执行<br><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">explain</span> <span class="keyword">select</span> * <span class="keyword">from</span> business_flow <span class="keyword">where</span> business_flow_id = <span class="number">268805964457574426</span></span><br></pre></td></tr></table></figure></p>
-<p>看输出会出现这段话</p>
-<p>Cannot use ref access on index ‘xxx’ due to type or collation conversion on field ‘business_flow_id’</p>
-<p>当过滤的字段是字符类型的时候，没有使用到索引，走的全表扫描；</p>
-<p>所以还是可以查询出结果来的，因为无法使用索引，所以查询出来的结果也是错的。</p>
-<p>既然发现查询出来的结果是有误差的，所以猜测用字符串’xxx’和xxy比较应该是相等的。</p>
-<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> <span class="string">'268805964457574426'</span> =<span class="number">268805964457574421</span></span><br></pre></td></tr></table></figure>
-<p>果不其然，也能查询出</p>
-<p>去查询了下其他的</p>
-<p>过滤字段为浮点类型，也会比较近似的，将导致结果看起来不一致，也就是可能导致查询结果错误</p>
-<p>当MySQL遇到字段类型不匹配的时候，会进行各种隐式转化</p>
-<p>所以在查询过滤的时候，一定要注意过滤字段的类型。可能会导致查询慢，甚至会导致错误结果。</p>
-<p>官方说是隐式转换</p>
-<p><a href="https://dev.mysql.com/doc/refman/5.7/en/type-conversion.html" target="_blank" rel="noopener">参考</a></p>
-
+<p>在过滤字段为数值类型的时候，数值类型有一种隐式转换，如果是以数字开头的，包含有字符，后面的字符会被截断，只取前面的数字值。</p>
+            <p class="article-more-link">
+                <a href="/2019/10/10/分析MySQL中隐式转换导致查询结果错误及索引不可用/#more">查看更多</a>
+            </p>
         
         </div>
         <footer class="article-footer">
@@ -231,7 +216,7 @@
 
 </div>
 
-    <a data-url="https://www.liangyouze.com/2019/10/10/分析MySQL中隐式转换导致查询结果错误及索引不可用/" data-id="ck1ocn1cl000r48fy99v7ck9l" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
+    <a data-url="https://www.liangyouze.com/2019/10/10/分析MySQL中隐式转换导致查询结果错误及索引不可用/" data-id="ck1ocqgy4000p7ofy229usp83" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
 <script>
     (function ($) {
         // Prevent duplicate binding
@@ -360,7 +345,7 @@
 
 </div>
 
-    <a data-url="https://www.liangyouze.com/2019/06/04/[译]合适以及为何使用最少使用(LFU)缓存与Golang中的实现/" data-id="ck1ocn1dw001e48fyx4xqoypm" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
+    <a data-url="https://www.liangyouze.com/2019/06/04/[译]合适以及为何使用最少使用(LFU)缓存与Golang中的实现/" data-id="ck1ocqgzj001e7ofy8wtaby8u" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
 <script>
     (function ($) {
         // Prevent duplicate binding
@@ -494,7 +479,7 @@
 
 </div>
 
-    <a data-url="https://www.liangyouze.com/2019/06/01/vim 技巧/" data-id="ck1ocn1ce000e48fypsc8kp8n" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
+    <a data-url="https://www.liangyouze.com/2019/06/01/vim 技巧/" data-id="ck1ocqgxt000c7ofygfnv808n" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
 <script>
     (function ($) {
         // Prevent duplicate binding
@@ -630,7 +615,7 @@
 
 </div>
 
-    <a data-url="https://www.liangyouze.com/2019/01/11/defer/" data-id="ck1ocn1c8000648fy8odzi6te" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
+    <a data-url="https://www.liangyouze.com/2019/01/11/defer/" data-id="ck1ocqgxp00067ofyflr4yzdt" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
 <script>
     (function ($) {
         // Prevent duplicate binding
@@ -763,7 +748,7 @@
 
 </div>
 
-    <a data-url="https://www.liangyouze.com/2018/12/31/2018总结/" data-id="ck1ocn1c1000048fy39ygvqz9" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
+    <a data-url="https://www.liangyouze.com/2018/12/31/2018总结/" data-id="ck1ocqgxi00007ofygyp98hf6" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
 <script>
     (function ($) {
         // Prevent duplicate binding
@@ -891,7 +876,7 @@
 
 </div>
 
-    <a data-url="https://www.liangyouze.com/2018/10/10/我所读过的书/" data-id="ck1ocn1cm000v48fybwiau83m" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
+    <a data-url="https://www.liangyouze.com/2018/10/10/我所读过的书/" data-id="ck1ocqgy5000t7ofy7po4w0q4" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
 <script>
     (function ($) {
         // Prevent duplicate binding
@@ -989,7 +974,7 @@
 
 </div>
 
-    <a data-url="https://www.liangyouze.com/2018/10/05/分布式架构/" data-id="ck1ocn1ck000p48fyo4mmpv19" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
+    <a data-url="https://www.liangyouze.com/2018/10/05/分布式架构/" data-id="ck1ocqgy3000n7ofy1c9xd7ev" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
 <script>
     (function ($) {
         // Prevent duplicate binding
@@ -1117,7 +1102,7 @@
 
 </div>
 
-    <a data-url="https://www.liangyouze.com/2018/09/11/elasticsearch社区分享会/" data-id="ck1ocn1cc000a48fy6mr4rw0m" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
+    <a data-url="https://www.liangyouze.com/2018/09/11/elasticsearch社区分享会/" data-id="ck1ocqgxr00077ofypv6dure7" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
 <script>
     (function ($) {
         // Prevent duplicate binding
@@ -1246,7 +1231,7 @@
 
 </div>
 
-    <a data-url="https://www.liangyouze.com/2018/08/10/关于生成订单号规则的一些思考/" data-id="ck1ocn1cj000l48fyz5uyppsj" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
+    <a data-url="https://www.liangyouze.com/2018/08/10/关于生成订单号规则的一些思考/" data-id="ck1ocqgy1000j7ofyovqxbcqv" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
 <script>
     (function ($) {
         // Prevent duplicate binding
@@ -1374,7 +1359,7 @@
 
 </div>
 
-    <a data-url="https://www.liangyouze.com/2018/07/31/关于iframe跨域传输/" data-id="ck1ocn1ci000j48fyq4mbi7fs" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
+    <a data-url="https://www.liangyouze.com/2018/07/31/关于iframe跨域传输/" data-id="ck1ocqgxz000h7ofy4bvns7c6" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
 <script>
     (function ($) {
         // Prevent duplicate binding
