@@ -250,7 +250,7 @@
 
 </div>
 
-    <a data-url="https://www.liangyouze.com/2019/10/11/分析MySQL中隐式转换导致查询结果错误及索引不可用/" data-id="ck1oqh8tn000vg1u3dnl1jes5" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
+    <a data-url="https://www.liangyouze.com/2019/10/11/分析MySQL中隐式转换导致查询结果错误及索引不可用/" data-id="ck1oqiv08000sidu36k044ly7" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
 <script>
     (function ($) {
         // Prevent duplicate binding
@@ -370,14 +370,10 @@
         
         <div class="article-entry" itemprop="articleBody">
         
-            
-            <h2 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h2><p>大概说一下业务场景，需要定时计算一些数据，从其他系统、接口拉取达到的数据比较多，然后经计算后的值存储在本系统中。拉取的数据量可能有万左右，然后以主键存在的数据是需要更新的。不存在则插入。每次做全量更新/插入。</p>
-<h2 id="起因"><a href="#起因" class="headerlink" title="起因"></a>起因</h2><p>最开始采用的方法是先查询，数据存在则更新数据，不存在则插入数据。但是数据要求的时效性比较高。于是定时任务在做任务处理的时候频率就比较高了。就出现了单位时间内对数据库的读写高，于是就换了一个方法。用INSERT … ON DUPLICATE KEY UPDATE。</p>
-<p>对数据库的读写次数虽然比之前少了，但是又引发了一个新的问题，因为更新、插入的数据量多，所以导致与一条INSERT … ON DUPLICATE KEY UPDATE的执行时间有点长，大概5s，去研究了下。实际上一次批量插入几千条条数据。为了解决这个问题，就分组批量查询，分为了每 50 条数据一组，这样每条sql 执行的时间也就短了。</p>
-<p>随之又出现了另外一个问题，随着数据量的增加，一次循环拉取的数据经计算,写入,更新等。时间大于定时任务所处理的时间，这样就导致与上一个定时任务还没处理完的时候，下一个定时任务又进来处理数据了。</p>
-<p>于是选择的做法是在每处理一组数据的时候，把 redis 的key 延长一点时间。然后整组数据处理完的时候，再删除 redis 的 值。等下一次定时任务抢到锁了再进来处理。</p>
-<p>想到的第二个方案是，直接插入数据库，主键冲突就抛错，根据指定的错来更新值</p>
-
+            <p><h2 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h2><p>大概说一下业务场景，需要定时计算一些数据，从其他系统、接口拉取达到的数据比较多，然后经计算后的值存储在本系统中。拉取的数据量可能有万左右，然后以主键存在的数据是需要更新的。不存在则插入。每次做全量更新/插入。</p>
+            <p class="article-more-link">
+                <a href="/2019/09/11/MySQL死锁/#more">查看更多</a>
+            </p>
         
         </div>
         <footer class="article-footer">
@@ -387,7 +383,7 @@
 
 </div>
 
-    <a data-url="https://www.liangyouze.com/2019/09/11/MySQL死锁/" data-id="ck1oqh8t30002g1u3dzl2rryp" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
+    <a data-url="https://www.liangyouze.com/2019/09/11/MySQL死锁/" data-id="ck1oqiuzt0002idu39f55kpo3" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
 <script>
     (function ($) {
         // Prevent duplicate binding
@@ -516,7 +512,7 @@
 
 </div>
 
-    <a data-url="https://www.liangyouze.com/2019/06/04/[译]合适以及为何使用最少使用(LFU)缓存与Golang中的实现/" data-id="ck1oqh8uz001lg1u3klz077hv" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
+    <a data-url="https://www.liangyouze.com/2019/06/04/[译]合适以及为何使用最少使用(LFU)缓存与Golang中的实现/" data-id="ck1oqiv1j001lidu3xji9o1tc" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
 <script>
     (function ($) {
         // Prevent duplicate binding
@@ -650,7 +646,7 @@
 
 </div>
 
-    <a data-url="https://www.liangyouze.com/2019/06/01/vim 技巧/" data-id="ck1oqh8th000jg1u3rvj3bai1" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
+    <a data-url="https://www.liangyouze.com/2019/06/01/vim 技巧/" data-id="ck1oqiv01000cidu3sppgfs9l" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
 <script>
     (function ($) {
         // Prevent duplicate binding
@@ -786,7 +782,7 @@
 
 </div>
 
-    <a data-url="https://www.liangyouze.com/2019/01/11/defer/" data-id="ck1oqh8t80007g1u32miogp8l" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
+    <a data-url="https://www.liangyouze.com/2019/01/11/defer/" data-id="ck1oqiuzx0006idu3h300izh4" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
 <script>
     (function ($) {
         // Prevent duplicate binding
@@ -919,7 +915,7 @@
 
 </div>
 
-    <a data-url="https://www.liangyouze.com/2018/12/31/2018总结/" data-id="ck1oqh8sy0000g1u3bbwpd57z" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
+    <a data-url="https://www.liangyouze.com/2018/12/31/2018总结/" data-id="ck1oqiuzp0000idu3g700m77f" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
 <script>
     (function ($) {
         // Prevent duplicate binding
@@ -1047,7 +1043,7 @@
 
 </div>
 
-    <a data-url="https://www.liangyouze.com/2018/10/10/我所读过的书/" data-id="ck1oqh8tm000tg1u378w0bvtr" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
+    <a data-url="https://www.liangyouze.com/2018/10/10/我所读过的书/" data-id="ck1oqiv09000uidu3gud8zxcd" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
 <script>
     (function ($) {
         // Prevent duplicate binding
@@ -1145,7 +1141,7 @@
 
 </div>
 
-    <a data-url="https://www.liangyouze.com/2018/10/05/分布式架构/" data-id="ck1oqh8tk000pg1u38nyge5gm" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
+    <a data-url="https://www.liangyouze.com/2018/10/05/分布式架构/" data-id="ck1oqiv07000oidu30x02kgoc" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
 <script>
     (function ($) {
         // Prevent duplicate binding
@@ -1273,7 +1269,7 @@
 
 </div>
 
-    <a data-url="https://www.liangyouze.com/2018/09/11/elasticsearch社区分享会/" data-id="ck1oqh8t90008g1u3gwsi347i" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
+    <a data-url="https://www.liangyouze.com/2018/09/11/elasticsearch社区分享会/" data-id="ck1oqiuzy0007idu32rkhdi56" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
 <script>
     (function ($) {
         // Prevent duplicate binding
@@ -1402,7 +1398,7 @@
 
 </div>
 
-    <a data-url="https://www.liangyouze.com/2018/08/10/关于生成订单号规则的一些思考/" data-id="ck1oqh8tj000ng1u3c5dp4ngn" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
+    <a data-url="https://www.liangyouze.com/2018/08/10/关于生成订单号规则的一些思考/" data-id="ck1oqiv04000iidu3b1d0easm" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
 <script>
     (function ($) {
         // Prevent duplicate binding

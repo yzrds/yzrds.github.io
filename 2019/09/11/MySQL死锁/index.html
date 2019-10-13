@@ -5,18 +5,18 @@
     
     <title>记一次MySQL死锁排查过程 | 梁友泽的博客</title>
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
-    <meta name="description" content="背景大概说一下业务场景，需要定时计算一些数据，从其他系统、接口拉取达到的数据比较多，然后经计算后的值存储在本系统中。拉取的数据量可能有万左右，然后以主键存在的数据是需要更新的。不存在则插入。每次做全量更新/插入。 起因最开始采用的方法是先查询，数据存在则更新数据，不存在则插入数据。但是数据要求的时效性比较高。于是定时任务在做任务处理的时候频率就比较高了。就出现了单位时间内对数据库的读写高，于是就换">
+    <meta name="description" content="背景大概说一下业务场景，需要定时计算一些数据，从其他系统、接口拉取达到的数据比较多，然后经计算后的值存储在本系统中。拉取的数据量可能有万左右，然后以主键存在的数据是需要更新的。不存在则插入。每次做全量更新/插入。">
 <meta name="keywords" content="MySQL">
 <meta property="og:type" content="article">
 <meta property="og:title" content="记一次MySQL死锁排查过程">
 <meta property="og:url" content="https://www.liangyouze.com/2019/09/11/MySQL死锁/index.html">
 <meta property="og:site_name" content="梁友泽的博客">
-<meta property="og:description" content="背景大概说一下业务场景，需要定时计算一些数据，从其他系统、接口拉取达到的数据比较多，然后经计算后的值存储在本系统中。拉取的数据量可能有万左右，然后以主键存在的数据是需要更新的。不存在则插入。每次做全量更新/插入。 起因最开始采用的方法是先查询，数据存在则更新数据，不存在则插入数据。但是数据要求的时效性比较高。于是定时任务在做任务处理的时候频率就比较高了。就出现了单位时间内对数据库的读写高，于是就换">
+<meta property="og:description" content="背景大概说一下业务场景，需要定时计算一些数据，从其他系统、接口拉取达到的数据比较多，然后经计算后的值存储在本系统中。拉取的数据量可能有万左右，然后以主键存在的数据是需要更新的。不存在则插入。每次做全量更新/插入。">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2019-10-13T08:35:03.047Z">
+<meta property="og:updated_time" content="2019-10-13T08:36:36.268Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="记一次MySQL死锁排查过程">
-<meta name="twitter:description" content="背景大概说一下业务场景，需要定时计算一些数据，从其他系统、接口拉取达到的数据比较多，然后经计算后的值存储在本系统中。拉取的数据量可能有万左右，然后以主键存在的数据是需要更新的。不存在则插入。每次做全量更新/插入。 起因最开始采用的方法是先查询，数据存在则更新数据，不存在则插入数据。但是数据要求的时效性比较高。于是定时任务在做任务处理的时候频率就比较高了。就出现了单位时间内对数据库的读写高，于是就换">
+<meta name="twitter:description" content="背景大概说一下业务场景，需要定时计算一些数据，从其他系统、接口拉取达到的数据比较多，然后经计算后的值存储在本系统中。拉取的数据量可能有万左右，然后以主键存在的数据是需要更新的。不存在则插入。每次做全量更新/插入。">
     
 
     
@@ -239,7 +239,7 @@
         <div class="article-entry" itemprop="articleBody">
         
             
-            <h2 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h2><p>大概说一下业务场景，需要定时计算一些数据，从其他系统、接口拉取达到的数据比较多，然后经计算后的值存储在本系统中。拉取的数据量可能有万左右，然后以主键存在的数据是需要更新的。不存在则插入。每次做全量更新/插入。</p>
+            <h2 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h2><p>大概说一下业务场景，需要定时计算一些数据，从其他系统、接口拉取达到的数据比较多，然后经计算后的值存储在本系统中。拉取的数据量可能有万左右，然后以主键存在的数据是需要更新的。不存在则插入。每次做全量更新/插入。<a id="more"></a></p>
 <h2 id="起因"><a href="#起因" class="headerlink" title="起因"></a>起因</h2><p>最开始采用的方法是先查询，数据存在则更新数据，不存在则插入数据。但是数据要求的时效性比较高。于是定时任务在做任务处理的时候频率就比较高了。就出现了单位时间内对数据库的读写高，于是就换了一个方法。用INSERT … ON DUPLICATE KEY UPDATE。</p>
 <p>对数据库的读写次数虽然比之前少了，但是又引发了一个新的问题，因为更新、插入的数据量多，所以导致与一条INSERT … ON DUPLICATE KEY UPDATE的执行时间有点长，大概5s，去研究了下。实际上一次批量插入几千条条数据。为了解决这个问题，就分组批量查询，分为了每 50 条数据一组，这样每条sql 执行的时间也就短了。</p>
 <p>随之又出现了另外一个问题，随着数据量的增加，一次循环拉取的数据经计算,写入,更新等。时间大于定时任务所处理的时间，这样就导致与上一个定时任务还没处理完的时候，下一个定时任务又进来处理数据了。</p>
@@ -255,7 +255,7 @@
 
 </div>
 
-    <a data-url="https://www.liangyouze.com/2019/09/11/MySQL死锁/" data-id="ck1oqh8t30002g1u3dzl2rryp" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
+    <a data-url="https://www.liangyouze.com/2019/09/11/MySQL死锁/" data-id="ck1oqiuzt0002idu39f55kpo3" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
 <script>
     (function ($) {
         // Prevent duplicate binding
