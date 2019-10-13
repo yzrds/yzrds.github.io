@@ -3,15 +3,22 @@
 <head>
     <meta charset="utf-8">
     
-    <title>标签: golang | 梁友泽的博客</title>
+    <title>分析MySQL中隐式转换导致查询结果错误及索引不可用 | 梁友泽的博客</title>
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
-    <meta property="og:type" content="website">
-<meta property="og:title" content="梁友泽的博客">
-<meta property="og:url" content="https://www.liangyouze.com/tags/golang/index.html">
+    <meta name="description" content="分析MySQL中隐式转换导致查询结果错误及索引不可用以下是例子 1SELECT * FROM TABLE WHERE xxx = 11 如果列xxx确实只有11的，你是否就认为筛选出来的就一定只有xxx=11的呢？ 在过滤字段为数值类型的时候，数值类型有一种隐式转换，如果是以数字开头的，包含有字符，后面的字符会被截断，只取前面的数字值。">
+<meta name="keywords" content="MySQL">
+<meta property="og:type" content="article">
+<meta property="og:title" content="分析MySQL中隐式转换导致查询结果错误及索引不可用">
+<meta property="og:url" content="https://www.liangyouze.com/2019/10/11/分析MySQL中隐式转换导致查询结果错误及索引不可用/index.html">
 <meta property="og:site_name" content="梁友泽的博客">
+<meta property="og:description" content="分析MySQL中隐式转换导致查询结果错误及索引不可用以下是例子 1SELECT * FROM TABLE WHERE xxx = 11 如果列xxx确实只有11的，你是否就认为筛选出来的就一定只有xxx=11的呢？ 在过滤字段为数值类型的时候，数值类型有一种隐式转换，如果是以数字开头的，包含有字符，后面的字符会被截断，只取前面的数字值。">
 <meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="https://note.youdao.com/yws/api/personal/file/WEBb5e550ac80953bc46e628a9768e9022e?method=download&shareKey=5c192c95070cd857c8009d43922961ce">
+<meta property="og:updated_time" content="2019-10-13T02:18:51.550Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="梁友泽的博客">
+<meta name="twitter:title" content="分析MySQL中隐式转换导致查询结果错误及索引不可用">
+<meta name="twitter:description" content="分析MySQL中隐式转换导致查询结果错误及索引不可用以下是例子 1SELECT * FROM TABLE WHERE xxx = 11 如果列xxx确实只有11的，你是否就认为筛选出来的就一定只有xxx=11的呢？ 在过滤字段为数值类型的时候，数值类型有一种隐式转换，如果是以数字开头的，包含有字符，后面的字符会被截断，只取前面的数字值。">
+<meta name="twitter:image" content="https://note.youdao.com/yws/api/personal/file/WEBb5e550ac80953bc46e628a9768e9022e?method=download&shareKey=5c192c95070cd857c8009d43922961ce">
     
 
     
@@ -191,81 +198,178 @@
 </aside>
 
             
-            <section id="main">
-<div class="timeline timeline-wrap">
-    <div class="timeline-row timeline-row-major">
-        <span class="node"><i class="fa fa-tag"></i></span>
-        <h1 class="title">#golang</h1>
-    </div>
-    
-        <div class="timeline-row">
-            <span class="node"></span>
-            <div class="content">
+            <section id="main"><article id="post-分析MySQL中隐式转换导致查询结果错误及索引不可用" class="article article-type-post" itemscope itemprop="blogPost">
+    <div class="article-inner">
+        
+        
+            <header class="article-header">
                 
     
-        <h1 itemprop="name">
-            <a class="timeline-article-title" href="/2019/06/04/[译]合适以及为何使用最少使用(LFU)缓存与Golang中的实现/">合适以及为何使用最少使用(LFU)缓存与Golang中的实现</a>
+        <h1 class="article-title" itemprop="name">
+            分析MySQL中隐式转换导致查询结果错误及索引不可用
         </h1>
     
 
-                <div class="article-meta">
-                    
+                
+                    <div class="article-meta">
+                        
     <div class="article-date">
         <i class="fa fa-calendar"></i>
-        <a href="/2019/06/04/[译]合适以及为何使用最少使用(LFU)缓存与Golang中的实现/">
-            <time datetime="2019-06-04T12:10:33.000Z" itemprop="datePublished">2019-06-04</time>
+        <a href="/2019/10/11/分析MySQL中隐式转换导致查询结果错误及索引不可用/">
+            <time datetime="2019-10-11T06:10:23.000Z" itemprop="datePublished">2019-10-11</time>
         </a>
     </div>
 
 
-                    
-                    
-    <div class="article-tag">
-        <i class="fa fa-tag"></i>
-        <a class="tag-link" href="/tags/golang/">golang</a>
-    </div>
-
-                </div>
-            </div>
-        </div>
-    
-        <div class="timeline-row">
-            <span class="node"></span>
-            <div class="content">
-                
-    
-        <h1 itemprop="name">
-            <a class="timeline-article-title" href="/2019/01/11/defer/">golang-defer</a>
-        </h1>
-    
-
-                <div class="article-meta">
-                    
-    <div class="article-date">
-        <i class="fa fa-calendar"></i>
-        <a href="/2019/01/11/defer/">
-            <time datetime="2019-01-11T06:10:23.000Z" itemprop="datePublished">2019-01-11</time>
-        </a>
-    </div>
-
-
-                    
+                        
     <div class="article-category">
     	<i class="fa fa-folder"></i>
-        <a class="article-category-link" href="/categories/golang/">golang</a>
+        <a class="article-category-link" href="/categories/MySQL/">MySQL</a>
     </div>
 
-                    
+                        
     <div class="article-tag">
         <i class="fa fa-tag"></i>
-        <a class="tag-link" href="/tags/golang/">golang</a>
+        <a class="tag-link" href="/tags/MySQL/">MySQL</a>
     </div>
 
-                </div>
-            </div>
+                    </div>
+                
+            </header>
+        
+        
+        <div class="article-entry" itemprop="articleBody">
+        
+            
+            <h3 id="分析MySQL中隐式转换导致查询结果错误及索引不可用"><a href="#分析MySQL中隐式转换导致查询结果错误及索引不可用" class="headerlink" title="分析MySQL中隐式转换导致查询结果错误及索引不可用"></a>分析MySQL中隐式转换导致查询结果错误及索引不可用</h3><p>以下是例子</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> * <span class="keyword">FROM</span> <span class="keyword">TABLE</span> <span class="keyword">WHERE</span> xxx = <span class="number">11</span></span><br></pre></td></tr></table></figure>
+<p>如果列xxx确实只有11的，你是否就认为筛选出来的就一定只有xxx=11的呢？</p>
+<p>在过滤字段为数值类型的时候，数值类型有一种隐式转换，如果是以数字开头的，包含有字符，后面的字符会被截断，只取前面的数字值。<a id="more"></a></p>
+<p>以下也均为测试数据</p>
+<p><img src="https://note.youdao.com/yws/api/personal/file/WEBb5e550ac80953bc46e628a9768e9022e?method=download&amp;shareKey=5c192c95070cd857c8009d43922961ce" alt="mysql数据转换图"></p>
+<p>当执行<br><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">explain</span> <span class="keyword">select</span> * <span class="keyword">from</span> business_flow <span class="keyword">where</span> business_flow_id = <span class="number">268805964457574426</span></span><br></pre></td></tr></table></figure></p>
+<p>看输出会出现这段话</p>
+<p>Cannot use ref access on index ‘xxx’ due to type or collation conversion on field ‘business_flow_id’</p>
+<p>当过滤的字段是字符类型的时候，没有使用到索引，走的全表扫描；</p>
+<p>所以还是可以查询出结果来的，因为无法使用索引，所以查询出来的结果也是错的。</p>
+<p>既然发现查询出来的结果是有误差的，所以猜测用字符串’xxx’和xxy比较应该是相等的。</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> <span class="string">'268805964457574426'</span> =<span class="number">268805964457574421</span></span><br></pre></td></tr></table></figure>
+<p>果不其然，也能查询出</p>
+<p>去查询了下其他的</p>
+<p>过滤字段为浮点类型，也会比较近似的，将导致结果看起来不一致，也就是可能导致查询结果错误</p>
+<p>当MySQL遇到字段类型不匹配的时候，会进行各种隐式转化</p>
+<p>所以在查询过滤的时候，一定要注意过滤字段的类型。可能会导致查询慢，甚至会导致错误结果。</p>
+<p>官方说是隐式转换</p>
+<p><a href="https://dev.mysql.com/doc/refman/5.7/en/type-conversion.html" target="_blank" rel="noopener">参考</a></p>
+
+        
         </div>
-    
+        <footer class="article-footer">
+            <div class="share-container">
+
+
+
 </div>
+
+    <a data-url="https://www.liangyouze.com/2019/10/11/分析MySQL中隐式转换导致查询结果错误及索引不可用/" data-id="ck1od1408000qhrfy08q9zv5f" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
+<script>
+    (function ($) {
+        // Prevent duplicate binding
+        if (typeof(__SHARE_BUTTON_BINDED__) === 'undefined' || !__SHARE_BUTTON_BINDED__) {
+            __SHARE_BUTTON_BINDED__ = true;
+        } else {
+            return;
+        }
+        $('body').on('click', function() {
+            $('.article-share-box.on').removeClass('on');
+        }).on('click', '.article-share-link', function(e) {
+            e.stopPropagation();
+
+            var $this = $(this),
+                url = $this.attr('data-url'),
+                encodedUrl = encodeURIComponent(url),
+                id = 'article-share-box-' + $this.attr('data-id'),
+                offset = $this.offset(),
+                box;
+
+            if ($('#' + id).length) {
+                box = $('#' + id);
+
+                if (box.hasClass('on')){
+                    box.removeClass('on');
+                    return;
+                }
+            } else {
+                var html = [
+                    '<div id="' + id + '" class="article-share-box">',
+                        '<input class="article-share-input" value="' + url + '">',
+                        '<div class="article-share-links">',
+                            '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="fa fa-twitter article-share-twitter" target="_blank" title="Twitter"></a>',
+                            '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="fa fa-facebook article-share-facebook" target="_blank" title="Facebook"></a>',
+                            '<a href="http://pinterest.com/pin/create/button/?url=' + encodedUrl + '" class="fa fa-pinterest article-share-pinterest" target="_blank" title="Pinterest"></a>',
+                            '<a href="https://plus.google.com/share?url=' + encodedUrl + '" class="fa fa-google article-share-google" target="_blank" title="Google+"></a>',
+                        '</div>',
+                    '</div>'
+                ].join('');
+
+              box = $(html);
+
+              $('body').append(box);
+            }
+
+            $('.article-share-box.on').hide();
+
+            box.css({
+                top: offset.top + 25,
+                left: offset.left
+            }).addClass('on');
+
+        }).on('click', '.article-share-box', function (e) {
+            e.stopPropagation();
+        }).on('click', '.article-share-box-input', function () {
+            $(this).select();
+        }).on('click', '.article-share-box-link', function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            window.open(this.href, 'article-share-box-window-' + Date.now(), 'width=500,height=450');
+        });
+    })(jQuery);
+</script>
+
+            
+    
+        <a href="https://www.liangyouze.com/2019/10/11/分析MySQL中隐式转换导致查询结果错误及索引不可用/#comments" class="article-comment-link disqus-comment-count" data-disqus-url="https://www.liangyouze.com/2019/10/11/分析MySQL中隐式转换导致查询结果错误及索引不可用/">评论</a>
+    
+
+        </footer>
+    </div>
+    
+        
+<nav id="article-nav">
+    
+    
+        <a href="/2019/06/04/[译]合适以及为何使用最少使用(LFU)缓存与Golang中的实现/" id="article-nav-older" class="article-nav-link-wrap">
+            <strong class="article-nav-caption">下一篇</strong>
+            <div class="article-nav-title">合适以及为何使用最少使用(LFU)缓存与Golang中的实现</div>
+        </a>
+    
+</nav>
+
+
+    
+</article>
+
+
+    
+    
+        <section id="comments">
+    <div id="disqus_thread">
+        <noscript>Please enable JavaScript to view the <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+    </div>
+</section>
+    
+
 </section>
             
                 
@@ -451,11 +555,13 @@
     <script>
     var disqus_config = function () {
         
-        this.page.identifier = '';
+            this.page.url = 'https://www.liangyouze.com/2019/10/11/分析MySQL中隐式转换导致查询结果错误及索引不可用/';
+        
+        this.page.identifier = '分析MySQL中隐式转换导致查询结果错误及索引不可用';
     };
     (function() { 
         var d = document, s = d.createElement('script');  
-        s.src = '//' + 'hexo-theme-icarus' + '.disqus.com/count.js';
+        s.src = '//' + 'hexo-theme-icarus' + '.disqus.com/embed.js';
         s.setAttribute('data-timestamp', +new Date());
         (d.head || d.body).appendChild(s);
     })();
