@@ -1,0 +1,736 @@
+<!DOCTYPE html>
+<html lang=zh>
+<head>
+    <meta charset="utf-8">
+    
+    <title>vim技巧 | 梁友泽的博客</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+    <meta name="description" content="目录简介小技巧启动及关闭教程篇文本编辑文本编辑的高效命令other 简介得益于 vim 的指法，敲起代码来如行云流水。不管是不是写代码，学好vim 指法相当重要，当然最重要的还是为了效率，节省时间做更多其他的事。">
+<meta name="keywords" content="vim">
+<meta property="og:type" content="article">
+<meta property="og:title" content="vim技巧">
+<meta property="og:url" content="https://www.liangyouze.com/2019/06/01/vim 技巧/index.html">
+<meta property="og:site_name" content="梁友泽的博客">
+<meta property="og:description" content="目录简介小技巧启动及关闭教程篇文本编辑文本编辑的高效命令other 简介得益于 vim 的指法，敲起代码来如行云流水。不管是不是写代码，学好vim 指法相当重要，当然最重要的还是为了效率，节省时间做更多其他的事。">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2019-06-01T07:14:16.238Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="vim技巧">
+<meta name="twitter:description" content="目录简介小技巧启动及关闭教程篇文本编辑文本编辑的高效命令other 简介得益于 vim 的指法，敲起代码来如行云流水。不管是不是写代码，学好vim 指法相当重要，当然最重要的还是为了效率，节省时间做更多其他的事。">
+    
+
+    
+
+    
+
+    <link rel="stylesheet" href="/libs/font-awesome/css/font-awesome.min.css">
+    <link rel="stylesheet" href="/libs/open-sans/styles.css">
+    <link rel="stylesheet" href="/libs/source-code-pro/styles.css">
+
+    <link rel="stylesheet" href="/css/style.css">
+
+    <script src="/libs/jquery/2.1.3/jquery.min.js"></script>
+    
+    
+        <link rel="stylesheet" href="/libs/lightgallery/css/lightgallery.min.css">
+    
+    
+        <link rel="stylesheet" href="/libs/justified-gallery/justifiedGallery.min.css">
+    
+    
+    
+    
+
+
+</head>
+
+<script async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+<body>
+    <div id="container">
+        <header id="header">
+    <div id="header-main" class="header-inner">
+        <div class="outer">
+            <a href="/" id="logo">
+                <i class="logo"></i>
+                <span class="site-title">梁友泽的博客</span>
+            </a>
+            <nav id="main-nav">
+                
+                    <a class="main-nav-link" href="/.">主页</a>
+                
+                    <a class="main-nav-link" href="/archives/">分类</a>
+                
+                    <a class="main-nav-link" href="/categories/">归档</a>
+                
+                    <a class="main-nav-link" href="/about">关于</a>
+                
+            </nav>
+            
+                
+                <nav id="sub-nav">
+                    <div class="profile" id="profile-nav">
+                        <a id="profile-anchor" href="javascript:;">
+                            <img class="avatar" src="/css/images/rolle.png" />
+                            <i class="fa fa-caret-down"></i>
+                        </a>
+                    </div>
+                </nav>
+            
+            <div id="search-form-wrap">
+
+    <form class="search-form">
+        <input type="text" class="ins-search-input search-form-input" placeholder="搜索" />
+        <button type="submit" class="search-form-submit"></button>
+    </form>
+    <div class="ins-search">
+    <div class="ins-search-mask"></div>
+    <div class="ins-search-container">
+        <div class="ins-input-wrapper">
+            <input type="text" class="ins-search-input" placeholder="想要查找什么..." />
+            <span class="ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: '文章',
+            PAGES: '页面',
+            CATEGORIES: '分类',
+            TAGS: '标签',
+            UNTITLED: '(未命名)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+<script src="/js/insight.js"></script>
+
+</div>
+        </div>
+    </div>
+    <div id="main-nav-mobile" class="header-sub header-inner">
+        <table class="menu outer">
+            <tr>
+                
+                    <td><a class="main-nav-link" href="/.">主页</a></td>
+                
+                    <td><a class="main-nav-link" href="/archives/">分类</a></td>
+                
+                    <td><a class="main-nav-link" href="/categories/">归档</a></td>
+                
+                    <td><a class="main-nav-link" href="/about">关于</a></td>
+                
+                <td>
+                    
+    <div class="search-form">
+        <input type="text" class="ins-search-input search-form-input" placeholder="搜索" />
+    </div>
+
+                </td>
+            </tr>
+        </table>
+    </div>
+</header>
+
+        <div class="outer">
+            
+                
+
+<aside id="profile" class="profile-fixed">
+    <div class="inner profile-inner">
+        <div class="base-info profile-block">
+            <img id="avatar" src="/css/images/rolle.png" />
+            <h2 id="name">梁友泽</h2>
+            <h3 id="title">Developer</h3>
+            <span id="location"><i class="fa fa-map-marker"></i>BeiJing, China</span>
+            <a id="follow" target="_blank" href="https://github.com/yzrds">关注我</a>
+        </div>
+        <div class="article-info profile-block">
+            <div class="article-info-block">
+                15
+                <span>文章</span>
+            </div>
+            <div class="article-info-block">
+                12
+                <span>标签</span>
+            </div>
+        </div>
+        
+        <div class="profile-block social-links">
+            <table>
+                <tr>
+                    
+                    
+                    <td>
+                        <a href="http://github.com/yzrds" target="_blank" title="github" class=tooltip>
+                            <i class="fa fa-github"></i>
+                        </a>
+                    </td>
+                    
+                    <td>
+                        <a href="/youzedev@gmail.com" target="_blank" title="email" class=tooltip>
+                            <i class="fa fa-email"></i>
+                        </a>
+                    </td>
+                    
+                    <td>
+                        <a href="/css/images/rolle_wechat.jpg" target="_blank" title="wechat" class=tooltip>
+                            <i class="fa fa-wechat"></i>
+                        </a>
+                    </td>
+                    
+                </tr>
+            </table>
+        </div>
+        
+    </div>
+</aside>
+
+            
+            <section id="main"><article id="post-vim 技巧" class="article article-type-post" itemscope itemprop="blogPost">
+    <div class="article-inner">
+        
+        
+            <header class="article-header">
+                
+    
+        <h1 class="article-title" itemprop="name">
+            vim技巧
+        </h1>
+    
+
+                
+                    <div class="article-meta">
+                        
+    <div class="article-date">
+        <i class="fa fa-calendar"></i>
+        <a href="/2019/06/01/vim 技巧/">
+            <time datetime="2019-06-01T06:10:23.000Z" itemprop="datePublished">2019-06-01</time>
+        </a>
+    </div>
+
+
+                        
+    <div class="article-category">
+    	<i class="fa fa-folder"></i>
+        <a class="article-category-link" href="/categories/vim/">vim</a>
+    </div>
+
+                        
+    <div class="article-tag">
+        <i class="fa fa-tag"></i>
+        <a class="tag-link" href="/tags/vim/">vim</a>
+    </div>
+
+                    </div>
+                
+            </header>
+        
+        
+        <div class="article-entry" itemprop="articleBody">
+        
+            
+            <h2 id="目录"><a href="#目录" class="headerlink" title="目录"></a>目录</h2><p><a href="#简介">简介</a><br><a href="#小技巧">小技巧</a><br><a href="#启动及关闭">启动及关闭</a><br><a href="#教程篇">教程篇</a><br><a href="#文本编辑">文本编辑</a><br><a href="#文本编辑的高效命令">文本编辑的高效命令</a><br><a href="#other">other</a></p>
+<h3 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h3><p>得益于 vim 的指法，敲起代码来如行云流水。不管是不是写代码，学好vim 指法相当重要，当然最重要的还是为了效率，节省时间做更多其他的事。 <a id="more"></a> </p>
+<h3 id="小技巧"><a href="#小技巧" class="headerlink" title="小技巧"></a>小技巧</h3><p>“工欲善其事，必先利其器”。在 Vi/Vim 版本的选择上，原则是“能用 Vim 就不要使用 Vi”。Vim 提供的功能和特性要比 Vi 多得多，如语法加亮着色功能等。就使用效果及效率来说，编辑同样的文件，使用 Vim 更胜一筹；就版本来说，新版的往往会修复旧版的一些缺陷及不足。这就要求我们在可能的情况下一定要使用最新版的 Vim。</p>
+<h3 id="启动及关闭"><a href="#启动及关闭" class="headerlink" title="启动及关闭"></a>启动及关闭</h3><ul>
+<li>退出<ul>
+<li>ZQ 无条件退出</li>
+<li>q!无条件退出</li>
+<li>ZZ 存盘并退出</li>
+<li>:wq 存盘并退出</li>
+</ul>
+</li>
+<li>保存部分文件<ul>
+<li>:m,nw &lt; file&gt;将 m 行到 n 行部分的内容保存到文件<file> 中</file></li>
+<li>:m,nw &gt;&gt; <file> 将 m 行到 n 行的内容添加到文件 <file> 的末尾</file></file></li>
+</ul>
+</li>
+<li>保存文件<ul>
+<li>:w</li>
+</ul>
+</li>
+</ul>
+<h3 id="教程篇"><a href="#教程篇" class="headerlink" title="教程篇"></a>教程篇</h3><p>默认的 vim 是没有显示行数的，可自行在 vim 配置文件里开启(自行Google)</p>
+<p>Vi/Vim 中操作单位有很多，按从小到大的顺序为（括号内为相应的操作命令）：字符（h、l）→ 单词 (w、W、b、B、e) → 行 (j、k、0、^、$、:n) → 句子（(、)）→ 段落（{、}）→ 屏 (H、M、L) → 页（Ctrl-f、Ctrl-b、Ctrl-u、Ctrl-d) → 文件（G、gg、:0、:$）。</p>
+<ul>
+<li>字符<ul>
+<li>h左移一位,l右移一位</li>
+</ul>
+</li>
+<li>单词<ul>
+<li>w/W 移动到下一单词的开头</li>
+<li>b/B 移动到上一单词的开头</li>
+<li>e/E 移动到光标所在单词的末尾</li>
+<li>f 快速移动到下一个字符的位置</li>
+</ul>
+</li>
+<li>行<ul>
+<li>j 下移一行 </li>
+<li>k 上移一行 </li>
+<li>0 移到当前行开头 </li>
+<li>^ 移到当前行的第一个非空字符 </li>
+<li>$ 移到当前行末尾 </li>
+<li>:n 移动到第 n 行</li>
+</ul>
+</li>
+<li>句子<ul>
+<li>) 移动到当前句子的末尾 </li>
+<li>( 移动到当前句子的开头</li>
+</ul>
+</li>
+<li>段落<ul>
+<li>} 移动当前段落的末尾</li>
+<li>{ 移到当前段落的开头</li>
+</ul>
+</li>
+<li>屏<ul>
+<li>H 移动到屏幕的第一行</li>
+<li>M 移动到屏幕的中间一行</li>
+<li>L 移动到屏幕的最后一行</li>
+</ul>
+</li>
+<li>页<ul>
+<li>Ctrl-f 向前滚动一页</li>
+<li>Ctrl-b 向后滚动一页</li>
+<li>Ctrl-u向前滚动半页</li>
+<li>Ctrl-d 向后滚动半页</li>
+</ul>
+</li>
+<li>文件<ul>
+<li>G 移动到文件末尾</li>
+<li>gg 移动到文件开头</li>
+<li>:0移动到文件第一行</li>
+<li>:$ 移动到文件最后一行</li>
+</ul>
+</li>
+</ul>
+<h3 id="文本编辑"><a href="#文本编辑" class="headerlink" title="文本编辑"></a>文本编辑</h3><p>  与光标移动一样，Vi/Vim 中关于编辑操作的命令也比较多，但操作单位要比移动光标少得多。按从小到大的顺序为（括号内为相应的操作命令）：字符 （x、c、s、r、i、a）→ 单词 (cw、cW、cb、cB、dw、dW、db、dB) → 行 (dd、d0、d$、I、A、o、O) → 句子（(、)）→ 段落（{、}）。这些操作单位有些可以加操作次数。操作对象的范围计算公式为：操作范围 = 操作次数 * 操作单位。比如：d3w 命令删除三个单词，10dd 命令删除十行。</p>
+<ul>
+<li>字符<ul>
+<li>x 删除光标位置的字符</li>
+<li>c 更改当前字符并进入插入模式</li>
+<li>s 替换光标位置的字符并进入插入模式</li>
+<li>r 替换光标位置的字符但不进入插入模式</li>
+<li>i 在当前位置的字符之前进入插入模式</li>
+<li>a 在当前位置的字符之后进入插入模式</li>
+</ul>
+</li>
+<li>单词<ul>
+<li>cw/cW 删除当前单词从光标开始的部分并进入插入模式</li>
+<li>cb/cB 删除当前单词从光标所在位置至单词开始的部分并进入插入模式</li>
+<li>dw/dW 删除当前单词从光标开始的部分但不进入插入模式</li>
+<li>db/dB 删除当前单词从光标所在位置至单词开始的部分但不进入插入模式</li>
+</ul>
+</li>
+<li>行<ul>
+<li>dd 删除当前行</li>
+<li>d0 删除从当前光标开始到行末的内容</li>
+<li>d$ 删除从当前光标开始到行末的内容</li>
+<li>I 在当前行的行首进入插入模式</li>
+<li>A 在当前行的行尾进入插入模式</li>
+<li>o 在当前行下方另起一行进入插入模式</li>
+<li>O 在当前行上方另起一行进入插入模式</li>
+</ul>
+</li>
+<li>句子<ul>
+<li>d) 删除当前句子从光标位置开始到句末的内容</li>
+<li>d( 删除当前句子从光标位置开始到句首的内容</li>
+</ul>
+</li>
+<li>段落<ul>
+<li>d} 删除当前段落从光标位置开始到段末的内容</li>
+<li>d{ 删除当前段落从光标位置开始到段首的内容</li>
+</ul>
+</li>
+</ul>
+<h3 id="文本编辑的高效命令"><a href="#文本编辑的高效命令" class="headerlink" title="文本编辑的高效命令"></a>文本编辑的高效命令</h3><ul>
+<li>复制与粘贴<ul>
+<li>yw 复制当前单词从光标开始的部分</li>
+<li>yy 复制光标所在行的所有字符</li>
+<li>p 将最后一个删除或复制文本放在当前字符</li>
+<li>P 将最后一个删除或复制文本放在当前字符之前</li>
+</ul>
+</li>
+<li>撤消与重做<ul>
+<li>u 撤消更改</li>
+<li>Ctrl-R 重做更改</li>
+</ul>
+</li>
+<li>重复操作<ul>
+<li>.重复上次操作</li>
+</ul>
+</li>
+<li>交换相邻字符或行<ul>
+<li>xp 交换光标位置的字符和它右边的字符</li>
+<li>ddp 交换光标位置的行和它的下一行</li>
+</ul>
+</li>
+<li>大小写转换<ul>
+<li>~ 将光标下的字母大小写反向转换</li>
+<li>guw 将光标所在的单词变为小写</li>
+<li>guw 将光标所在的单词变为小写</li>
+<li>gUw 将光标所在的单词变为大写</li>
+<li>guu 光标所在的行所有字符变为小写</li>
+<li>gUU 光标所在的行所有字符变为大写</li>
+<li>g~~ 光标所在的行所有字符大小写反向转换</li>
+</ul>
+</li>
+<li>排序<ul>
+<li>:1,$!sort 将文件内的所有内容排序 </li>
+</ul>
+</li>
+</ul>
+<h3 id="other"><a href="#other" class="headerlink" title="other"></a>other</h3><p>先定单位再定量</p>
+<p>操作对象的范围计算公式为：操作范围 = 操作次数 * 操作单位。比如：5h 命令左移 5 个字符，8w 命令右移 8 个单词。</p>
+
+        
+        </div>
+        <footer class="article-footer">
+            <div class="share-container">
+
+
+
+</div>
+
+    <a data-url="https://www.liangyouze.com/2019/06/01/vim 技巧/" data-id="ck46rkgcw000iabu32wbjlrlv" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
+<script>
+    (function ($) {
+        // Prevent duplicate binding
+        if (typeof(__SHARE_BUTTON_BINDED__) === 'undefined' || !__SHARE_BUTTON_BINDED__) {
+            __SHARE_BUTTON_BINDED__ = true;
+        } else {
+            return;
+        }
+        $('body').on('click', function() {
+            $('.article-share-box.on').removeClass('on');
+        }).on('click', '.article-share-link', function(e) {
+            e.stopPropagation();
+
+            var $this = $(this),
+                url = $this.attr('data-url'),
+                encodedUrl = encodeURIComponent(url),
+                id = 'article-share-box-' + $this.attr('data-id'),
+                offset = $this.offset(),
+                box;
+
+            if ($('#' + id).length) {
+                box = $('#' + id);
+
+                if (box.hasClass('on')){
+                    box.removeClass('on');
+                    return;
+                }
+            } else {
+                var html = [
+                    '<div id="' + id + '" class="article-share-box">',
+                        '<input class="article-share-input" value="' + url + '">',
+                        '<div class="article-share-links">',
+                            '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="fa fa-twitter article-share-twitter" target="_blank" title="Twitter"></a>',
+                            '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="fa fa-facebook article-share-facebook" target="_blank" title="Facebook"></a>',
+                            '<a href="http://pinterest.com/pin/create/button/?url=' + encodedUrl + '" class="fa fa-pinterest article-share-pinterest" target="_blank" title="Pinterest"></a>',
+                            '<a href="https://plus.google.com/share?url=' + encodedUrl + '" class="fa fa-google article-share-google" target="_blank" title="Google+"></a>',
+                        '</div>',
+                    '</div>'
+                ].join('');
+
+              box = $(html);
+
+              $('body').append(box);
+            }
+
+            $('.article-share-box.on').hide();
+
+            box.css({
+                top: offset.top + 25,
+                left: offset.left
+            }).addClass('on');
+
+        }).on('click', '.article-share-box', function (e) {
+            e.stopPropagation();
+        }).on('click', '.article-share-box-input', function () {
+            $(this).select();
+        }).on('click', '.article-share-box-link', function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            window.open(this.href, 'article-share-box-window-' + Date.now(), 'width=500,height=450');
+        });
+    })(jQuery);
+</script>
+
+            
+    
+        <a href="https://www.liangyouze.com/2019/06/01/vim 技巧/#comments" class="article-comment-link disqus-comment-count" data-disqus-url="https://www.liangyouze.com/2019/06/01/vim 技巧/">评论</a>
+    
+
+        </footer>
+    </div>
+    
+        
+<nav id="article-nav">
+    
+        <a href="/2019/06/04/[译]合适以及为何使用最少使用(LFU)缓存与Golang中的实现/" id="article-nav-newer" class="article-nav-link-wrap">
+            <strong class="article-nav-caption">上一篇</strong>
+            <div class="article-nav-title">
+                
+                    合适以及为何使用最少使用(LFU)缓存与Golang中的实现
+                
+            </div>
+        </a>
+    
+    
+        <a href="/2019/01/11/defer/" id="article-nav-older" class="article-nav-link-wrap">
+            <strong class="article-nav-caption">下一篇</strong>
+            <div class="article-nav-title">golang-defer</div>
+        </a>
+    
+</nav>
+
+
+    
+</article>
+
+
+    
+    
+        <section id="comments">
+    <div id="disqus_thread">
+        <noscript>Please enable JavaScript to view the <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+    </div>
+</section>
+    
+
+</section>
+            
+                
+<aside id="sidebar">
+   
+        
+    <div class="widget-wrap">
+        <h3 class="widget-title">最新文章</h3>
+        <div class="widget">
+            <ul id="recent-post" class="">
+                
+                    <li>
+                        
+                        <!-- <div class="item-thumbnail">
+                            <a href="/2019/10/11/分析MySQL中隐式转换导致查询结果错误及索引不可用/" class="thumbnail">
+    
+    
+        <span class="thumbnail-image thumbnail-none"></span>
+    
+</a>
+
+                        </div> -->
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/MySQL/">MySQL</a></p>
+                            <p class="item-title"><a href="/2019/10/11/分析MySQL中隐式转换导致查询结果错误及索引不可用/" class="title">分析MySQL中隐式转换导致查询结果错误及索引不可用</a></p>
+                            <p class="item-date"><time datetime="2019-10-11T06:10:23.000Z" itemprop="datePublished">2019-10-11</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <!-- <div class="item-thumbnail">
+                            <a href="/2019/09/11/MySQL死锁/" class="thumbnail">
+    
+    
+        <span class="thumbnail-image thumbnail-none"></span>
+    
+</a>
+
+                        </div> -->
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/MySQL/">MySQL</a></p>
+                            <p class="item-title"><a href="/2019/09/11/MySQL死锁/" class="title">记一次MySQL死锁排查过程</a></p>
+                            <p class="item-date"><time datetime="2019-09-11T06:10:23.000Z" itemprop="datePublished">2019-09-11</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <!-- <div class="item-thumbnail">
+                            <a href="/2019/06/04/[译]合适以及为何使用最少使用(LFU)缓存与Golang中的实现/" class="thumbnail">
+    
+    
+        <span class="thumbnail-image thumbnail-none"></span>
+    
+</a>
+
+                        </div> -->
+                        
+                        <div class="item-inner">
+                            <p class="item-category"></p>
+                            <p class="item-title"><a href="/2019/06/04/[译]合适以及为何使用最少使用(LFU)缓存与Golang中的实现/" class="title">合适以及为何使用最少使用(LFU)缓存与Golang中的实现</a></p>
+                            <p class="item-date"><time datetime="2019-06-04T12:10:33.000Z" itemprop="datePublished">2019-06-04</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <!-- <div class="item-thumbnail">
+                            <a href="/2019/06/01/vim 技巧/" class="thumbnail">
+    
+    
+        <span class="thumbnail-image thumbnail-none"></span>
+    
+</a>
+
+                        </div> -->
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/vim/">vim</a></p>
+                            <p class="item-title"><a href="/2019/06/01/vim 技巧/" class="title">vim技巧</a></p>
+                            <p class="item-date"><time datetime="2019-06-01T06:10:23.000Z" itemprop="datePublished">2019-06-01</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <!-- <div class="item-thumbnail">
+                            <a href="/2019/01/11/defer/" class="thumbnail">
+    
+    
+        <span class="thumbnail-image thumbnail-none"></span>
+    
+</a>
+
+                        </div> -->
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/golang/">golang</a></p>
+                            <p class="item-title"><a href="/2019/01/11/defer/" class="title">golang-defer</a></p>
+                            <p class="item-date"><time datetime="2019-01-11T06:10:23.000Z" itemprop="datePublished">2019-01-11</time></p>
+                        </div>
+                    </li>
+                
+            </ul>
+        </div>
+    </div>
+
+    
+        
+    <div class="widget-wrap">
+        <h3 class="widget-title">分类</h3>
+        <div class="widget">
+            <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/MySQL/">MySQL</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/docker/">docker</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/golang/">golang</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/vim/">vim</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/杂谈/">杂谈</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/计数/">计数</a><span class="category-list-count">1</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/计数/MySQL/">MySQL</a><span class="category-list-count">1</span></li></ul></li></ul>
+        </div>
+    </div>
+
+    
+        
+    <div class="widget-wrap">
+        <h3 class="widget-title">归档</h3>
+        <div class="widget">
+            <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/10/">十月 2019</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/09/">九月 2019</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/06/">六月 2019</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/01/">一月 2019</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/12/">十二月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/10/">十月 2018</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/09/">九月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/08/">八月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/07/">七月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/05/">五月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/04/">四月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/03/">三月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/11/">十一月 2017</a><span class="archive-list-count">1</span></li></ul>
+        </div>
+    </div>
+
+    
+        
+    <div class="widget-wrap">
+        <h3 class="widget-title">标签</h3>
+        <div class="widget">
+            <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Docker/">Docker</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/MySQL/">MySQL</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/elasticsearch/">elasticsearch</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/golang/">golang</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/iframe/">iframe</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/vim/">vim</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/字符串/">字符串</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/杂谈/">杂谈</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/规则/">规则</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/订单号/">订单号</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/读书/">读书</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/跨域/">跨域</a><span class="tag-list-count">1</span></li></ul>
+        </div>
+    </div>
+
+    
+        
+    <div class="widget-wrap">
+        <h3 class="widget-title">标签云</h3>
+        <div class="widget tagcloud">
+            <a href="/tags/Docker/" style="font-size: 10px;">Docker</a> <a href="/tags/MySQL/" style="font-size: 20px;">MySQL</a> <a href="/tags/elasticsearch/" style="font-size: 10px;">elasticsearch</a> <a href="/tags/golang/" style="font-size: 15px;">golang</a> <a href="/tags/iframe/" style="font-size: 10px;">iframe</a> <a href="/tags/vim/" style="font-size: 10px;">vim</a> <a href="/tags/字符串/" style="font-size: 15px;">字符串</a> <a href="/tags/杂谈/" style="font-size: 10px;">杂谈</a> <a href="/tags/规则/" style="font-size: 10px;">规则</a> <a href="/tags/订单号/" style="font-size: 10px;">订单号</a> <a href="/tags/读书/" style="font-size: 10px;">读书</a> <a href="/tags/跨域/" style="font-size: 10px;">跨域</a>
+        </div>
+    </div>
+
+    
+        
+    <div class="widget-wrap widget-list">
+        <h3 class="widget-title">链接</h3>
+        <div class="widget">
+            <ul>
+                
+                    <li>
+                        <a href="http://www.liangyongrui.com">梁永锐</a>
+                    </li>
+                
+            </ul>
+        </div>
+    </div>
+
+
+    
+    <div id="toTop" class="fa fa-angle-up"></div>
+</aside>
+
+            
+        </div>
+        <footer id="footer">
+    <div class="outer">
+        <div id="footer-info" class="inner">
+			<!--不蒜子统计-->
+           <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+            <span id="busuanzi_container_site_pv">本站总访问量:<span id="busuanzi_value_site_pv"></span>&nbsp;本站总访次数:<span id="busuanzi_value_site_uv"></span></span><br>
+		
+            &copy; 2019 梁友泽<br>
+            Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>. Theme by <a href="http://github.com/ppoffice">PPOffice</a>
+        </div>
+    </div>
+</footer>
+        
+    
+    <script>
+    var disqus_config = function () {
+        
+            this.page.url = 'https://www.liangyouze.com/2019/06/01/vim 技巧/';
+        
+        this.page.identifier = 'vim 技巧';
+    };
+    (function() { 
+        var d = document, s = d.createElement('script');  
+        s.src = '//' + 'hexo-theme-icarus' + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+
+
+
+
+    
+        <script src="/libs/lightgallery/js/lightgallery.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-thumbnail.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-pager.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-autoplay.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-fullscreen.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-zoom.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-hash.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-share.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-video.min.js"></script>
+    
+    
+        <script src="/libs/justified-gallery/jquery.justifiedGallery.min.js"></script>
+    
+    
+
+
+
+<!-- Custom Scripts -->
+<script src="/js/main.js"></script>
+
+    </div>
+</body>
+</html>
