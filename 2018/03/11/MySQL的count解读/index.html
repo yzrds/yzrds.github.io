@@ -3,15 +3,20 @@
 <head>
     <meta charset="utf-8">
     
-    <title>归档: 2019 | 梁友泽的博客</title>
+    <title>count(*) 的实现方式 | 梁友泽的博客</title>
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
-    <meta property="og:type" content="website">
-<meta property="og:title" content="梁友泽的博客">
-<meta property="og:url" content="https://www.liangyouze.com/archives/2019/index.html">
+    <meta name="description" content="InnoDB引擎在执行count(*)的时候，需要把数据一行一行地从引擎里面读出来，然后累积计数 MyISAM 引擎把一个表的总行数存在了磁盘上，因此执行 count(*) 的时候会直接返回这个数，效率很高；">
+<meta name="keywords" content="MySQL">
+<meta property="og:type" content="article">
+<meta property="og:title" content="count(*) 的实现方式">
+<meta property="og:url" content="https://www.liangyouze.com/2018/03/11/MySQL的count解读/index.html">
 <meta property="og:site_name" content="梁友泽的博客">
+<meta property="og:description" content="InnoDB引擎在执行count(*)的时候，需要把数据一行一行地从引擎里面读出来，然后累积计数 MyISAM 引擎把一个表的总行数存在了磁盘上，因此执行 count(*) 的时候会直接返回这个数，效率很高；">
 <meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2019-12-15T08:11:17.516Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="梁友泽的博客">
+<meta name="twitter:title" content="count(*) 的实现方式">
+<meta name="twitter:description" content="InnoDB引擎在执行count(*)的时候，需要把数据一行一行地从引擎里面读出来，然后累积计数 MyISAM 引擎把一个表的总行数存在了磁盘上，因此执行 count(*) 的时候会直接返回这个数，效率很高；">
     
 
     
@@ -191,189 +196,247 @@
 </aside>
 
             
-            <section id="main"><div class="timeline timeline-wrap">
-    
-            <div class="timeline-row timeline-row-major">
-                <span class="node"><i class="fa fa-calendar"></i></span>
-                <h1 class="title">2019</h1>
-            </div>
+            <section id="main"><article id="post-MySQL的count解读" class="article article-type-post" itemscope itemprop="blogPost">
+    <div class="article-inner">
         
-        <div class="timeline-row">
-            <span class="node"></span>
-            <div class="content">
+        
+            <header class="article-header">
                 
     
-        <h1 itemprop="name">
-            <a class="timeline-article-title" href="/2019/10/11/分析MySQL中隐式转换导致查询结果错误及索引不可用/">分析MySQL中隐式转换导致查询结果错误及索引不可用</a>
+        <h1 class="article-title" itemprop="name">
+            count(*) 的实现方式
         </h1>
     
 
-                <div class="article-meta">
-                    
+                
+                    <div class="article-meta">
+                        
     <div class="article-date">
         <i class="fa fa-calendar"></i>
-        <a href="/2019/10/11/分析MySQL中隐式转换导致查询结果错误及索引不可用/">
-            <time datetime="2019-10-11T06:10:23.000Z" itemprop="datePublished">2019-10-11</time>
+        <a href="/2018/03/11/MySQL的count解读/">
+            <time datetime="2018-03-11T06:10:23.000Z" itemprop="datePublished">2018-03-11</time>
         </a>
     </div>
 
 
-                    
+                        
     <div class="article-category">
     	<i class="fa fa-folder"></i>
-        <a class="article-category-link" href="/categories/MySQL/">MySQL</a>
+        <a class="article-category-link" href="/categories/计数/">计数</a><i class="fa fa-angle-right"></i><a class="article-category-link" href="/categories/计数/MySQL/">MySQL</a>
     </div>
 
-                    
+                        
     <div class="article-tag">
         <i class="fa fa-tag"></i>
         <a class="tag-link" href="/tags/MySQL/">MySQL</a>
     </div>
 
-                </div>
-            </div>
-        </div>
-    
-        <div class="timeline-row">
-            <span class="node"></span>
-            <div class="content">
+                    </div>
                 
-    
-        <h1 itemprop="name">
-            <a class="timeline-article-title" href="/2019/09/11/MySQL死锁/">记一次MySQL死锁排查过程</a>
-        </h1>
-    
+            </header>
+        
+        
+        <div class="article-entry" itemprop="articleBody">
+        
+            
+            <ul>
+<li>InnoDB引擎在执行count(*)的时候，需要把数据一行一行地从引擎里面读出来，然后累积计数</li>
+<li>MyISAM 引擎把一个表的总行数存在了磁盘上，因此执行 count(*) 的时候会直接返回这个数，效率很高；<a id="more"></a></li>
+</ul>
+<h3 id="那为什么-InnoDB-不跟-MyISAM-一样，也把数字存起来呢？"><a href="#那为什么-InnoDB-不跟-MyISAM-一样，也把数字存起来呢？" class="headerlink" title="那为什么 InnoDB 不跟 MyISAM 一样，也把数字存起来呢？"></a>那为什么 InnoDB 不跟 MyISAM 一样，也把数字存起来呢？</h3><p>这是因为即使是在同一个时刻的多个查询，由于多版本并发控制（MVCC）的原因，InnoDB 表“应该返回多少行”也是不确定的。这里，用一个算 count(*) 的例子来为你解释一下。</p>
+<p>假设表 t 中现在有 10000 条记录，我们设计了三个用户并行的会话。</p>
+<ul>
+<li>会话 A 先启动事务并查询一次表的总行数；</li>
+<li>会话 B 启动事务，插入一行后记录后，查询表的总行数；</li>
+<li>会话 C 先启动一个单独的语句，插入一行记录后，查询表的总行数。</li>
+</ul>
+<p>我们假设从上到下是按照时间顺序执行的，同一行语句是在同一时刻执行的。</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>会话A</th>
+<th>会话B</th>
+<th>会话C</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td></td>
+<td>begin</td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td>select count (*) from t</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td></td>
+<td>insert into t (写入一行数据)</td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td>begin</td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td>insert into t(写入一行数据)</td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td>select count(*) from t(返回10000)</td>
+<td>select count(*) from t(返回10002)</td>
+<td>select count(*) from t(返回10001)</td>
+</tr>
+</tbody>
+</table>
+<p>在最后一个时刻，三个会话A，B，C会同时查询表t的总行数，但拿到的结果却不同</p>
+<p>这和 InnoDB 的事务设计有关系，可重复读是它默认的隔离级别，在代码上就是通过多版本并发控制，也就是 MVCC 来实现的。每一行记录都要判断自己是否对这个会话可见，因此对于 count(*) 请求来说，InnoDB 只好把数据一行一行地读出依次判断，可见的行才能够用于计算“基于这个查询”的表的总行数。</p>
+<p>InnoDB 是索引组织表，主键索引树的叶子节点是数据，而普通索引树的叶子节点是主键值。所以，普通索引树比主键索引树小很多。对于 count(*) 这样的操作，遍历哪个索引树得到的结果逻辑上都是一样的。因此，MySQL 优化器会找到最小的那棵树来遍历。在保证逻辑正确的前提下，尽量减少扫描的数据量，是数据库系统设计的通用法则之一。</p>
+<p>如果你用过 show table status 命令的话，就会发现这个命令的输出结果里面也有一个 TABLE_ROWS 用于显示这个表当前有多少行，这个命令执行挺快的，那这个 TABLE_ROWS 能代替 count(*) 吗？</p>
+<p>索引统计的值是通过采样来估算的。实际上，TABLE_ROWS 就是从这个采样估算得来的，因此它也很不准。有多不准呢，官方文档说误差可能达到 40% 到 50%。所以，show table status 命令显示的行数也不能直接使用。</p>
+<p>总结一下</p>
+<ul>
+<li>MyISAM 表虽然 count(*) 很快，但是不支持事务；</li>
+<li>show table status 命令虽然返回很快，但是不准确；</li>
+<li>InnoDB 表直接 count(*) 会遍历全表，虽然结果准确，但会导致性能问题。</li>
+</ul>
+<p>对于 count(主键 id) 来说，InnoDB 引擎会遍历整张表，把每一行的 id 值都取出来，返回给 server 层。server 层拿到 id 后，判断是不可能为空的，就按行累加。</p>
+<p>对于 count(1) 来说，InnoDB 引擎遍历整张表，但不取值。server 层对于返回的每一行，放一个数字“1”进去，判断是不可能为空的，按行累加。</p>
+<p>对于 count(字段) 来说：</p>
+<ul>
+<li>如果这个“字段”是定义为 not null 的话，一行行地从记录里面读出这个字段，判断不能为 null，按行累加；</li>
+<li>如果这个“字段”定义允许为 null，那么执行的时候，判断到有可能是 null，还要把值取出来再判断一下，不是 null 才累加。 </li>
+</ul>
+<p>按照效率排序的话，count(字段)&lt;count(主键id)&lt;count(1)≈&lt;count(*)</p>
+<p>尽量使用count(*)</p>
+<p>参考极客时间MySQL实战45讲</p>
 
-                <div class="article-meta">
-                    
-    <div class="article-date">
-        <i class="fa fa-calendar"></i>
-        <a href="/2019/09/11/MySQL死锁/">
-            <time datetime="2019-09-11T06:10:23.000Z" itemprop="datePublished">2019-09-11</time>
-        </a>
-    </div>
-
-
-                    
-    <div class="article-category">
-    	<i class="fa fa-folder"></i>
-        <a class="article-category-link" href="/categories/MySQL/">MySQL</a>
-    </div>
-
-                    
-    <div class="article-tag">
-        <i class="fa fa-tag"></i>
-        <a class="tag-link" href="/tags/MySQL/">MySQL</a>
-    </div>
-
-                </div>
-            </div>
+        
         </div>
-    
-        <div class="timeline-row">
-            <span class="node"></span>
-            <div class="content">
-                
-    
-        <h1 itemprop="name">
-            <a class="timeline-article-title" href="/2019/06/04/[译]合适以及为何使用最少使用(LFU)缓存与Golang中的实现/">合适以及为何使用最少使用(LFU)缓存与Golang中的实现</a>
-        </h1>
-    
-
-                <div class="article-meta">
-                    
-    <div class="article-date">
-        <i class="fa fa-calendar"></i>
-        <a href="/2019/06/04/[译]合适以及为何使用最少使用(LFU)缓存与Golang中的实现/">
-            <time datetime="2019-06-04T12:10:33.000Z" itemprop="datePublished">2019-06-04</time>
-        </a>
-    </div>
+        <footer class="article-footer">
+            <div class="share-container">
 
 
-                    
-                    
-    <div class="article-tag">
-        <i class="fa fa-tag"></i>
-        <a class="tag-link" href="/tags/golang/">golang</a>
-    </div>
 
-                </div>
-            </div>
-        </div>
-    
-        <div class="timeline-row">
-            <span class="node"></span>
-            <div class="content">
-                
-    
-        <h1 itemprop="name">
-            <a class="timeline-article-title" href="/2019/06/01/vim 技巧/">vim技巧</a>
-        </h1>
-    
-
-                <div class="article-meta">
-                    
-    <div class="article-date">
-        <i class="fa fa-calendar"></i>
-        <a href="/2019/06/01/vim 技巧/">
-            <time datetime="2019-06-01T06:10:23.000Z" itemprop="datePublished">2019-06-01</time>
-        </a>
-    </div>
-
-
-                    
-    <div class="article-category">
-    	<i class="fa fa-folder"></i>
-        <a class="article-category-link" href="/categories/vim/">vim</a>
-    </div>
-
-                    
-    <div class="article-tag">
-        <i class="fa fa-tag"></i>
-        <a class="tag-link" href="/tags/vim/">vim</a>
-    </div>
-
-                </div>
-            </div>
-        </div>
-    
-        <div class="timeline-row">
-            <span class="node"></span>
-            <div class="content">
-                
-    
-        <h1 itemprop="name">
-            <a class="timeline-article-title" href="/2019/01/11/defer/">golang-defer</a>
-        </h1>
-    
-
-                <div class="article-meta">
-                    
-    <div class="article-date">
-        <i class="fa fa-calendar"></i>
-        <a href="/2019/01/11/defer/">
-            <time datetime="2019-01-11T06:10:23.000Z" itemprop="datePublished">2019-01-11</time>
-        </a>
-    </div>
-
-
-                    
-    <div class="article-category">
-    	<i class="fa fa-folder"></i>
-        <a class="article-category-link" href="/categories/golang/">golang</a>
-    </div>
-
-                    
-    <div class="article-tag">
-        <i class="fa fa-tag"></i>
-        <a class="tag-link" href="/tags/golang/">golang</a>
-    </div>
-
-                </div>
-            </div>
-        </div>
-    
 </div>
+
+    <a data-url="https://www.liangyouze.com/2018/03/11/MySQL的count解读/" data-id="ck46qdypu00000uu3vh2rvbe6" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
+<script>
+    (function ($) {
+        // Prevent duplicate binding
+        if (typeof(__SHARE_BUTTON_BINDED__) === 'undefined' || !__SHARE_BUTTON_BINDED__) {
+            __SHARE_BUTTON_BINDED__ = true;
+        } else {
+            return;
+        }
+        $('body').on('click', function() {
+            $('.article-share-box.on').removeClass('on');
+        }).on('click', '.article-share-link', function(e) {
+            e.stopPropagation();
+
+            var $this = $(this),
+                url = $this.attr('data-url'),
+                encodedUrl = encodeURIComponent(url),
+                id = 'article-share-box-' + $this.attr('data-id'),
+                offset = $this.offset(),
+                box;
+
+            if ($('#' + id).length) {
+                box = $('#' + id);
+
+                if (box.hasClass('on')){
+                    box.removeClass('on');
+                    return;
+                }
+            } else {
+                var html = [
+                    '<div id="' + id + '" class="article-share-box">',
+                        '<input class="article-share-input" value="' + url + '">',
+                        '<div class="article-share-links">',
+                            '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="fa fa-twitter article-share-twitter" target="_blank" title="Twitter"></a>',
+                            '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="fa fa-facebook article-share-facebook" target="_blank" title="Facebook"></a>',
+                            '<a href="http://pinterest.com/pin/create/button/?url=' + encodedUrl + '" class="fa fa-pinterest article-share-pinterest" target="_blank" title="Pinterest"></a>',
+                            '<a href="https://plus.google.com/share?url=' + encodedUrl + '" class="fa fa-google article-share-google" target="_blank" title="Google+"></a>',
+                        '</div>',
+                    '</div>'
+                ].join('');
+
+              box = $(html);
+
+              $('body').append(box);
+            }
+
+            $('.article-share-box.on').hide();
+
+            box.css({
+                top: offset.top + 25,
+                left: offset.left
+            }).addClass('on');
+
+        }).on('click', '.article-share-box', function (e) {
+            e.stopPropagation();
+        }).on('click', '.article-share-box-input', function () {
+            $(this).select();
+        }).on('click', '.article-share-box-link', function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            window.open(this.href, 'article-share-box-window-' + Date.now(), 'width=500,height=450');
+        });
+    })(jQuery);
+</script>
+
+            
+    
+        <a href="https://www.liangyouze.com/2018/03/11/MySQL的count解读/#comments" class="article-comment-link disqus-comment-count" data-disqus-url="https://www.liangyouze.com/2018/03/11/MySQL的count解读/">评论</a>
+    
+
+        </footer>
+    </div>
+    
+        
+<nav id="article-nav">
+    
+        <a href="/2018/04/01/golang 中获取字符串个数/" id="article-nav-newer" class="article-nav-link-wrap">
+            <strong class="article-nav-caption">上一篇</strong>
+            <div class="article-nav-title">
+                
+                    golang 中获取字符串个数
+                
+            </div>
+        </a>
+    
+    
+        <a href="/2017/11/23/String、StringBuffer、StringBuilder三者之间的区别/" id="article-nav-older" class="article-nav-link-wrap">
+            <strong class="article-nav-caption">下一篇</strong>
+            <div class="article-nav-title">String、StringBuffer、StringBuilder三者之间的区别</div>
+        </a>
+    
+</nav>
+
+
+    
+</article>
+
+
+    
+    
+        <section id="comments">
+    <div id="disqus_thread">
+        <noscript>Please enable JavaScript to view the <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+    </div>
+</section>
+    
+
 </section>
             
                 
@@ -559,11 +622,13 @@
     <script>
     var disqus_config = function () {
         
-        this.page.identifier = '';
+            this.page.url = 'https://www.liangyouze.com/2018/03/11/MySQL的count解读/';
+        
+        this.page.identifier = 'MySQL的count解读';
     };
     (function() { 
         var d = document, s = d.createElement('script');  
-        s.src = '//' + 'hexo-theme-icarus' + '.disqus.com/count.js';
+        s.src = '//' + 'hexo-theme-icarus' + '.disqus.com/embed.js';
         s.setAttribute('data-timestamp', +new Date());
         (d.head || d.body).appendChild(s);
     })();
