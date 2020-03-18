@@ -3,15 +3,20 @@
 <head>
     <meta charset="utf-8">
     
-    <title>归档: 2018/3 | 梁友泽的博客</title>
+    <title>给字符串加索引 | 梁友泽的博客</title>
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
-    <meta property="og:type" content="website">
-<meta property="og:title" content="梁友泽的博客">
-<meta property="og:url" content="https://www.liangyouze.com/archives/2018/03/index.html">
+    <meta name="description" content="MySQL是支持前缀索引的，前缀索引的优势就是占用的空间小，这同时带来的损失是，可能会增加额外的记录扫描次数。">
+<meta name="keywords" content="MySQL">
+<meta property="og:type" content="article">
+<meta property="og:title" content="给字符串加索引">
+<meta property="og:url" content="https://www.liangyouze.com/2019/02/11/给字符串加索引/index.html">
 <meta property="og:site_name" content="梁友泽的博客">
+<meta property="og:description" content="MySQL是支持前缀索引的，前缀索引的优势就是占用的空间小，这同时带来的损失是，可能会增加额外的记录扫描次数。">
 <meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2020-03-18T00:24:55.576Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="梁友泽的博客">
+<meta name="twitter:title" content="给字符串加索引">
+<meta name="twitter:description" content="MySQL是支持前缀索引的，前缀索引的优势就是占用的空间小，这同时带来的损失是，可能会增加额外的记录扫描次数。">
     
 
     
@@ -191,50 +196,209 @@
 </aside>
 
             
-            <section id="main"><div class="timeline timeline-wrap">
-    
-            <div class="timeline-row timeline-row-major">
-                <span class="node"><i class="fa fa-calendar"></i></span>
-                <h1 class="title">2018</h1>
-            </div>
+            <section id="main"><article id="post-给字符串加索引" class="article article-type-post" itemscope itemprop="blogPost">
+    <div class="article-inner">
         
-        <div class="timeline-row">
-            <span class="node"></span>
-            <div class="content">
+        
+            <header class="article-header">
                 
     
-        <h1 itemprop="name">
-            <a class="timeline-article-title" href="/2018/03/11/MySQL的count解读/">count(*) 的实现方式</a>
+        <h1 class="article-title" itemprop="name">
+            给字符串加索引
         </h1>
     
 
-                <div class="article-meta">
-                    
+                
+                    <div class="article-meta">
+                        
     <div class="article-date">
         <i class="fa fa-calendar"></i>
-        <a href="/2018/03/11/MySQL的count解读/">
-            <time datetime="2018-03-11T06:10:23.000Z" itemprop="datePublished">2018-03-11</time>
+        <a href="/2019/02/11/给字符串加索引/">
+            <time datetime="2019-02-11T06:10:23.000Z" itemprop="datePublished">2019-02-11</time>
         </a>
     </div>
 
 
-                    
+                        
     <div class="article-category">
     	<i class="fa fa-folder"></i>
-        <a class="article-category-link" href="/categories/MySQL/">MySQL</a>
+        <a class="article-category-link" href="/categories/mysql/">mysql</a>
     </div>
 
-                    
+                        
     <div class="article-tag">
         <i class="fa fa-tag"></i>
         <a class="tag-link" href="/tags/MySQL/">MySQL</a>
     </div>
 
-                </div>
-            </div>
+                    </div>
+                
+            </header>
+        
+        
+        <div class="article-entry" itemprop="articleBody">
+        
+            
+            <p>MySQL是支持前缀索引的，前缀索引的优势就是占用的空间小，这同时带来的损失是，可能会增加额外的记录扫描次数。<a id="more"></a></p>
+<p>比如一些用户表，登录账户是邮箱</p>
+<p>如果要使用的是邮箱登录，所以代码中一定会有这种类似的语句</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> f1, f2 <span class="keyword">from</span> tableName <span class="keyword">where</span> email=<span class="string">'xxx'</span>;</span><br></pre></td></tr></table></figure>
+<p>如果email这个字段上没有索引的话，那这些语句就只能做全表扫描</p>
+<p>MySQL 是支持前缀索引的，可以定义字符串的一部分作为索引。默认地，如果你创建索引的语句不指定前缀长度，那么索引就会包含整个字符串。</p>
+<p>比如，这两个在 email 字段上创建索引的语句：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">alter</span> <span class="keyword">table</span> t <span class="keyword">add</span> <span class="keyword">index</span> index1(email);</span><br><span class="line"><span class="keyword">alter</span> <span class="keyword">table</span> t <span class="keyword">add</span> <span class="keyword">index</span> index2(email(<span class="number">6</span>));</span><br></pre></td></tr></table></figure>
+<p>第一个语句创建的 index1 索引里面，包含了每个记录的整个字符串；</p>
+<p>而第二个语句创建的 index2 索引里面，对于每个记录都是只取前 6 个字节。</p>
+<p>其中email(6)这个索引结构中每个邮箱字段只取前6个字节，占用的空间会比较小，这是使用前缀索引的优势,但是带来的损失可能会增加额外的记录扫描次数</p>
+<p>看看下面这个语句</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> <span class="keyword">id</span>,<span class="keyword">name</span>,email <span class="keyword">from</span> SUser <span class="keyword">where</span> email=<span class="string">'zhangssxyz@xxx.com'</span>;</span><br></pre></td></tr></table></figure>
+<p>如果使用的是这种索引index1（即 email 整个字符串的索引结构），执行顺序是这样的：</p>
+<ul>
+<li>从 index1 索引树找到满足索引值是’<a href="mailto:zhangssxyz@xxx.com" target="_blank" rel="noopener">zhangssxyz@xxx.com</a>’的这条记录，取得 ID2 的值；</li>
+<li>到主键上查到主键值是 ID2 的行，判断 email 的值是正确的，将这行记录加入结果集；</li>
+<li>取 index1 索引树上刚刚查到的位置的下一条记录，发现已经不满足 <a href="mailto:email=&#39;zhangssxyz@xxx.com" target="_blank" rel="noopener">email=&#39;zhangssxyz@xxx.com</a>’的条件了，循环结束。</li>
+</ul>
+<p>这个过程中，只需要回主键索引取一次数据，所以系统认为只扫描了一行。</p>
+<p>如果使用的是 index2（即 email(6) 索引结构），执行顺序是这样的：</p>
+<ul>
+<li>从 index2 索引树找到满足索引值是’zhangs’的记录，找到的第一个是 ID1；</li>
+<li>到主键上查到主键值是 ID1 的行，判断出 email 的值不是’<a href="mailto:zhangssxyz@xxx.com" target="_blank" rel="noopener">zhangssxyz@xxx.com</a>’，这行记录丢弃；</li>
+<li>取 index2 上刚刚查到的位置的下一条记录，发现仍然是’zhangs’，取出 ID2，再到 ID 索引上取整行然后判断，这次值对了，将这行记录加入结果集；</li>
+<li>重复上一步，直到在 idxe2 上取到的值不是’zhangs’时，循环结束。</li>
+</ul>
+<p>在这个过程中，要回主键索引取 4 次数据，也就是扫描了 4 行。</p>
+<p>所以使用前缀索引有可能会使查询语句读数据的次数变多</p>
+<p>使用前缀索引，定义好长度，就可以做到既节省空间，又不用额外增加太多的查询成本。</p>
+<p>如果我们能够确定业务需求里面只有按照身份证进行等值查询的需求，这种方法，既可以占用更小的空间，也能达到相同的查询效率。</p>
+<p>有以下2中方式</p>
+<ol>
+<li>就是使用倒序存储，比如身份证倒序，查询的时候再用函数转一下</li>
+<li>以及使用hash字段，在表上创建一个整数字段，来保存身份证的校验码，同时在这个字段上加索引</li>
+</ol>
+<p>这两种方式对比区别</p>
+<ol>
+<li>从占用的额外空间来看，倒序存储方式在主键索引上，不会消耗额外的存储空间，而 hash 字段方法需要增加一个字段。当然，倒序存储方式使用 4 个字节的前缀长度应该是不够的，如果再长一点，这个消耗跟额外这个 hash 字段也差不多抵消了。</li>
+<li>在 CPU 消耗方面，倒序方式每次写和读的时候，都需要额外调用一次 reverse 函数，而 hash 字段的方式需要额外调用一次 crc32() 函数。如果只从这两个函数的计算复杂度来看的话，reverse 函数额外消耗的 CPU 资源会更小些。</li>
+<li>从查询效率上看，使用 hash 字段方式的查询性能相对更稳定一些。因为 crc32 算出来的值虽然有冲突的概率，但是概率非常小，可以认为每次查询的平均扫描行数接近 1。而倒序存储方式毕竟还是用的前缀索引的方式，也就是说还是会增加扫描行数。</li>
+</ol>
+
+        
         </div>
-    
+        <footer class="article-footer">
+            <div class="share-container">
+
+
+
 </div>
+
+    <a data-url="https://www.liangyouze.com/2019/02/11/给字符串加索引/" data-id="ck7wl4057000xknu328tzc4kw" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
+<script>
+    (function ($) {
+        // Prevent duplicate binding
+        if (typeof(__SHARE_BUTTON_BINDED__) === 'undefined' || !__SHARE_BUTTON_BINDED__) {
+            __SHARE_BUTTON_BINDED__ = true;
+        } else {
+            return;
+        }
+        $('body').on('click', function() {
+            $('.article-share-box.on').removeClass('on');
+        }).on('click', '.article-share-link', function(e) {
+            e.stopPropagation();
+
+            var $this = $(this),
+                url = $this.attr('data-url'),
+                encodedUrl = encodeURIComponent(url),
+                id = 'article-share-box-' + $this.attr('data-id'),
+                offset = $this.offset(),
+                box;
+
+            if ($('#' + id).length) {
+                box = $('#' + id);
+
+                if (box.hasClass('on')){
+                    box.removeClass('on');
+                    return;
+                }
+            } else {
+                var html = [
+                    '<div id="' + id + '" class="article-share-box">',
+                        '<input class="article-share-input" value="' + url + '">',
+                        '<div class="article-share-links">',
+                            '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="fa fa-twitter article-share-twitter" target="_blank" title="Twitter"></a>',
+                            '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="fa fa-facebook article-share-facebook" target="_blank" title="Facebook"></a>',
+                            '<a href="http://pinterest.com/pin/create/button/?url=' + encodedUrl + '" class="fa fa-pinterest article-share-pinterest" target="_blank" title="Pinterest"></a>',
+                            '<a href="https://plus.google.com/share?url=' + encodedUrl + '" class="fa fa-google article-share-google" target="_blank" title="Google+"></a>',
+                        '</div>',
+                    '</div>'
+                ].join('');
+
+              box = $(html);
+
+              $('body').append(box);
+            }
+
+            $('.article-share-box.on').hide();
+
+            box.css({
+                top: offset.top + 25,
+                left: offset.left
+            }).addClass('on');
+
+        }).on('click', '.article-share-box', function (e) {
+            e.stopPropagation();
+        }).on('click', '.article-share-box-input', function () {
+            $(this).select();
+        }).on('click', '.article-share-box-link', function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            window.open(this.href, 'article-share-box-window-' + Date.now(), 'width=500,height=450');
+        });
+    })(jQuery);
+</script>
+
+            
+    
+        <a href="https://www.liangyouze.com/2019/02/11/给字符串加索引/#comments" class="article-comment-link disqus-comment-count" data-disqus-url="https://www.liangyouze.com/2019/02/11/给字符串加索引/">评论</a>
+    
+
+        </footer>
+    </div>
+    
+        
+<nav id="article-nav">
+    
+        <a href="/2019/06/01/vim 技巧/" id="article-nav-newer" class="article-nav-link-wrap">
+            <strong class="article-nav-caption">上一篇</strong>
+            <div class="article-nav-title">
+                
+                    vim技巧
+                
+            </div>
+        </a>
+    
+    
+        <a href="/2019/01/11/defer/" id="article-nav-older" class="article-nav-link-wrap">
+            <strong class="article-nav-caption">下一篇</strong>
+            <div class="article-nav-title">golang-defer</div>
+        </a>
+    
+</nav>
+
+
+    
+</article>
+
+
+    
+    
+        <section id="comments">
+    <div id="disqus_thread">
+        <noscript>Please enable JavaScript to view the <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+    </div>
+</section>
+    
+
 </section>
             
                 
@@ -420,11 +584,13 @@
     <script>
     var disqus_config = function () {
         
-        this.page.identifier = '';
+            this.page.url = 'https://www.liangyouze.com/2019/02/11/给字符串加索引/';
+        
+        this.page.identifier = '给字符串加索引';
     };
     (function() { 
         var d = document, s = d.createElement('script');  
-        s.src = '//' + 'hexo-theme-icarus' + '.disqus.com/count.js';
+        s.src = '//' + 'hexo-theme-icarus' + '.disqus.com/embed.js';
         s.setAttribute('data-timestamp', +new Date());
         (d.head || d.body).appendChild(s);
     })();
