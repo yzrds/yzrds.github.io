@@ -3,20 +3,24 @@
 <head>
     <meta charset="utf-8">
     
-    <title>golang 中获取字符串个数 | 梁友泽的博客</title>
+    <title>内存对齐 | 梁友泽的博客</title>
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
-    <meta name="description" content="golang 中获取字符串个数在 golang 中不能直接用 len 函数来统计字符串长度，查看了下源码发现字符串是以 UTF-8 为格式存储的，说明 len 函数是取得包含 byte 的个数">
-<meta name="keywords" content="字符串">
+    <meta name="description" content="内存对齐 内存CPU要想从内存读取数据，需要通过地址总线，把地址传输给内存，内存准备好数据，输出到数据总线若是32位地址总线，可以寻址[0,2的32次方-1]，占用内存4g有些CPU是能够支持访问任意地址的，它是做了很多处理，比如想从地址1读取8字节的数据，CPU会分2次读，第一次从0-7,只取后7字节，第二次从8-15，但只取第一字节。把2次结果拼接起来拿到所需数据。这样比较耗费性能，编译器会把">
+<meta name="keywords" content="内存对齐">
 <meta property="og:type" content="article">
-<meta property="og:title" content="golang 中获取字符串个数">
-<meta property="og:url" content="https://www.liangyouze.com/2018/04/01/golang 中获取字符串个数/index.html">
+<meta property="og:title" content="内存对齐">
+<meta property="og:url" content="https://www.liangyouze.com/2020/08/11/内存对齐/index.html">
 <meta property="og:site_name" content="梁友泽的博客">
-<meta property="og:description" content="golang 中获取字符串个数在 golang 中不能直接用 len 函数来统计字符串长度，查看了下源码发现字符串是以 UTF-8 为格式存储的，说明 len 函数是取得包含 byte 的个数">
+<meta property="og:description" content="内存对齐 内存CPU要想从内存读取数据，需要通过地址总线，把地址传输给内存，内存准备好数据，输出到数据总线若是32位地址总线，可以寻址[0,2的32次方-1]，占用内存4g有些CPU是能够支持访问任意地址的，它是做了很多处理，比如想从地址1读取8字节的数据，CPU会分2次读，第一次从0-7,只取后7字节，第二次从8-15，但只取第一字节。把2次结果拼接起来拿到所需数据。这样比较耗费性能，编译器会把">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2019-08-11T03:21:34.614Z">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2020/png/203997/1605377064721-24444cc6-8a5d-421d-8e26-cf97671ca235.png#align=left&display=inline&height=301&margin=%5Bobject%20Object%5D&name=image.png&originHeight=401&originWidth=749&size=220553&status=done&style=none&width=562">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2020/png/203997/1605539978350-f73bfde3-25e7-4946-b8a6-6a8269117412.png#align=left&display=inline&height=379&margin=%5Bobject%20Object%5D&name=image.png&originHeight=379&originWidth=646&size=81183&status=done&style=none&width=646">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2020/png/203997/1605540679086-1d5177d5-4dd2-4d07-b7b1-84c898f76df4.png#align=left&display=inline&height=65&margin=%5Bobject%20Object%5D&name=image.png&originHeight=130&originWidth=998&size=24366&status=done&style=none&width=499">
+<meta property="og:updated_time" content="2021-02-20T16:10:15.197Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="golang 中获取字符串个数">
-<meta name="twitter:description" content="golang 中获取字符串个数在 golang 中不能直接用 len 函数来统计字符串长度，查看了下源码发现字符串是以 UTF-8 为格式存储的，说明 len 函数是取得包含 byte 的个数">
+<meta name="twitter:title" content="内存对齐">
+<meta name="twitter:description" content="内存对齐 内存CPU要想从内存读取数据，需要通过地址总线，把地址传输给内存，内存准备好数据，输出到数据总线若是32位地址总线，可以寻址[0,2的32次方-1]，占用内存4g有些CPU是能够支持访问任意地址的，它是做了很多处理，比如想从地址1读取8字节的数据，CPU会分2次读，第一次从0-7,只取后7字节，第二次从8-15，但只取第一字节。把2次结果拼接起来拿到所需数据。这样比较耗费性能，编译器会把">
+<meta name="twitter:image" content="https://cdn.nlark.com/yuque/0/2020/png/203997/1605377064721-24444cc6-8a5d-421d-8e26-cf97671ca235.png#align=left&display=inline&height=301&margin=%5Bobject%20Object%5D&name=image.png&originHeight=401&originWidth=749&size=220553&status=done&style=none&width=562">
     
 
     
@@ -196,7 +200,7 @@
 </aside>
 
             
-            <section id="main"><article id="post-golang 中获取字符串个数" class="article article-type-post" itemscope itemprop="blogPost">
+            <section id="main"><article id="post-内存对齐" class="article article-type-post" itemscope itemprop="blogPost">
     <div class="article-inner">
         
         
@@ -204,7 +208,7 @@
                 
     
         <h1 class="article-title" itemprop="name">
-            golang 中获取字符串个数
+            内存对齐
         </h1>
     
 
@@ -213,8 +217,8 @@
                         
     <div class="article-date">
         <i class="fa fa-calendar"></i>
-        <a href="/2018/04/01/golang 中获取字符串个数/">
-            <time datetime="2018-04-01T06:10:23.000Z" itemprop="datePublished">2018-04-01</time>
+        <a href="/2020/08/11/内存对齐/">
+            <time datetime="2020-08-11T06:10:23.000Z" itemprop="datePublished">2020-08-11</time>
         </a>
     </div>
 
@@ -228,7 +232,7 @@
                         
     <div class="article-tag">
         <i class="fa fa-tag"></i>
-        <a class="tag-link" href="/tags/字符串/">字符串</a>
+        <a class="tag-link" href="/tags/内存对齐/">内存对齐</a>
     </div>
 
                     </div>
@@ -239,19 +243,150 @@
         <div class="article-entry" itemprop="articleBody">
         
             
-            <h4 id="golang-中获取字符串个数"><a href="#golang-中获取字符串个数" class="headerlink" title="golang 中获取字符串个数"></a>golang 中获取字符串个数</h4><p>在 golang 中不能直接用 len 函数来统计字符串长度，查看了下源码发现字符串是以 UTF-8 为格式存储的，说明 len 函数是取得包含 byte 的个数 <a id="more"></a> </p>
-<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// string is the set of all strings of 8-bit bytes, conventionally but not</span></span><br><span class="line"><span class="comment">// necessarily representing UTF-8-encoded text. A string may be empty, but</span></span><br><span class="line"><span class="comment">// not nil. Values of string type are immutable.</span></span><br></pre></td></tr></table></figure>
-<p>举个例子，”Hello, 世界“(因为，对比所以用了中文)</p>
-<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">s := <span class="string">"Hello, 世界"</span></span><br><span class="line">fmt.Println(<span class="built_in">len</span>(s)) <span class="comment">// 13</span></span><br><span class="line">fmt.Println([]<span class="keyword">byte</span>(s)) <span class="comment">// [72 101 108 108 111 44 32 228 184 150 231 149 140]</span></span><br></pre></td></tr></table></figure>
-<p>既然是以 byte 存储的，那自然就想到了取 byte 的长度</p>
-<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">- bytes.Count() </span><br><span class="line">- strings.Count() </span><br><span class="line">- 将字符串转换为 []runee 后调用 <span class="built_in">len</span> 函数</span><br><span class="line">- 使用 utf8.RuneCountInString()</span><br></pre></td></tr></table></figure>
-<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> main</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">	<span class="string">"bytes"</span></span><br><span class="line">	<span class="string">"fmt"</span></span><br><span class="line">	<span class="string">"strings"</span></span><br><span class="line">	<span class="string">"testing"</span></span><br><span class="line">	<span class="string">"unicode/utf8"</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment">在 golang 中不能直接用 len 函数来统计字符串长度，查看了下源码发现字符串是以 UTF-8 为格式存储的，说明 len 函数是取得包含 byte 的个数</span></span><br><span class="line"><span class="comment"></span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line"></span><br><span class="line">	s := <span class="string">"hello, 世界"</span></span><br><span class="line">	fmt.Println(<span class="built_in">len</span>(s))    <span class="comment">// 13</span></span><br><span class="line">	fmt.Println([]<span class="keyword">byte</span>(s)) <span class="comment">// [72 101 108 108 111 44 32 228 184 150 231 149 140]</span></span><br><span class="line"></span><br><span class="line">	fmt.Print(f1(s))</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">f1</span><span class="params">(s <span class="keyword">string</span>)</span> <span class="title">int</span></span> &#123;</span><br><span class="line">	<span class="keyword">return</span> bytes.Count([]<span class="keyword">byte</span>(s), <span class="literal">nil</span>) - <span class="number">1</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">f2</span><span class="params">(s <span class="keyword">string</span>)</span> <span class="title">int</span></span> &#123;</span><br><span class="line">	<span class="keyword">return</span> strings.Count(s, <span class="string">""</span>) - <span class="number">1</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">f3</span><span class="params">(s <span class="keyword">string</span>)</span> <span class="title">int</span></span> &#123;</span><br><span class="line">	<span class="keyword">return</span> <span class="built_in">len</span>([]<span class="keyword">rune</span>(s))</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">f4</span><span class="params">(s <span class="keyword">string</span>)</span> <span class="title">int</span></span> &#123;</span><br><span class="line">	<span class="keyword">return</span> utf8.RuneCountInString(s)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> s = <span class="string">"Hello, 世界"</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">Benchmark1</span><span class="params">(b *testing.B)</span></span> &#123;</span><br><span class="line">	<span class="keyword">for</span> i := <span class="number">0</span>; i &lt; b.N; i++ &#123;</span><br><span class="line">		f1(s)</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">Benchmark2</span><span class="params">(b *testing.B)</span></span> &#123;</span><br><span class="line">	<span class="keyword">for</span> i := <span class="number">0</span>; i &lt; b.N; i++ &#123;</span><br><span class="line">		f2(s)</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">Benchmark3</span><span class="params">(b *testing.B)</span></span> &#123;</span><br><span class="line">	<span class="keyword">for</span> i := <span class="number">0</span>; i &lt; b.N; i++ &#123;</span><br><span class="line">		f3(s)</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">Benchmark4</span><span class="params">(b *testing.B)</span></span> &#123;</span><br><span class="line">	<span class="keyword">for</span> i := <span class="number">0</span>; i &lt; b.N; i++ &#123;</span><br><span class="line">		f4(s)</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>在 golang ldea配置中我没有看到 benchamark配置，总说包不对，在命令行中输入</p>
-<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">go</span> test stringCount_test.<span class="keyword">go</span> -bench <span class="string">".*"</span></span><br></pre></td></tr></table></figure>
-<p>得到以下结果</p>
-<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">Benchmark1<span class="number">-12</span>           <span class="number">100000000</span>               <span class="number">17.7</span> ns/op</span><br><span class="line">Benchmark2<span class="number">-12</span>           <span class="number">100000000</span>               <span class="number">14.0</span> ns/op</span><br><span class="line">Benchmark3<span class="number">-12</span>           <span class="number">100000000</span>               <span class="number">14.5</span> ns/op</span><br><span class="line">Benchmark4<span class="number">-12</span>           <span class="number">100000000</span>               <span class="number">13.1</span> ns/op</span><br></pre></td></tr></table></figure>
-<p>最快的是utf8.RuneCountInString()</p>
-<p><a href="http://mengqi.info/html/2015/201506012300-using-golang-to-count-the-number-of-characters.html" target="_blank" rel="noopener">参考</a></p>
+            <h1 id="内存对齐"><a href="#内存对齐" class="headerlink" title="内存对齐"></a>内存对齐</h1><p><a name="zxzFd"></a></p>
+<h3 id="内存"><a href="#内存" class="headerlink" title="内存"></a>内存</h3><p><br>CPU要想从内存读取数据，需要通过地址总线，把地址传输给内存，内存准备好数据，输出到数据总线<br>若是32位地址总线，可以寻址[0,2的32次方-1]，占用内存4g<br><img src="https://cdn.nlark.com/yuque/0/2020/png/203997/1605377064721-24444cc6-8a5d-421d-8e26-cf97671ca235.png#align=left&amp;display=inline&amp;height=301&amp;margin=%5Bobject%20Object%5D&amp;name=image.png&amp;originHeight=401&amp;originWidth=749&amp;size=220553&amp;status=done&amp;style=none&amp;width=562" alt="image.png"><br><br><br>有些CPU是能够支持访问任意地址的，它是做了很多处理，比如想从地址1读取8字节的数据，CPU会分2次读，第一次从0-7,只取后7字节，第二次从8-15，但只取第一字节。把2次结果拼接起来拿到所需数据。这样比较耗费性能，编译器会把各种类型的值安排到合适的位置，并占用合适的长度。每种类型的对齐边值就是它的对齐边界。int16（2），int32（4），内存对齐要求数据存储地址以及占用的字节数都是它对齐边界的倍数。<br>  <a id="more"></a></p>
+<p><a name="ORDcj"></a></p>
+<h3 id="内存对齐的收益"><a href="#内存对齐的收益" class="headerlink" title="内存对齐的收益"></a>内存对齐的收益</h3><ul>
+<li>提高代码平台兼容性</li>
+<li>优化数据对内存的使用</li>
+<li>避免一些内存不对齐带来的坑</li>
+<li>有助于一些源码的阅读</li>
+</ul>
+<p><a name="txJM0"></a></p>
+<h3 id="为什么要对齐"><a href="#为什么要对齐" class="headerlink" title="为什么要对齐"></a>为什么要对齐</h3><p><br>列举一些常见的单位<br></p>
+<ul>
+<li>位 bit<ul>
+<li>计算机内存数据存储的最小单位</li>
+</ul>
+</li>
+<li>字节 byte<ul>
+<li>计算机数据处理的基本单位</li>
+</ul>
+</li>
+<li>机器字 machine word<ul>
+<li>计算机用来一次性处理事务的一个固定长度</li>
+</ul>
+</li>
+</ul>
+<ol>
+<li>平台原因<ol>
+<li>某些硬件平台只能在某些地址处取某些特定类似的数据</li>
+</ol>
+</li>
+<li>性能原因<ol>
+<li>数据结构应该尽可能地在自然边界上对齐，为了访问未对齐的内存，处理器需要作2次内存访问，而内存对齐就只需要一次访问</li>
+</ol>
+</li>
+<li>64位字的安全访问保证<ol>
+<li>在x86-32上，64位函数使用Pentium MMX之前不存在的指令。在非Linux ARM上，64位函数使用ARMv6k内核之前不可用的指令</li>
+<li>在ARM、x86-32和32MIPS上，调用方有责任安排对原子访问的64位字对齐。变量或分配的结构、数组或切片中的第一个字(word)可以依赖当做是64位对齐的(摘抄的,不是太懂)</li>
+<li>操作系统的cpu不是一个字节一个字节访问的，而是2，4，8这样的字长来访问的</li>
+<li>处理器从存储器子系统读取数据至寄存器，或者，写寄存器数据到存储器，传送的数据长度通常是字长。</li>
+</ol>
+</li>
+</ol>
+<p><br><br><br>如何确定每种类型的对齐边界？<br><br><br>和平台有关<br><br><br>go语言支持这些平台</p>
+<table>
+<thead>
+<tr>
+<th>archName</th>
+<th>PtrSize(指针宽度)</th>
+<th>RegSize(寄存器宽度)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>386</td>
+<td>4</td>
+<td>8</td>
+</tr>
+<tr>
+<td>amd64</td>
+<td>8</td>
+<td>8</td>
+</tr>
+<tr>
+<td>arm</td>
+<td>4</td>
+<td>4</td>
+</tr>
+<tr>
+<td>arm64</td>
+<td>5</td>
+<td>8</td>
+</tr>
+<tr>
+<td>……</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p><br>被Go语言称为寄存器宽度的这个值，就可以理解为机器字长，也是平台对应的最大对齐边界，而数据类型的对齐边界是取类型大小与平台最大对齐边界中的较小的那个<br></p>
+<table>
+<thead>
+<tr>
+<th>类型</th>
+<th>大小</th>
+<th>RegSize</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>int8</td>
+<td>1 byte</td>
+<td>8 byte</td>
+</tr>
+<tr>
+<td>int16</td>
+<td>2 byte</td>
+<td>8 byte</td>
+</tr>
+<tr>
+<td>int32</td>
+<td>4 byte</td>
+<td>8 byte</td>
+</tr>
+<tr>
+<td>int64</td>
+<td>8 byte</td>
+<td>8 byte</td>
+</tr>
+<tr>
+<td>string</td>
+<td>16 byte</td>
+<td>8 byte</td>
+</tr>
+<tr>
+<td>slice</td>
+<td>24 byte</td>
+<td>8 byte</td>
+</tr>
+<tr>
+<td>…</td>
+<td>…</td>
+<td>…</td>
+</tr>
+</tbody>
+</table>
+<p><br>同一个类型在不同平台上的大小可能不同，不按照最大对齐边界或者最小对齐边界来考虑是为了减少浪费、提高性能<br><br><br>如何确定一个结构体的对齐边界<br><br><br>先确定每个成员的对齐边界，然后取最大值<br></p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> T stract &#123;</span><br><span class="line">    </span><br><span class="line">	a <span class="keyword">int8</span>     <span class="number">1</span> <span class="keyword">byte</span></span><br><span class="line">    b <span class="keyword">int64</span>    <span class="number">8</span> <span class="keyword">byte</span></span><br><span class="line">    c <span class="keyword">int32</span>    <span class="number">4</span> <span class="keyword">byte</span>     最大对齐  <span class="number">8</span> <span class="keyword">byte</span></span><br><span class="line">    d <span class="keyword">int16</span>    <span class="number">2</span> <span class="keyword">byte</span> </span><br><span class="line">    </span><br><span class="line">    </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><br>内存对齐的第一个要求、存储这个结构体的起始地址是对齐边界的整数倍<br><br><br><br><br><br><br><img src="https://cdn.nlark.com/yuque/0/2020/png/203997/1605539978350-f73bfde3-25e7-4946-b8a6-6a8269117412.png#align=left&amp;display=inline&amp;height=379&amp;margin=%5Bobject%20Object%5D&amp;name=image.png&amp;originHeight=379&amp;originWidth=646&amp;size=81183&amp;status=done&amp;style=none&amp;width=646" alt="image.png"><br>第一个成员a,它要对齐到1字节，而这里是相对地址0，所以直接放这里，然后是第二个成员b,它要对齐到8字节，但是接下来的地址对8取模不等于0,所以要往后移。接下来是c，它要对齐到4字节。所有成员放好还不算完，内存对齐的第二个要求是结构体整体占用字节数需要是类型对齐边界的整数倍，不够的话要往后扩张。所以要扩充到相当地址23这里。最终这个结构体类型的大小就是24字节<br><br><br>为啥要限制类型大小等于其对其边界的整数倍 ？<br><br><br>假如不扩张到对齐边界的整数倍，这个结构体大小就是22字节，如果要使用长度为2的T类型数组，按照元素类型大小，会占用44字节，就会导致于第二个元素并没有内存对齐<br><br><br><img src="https://cdn.nlark.com/yuque/0/2020/png/203997/1605540679086-1d5177d5-4dd2-4d07-b7b1-84c898f76df4.png#align=left&amp;display=inline&amp;height=65&amp;margin=%5Bobject%20Object%5D&amp;name=image.png&amp;originHeight=130&amp;originWidth=998&amp;size=24366&amp;status=done&amp;style=none&amp;width=499" alt="image.png"><br><br><br>所以只有每个结构体的大小是对齐值的整数倍，才能保证数组中的每一个都是内存对齐的<br><br><br>内存对齐的第二个要求：结构体整体占用字节数需要是类型对齐边界的倍数，不够的话要往后扩张一下<br><br><br>举个特例<br><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> T1 <span class="keyword">struct</span> &#123;</span><br><span class="line">    a <span class="keyword">struct</span>&#123;&#125;</span><br><span class="line">    x <span class="keyword">int64</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span> T2 <span class="keyword">struct</span> &#123;</span><br><span class="line">	x <span class="keyword">int64</span></span><br><span class="line">    a <span class="keyword">struct</span>&#123;&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">a1 := T1&#123;&#125;</span><br><span class="line">a2 := T2&#123;&#125;</span><br><span class="line"></span><br><span class="line">fmt.Printf(<span class="string">"zone size struct&#123;&#125; of T1 size:%d,Ts(as final field) size:%d"</span>,</span><br><span class="line">           unfafe.Sizeof(a1), <span class="comment">// 8</span></span><br><span class="line">           unfafe.Sizeof(a2), <span class="comment">// 64位，16；32位：12</span></span><br><span class="line">)</span><br></pre></td></tr></table></figure></p>
+<p><br>T2可能做了一个Padding(填充)，因为在边界，可能会对一些边界的值进行引用等<br><br><br>特殊：<br><br><br><code>struct{}</code> 和<code>[0]T{}</code> 的大小为0; 不同的大小为0的变量可能指向同一块地址。<br><br><br></p>
+<p><a name="CliP1"></a></p>
+<h3 id="零大小字段对齐"><a href="#零大小字段对齐" class="headerlink" title="零大小字段对齐"></a>零大小字段对齐</h3><p><br>零大小字段（<code>zero sized field</code>）是指<code>struct{}</code><br><br><br>大小为0，按理作为字段时不需要对齐，但当在作为结构体最后一个字段（<code>final field</code>）时需要对齐的。<br>为什么？<br>因为，如果有指针指向这个<code>final zero field</code>, 返回的地址将在结构体之外（即指向了别的内存），<br>如果此指针一直存活不释放对应的内存，就会有内存泄露的问题（该内存不因结构体释放而释放）<br><br><br><br><br>使用  golangci-lint  检测对齐<br><br><br>golangci-lint run –disable-all -E maligned<br><br><br></p>
+<p><a name="EEj7F"></a></p>
+<h3 id="结论"><a href="#结论" class="headerlink" title="结论"></a>结论</h3><ul>
+<li>内存对齐是为了cpu更高效的访问内存中的数据</li>
+<li>结构体对齐依赖类型的大小保证和对齐保证</li>
+<li>地址对齐保证是:如果类型t的对齐保证是n，那么类型t的每个值的地址在运行时必须是n的倍数</li>
+<li>零大小字段要避免只作为struct最后一个字段，会有内存浪费</li>
+</ul>
+<p><br><br><br>参考</p>
+<ul>
+<li><a href="https://www.bilibili.com/video/BV1Ja4y1i7AF" target="_blank" rel="noopener">【Golang】这个内存对齐呀！？</a></li>
+<li><a href="https://ms2008.github.io/2019/08/01/golang-memory-alignment/" target="_blank" rel="noopener">Golang 是否有必要内存对齐？</a></li>
+<li><a href="https://learnku.com/articles/39255" target="_blank" rel="noopener">Go 的内存对齐和指针运算详解和实践</a></li>
+</ul>
 
         
         </div>
@@ -262,7 +397,7 @@
 
 </div>
 
-    <a data-url="https://www.liangyouze.com/2018/04/01/golang 中获取字符串个数/" data-id="ckldx4zrh000ltau3jebm5cum" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
+    <a data-url="https://www.liangyouze.com/2020/08/11/内存对齐/" data-id="ckldx4zrn000vtau3rqdm5zxa" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
 <script>
     (function ($) {
         // Prevent duplicate binding
@@ -330,7 +465,7 @@
 
             
     
-        <a href="https://www.liangyouze.com/2018/04/01/golang 中获取字符串个数/#comments" class="article-comment-link disqus-comment-count" data-disqus-url="https://www.liangyouze.com/2018/04/01/golang 中获取字符串个数/">评论</a>
+        <a href="https://www.liangyouze.com/2020/08/11/内存对齐/#comments" class="article-comment-link disqus-comment-count" data-disqus-url="https://www.liangyouze.com/2020/08/11/内存对齐/">评论</a>
     
 
         </footer>
@@ -339,19 +474,10 @@
         
 <nav id="article-nav">
     
-        <a href="/2018/05/11/关于docker/" id="article-nav-newer" class="article-nav-link-wrap">
-            <strong class="article-nav-caption">上一篇</strong>
-            <div class="article-nav-title">
-                
-                    初识Docker
-                
-            </div>
-        </a>
     
-    
-        <a href="/2018/03/11/MySQL的count解读/" id="article-nav-older" class="article-nav-link-wrap">
+        <a href="/2020/02/11/给字符串加索引/" id="article-nav-older" class="article-nav-link-wrap">
             <strong class="article-nav-caption">下一篇</strong>
-            <div class="article-nav-title">count(*) 的实现方式</div>
+            <div class="article-nav-title">给字符串加索引</div>
         </a>
     
 </nav>
@@ -555,9 +681,9 @@
     <script>
     var disqus_config = function () {
         
-            this.page.url = 'https://www.liangyouze.com/2018/04/01/golang 中获取字符串个数/';
+            this.page.url = 'https://www.liangyouze.com/2020/08/11/内存对齐/';
         
-        this.page.identifier = 'golang 中获取字符串个数';
+        this.page.identifier = '内存对齐';
     };
     (function() { 
         var d = document, s = d.createElement('script');  
