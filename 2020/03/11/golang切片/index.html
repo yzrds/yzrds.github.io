@@ -1,0 +1,708 @@
+<!DOCTYPE html>
+<html lang=zh>
+<head>
+    <meta charset="utf-8">
+    
+    <title>golang 切片 | 梁友泽的博客</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+    <meta name="description" content="golang 切片切片是引用切片组成元素：  指针：指向底层数组 长度：切片中元素的长度，不能大于容量 容量：指针所指向的底层数组的总容量  初始化方式  使用make12slice := make([]int, 5)     // 初始化长度和容量都为 5 的切片slice := make([]int, 5, 10) // 初始化长度为 5, 容量为 10 的切片   使用 make 关键字创建">
+<meta name="keywords" content="golang">
+<meta property="og:type" content="article">
+<meta property="og:title" content="golang 切片">
+<meta property="og:url" content="https://www.liangyouze.com/2020/03/11/golang切片/index.html">
+<meta property="og:site_name" content="梁友泽的博客">
+<meta property="og:description" content="golang 切片切片是引用切片组成元素：  指针：指向底层数组 长度：切片中元素的长度，不能大于容量 容量：指针所指向的底层数组的总容量  初始化方式  使用make12slice := make([]int, 5)     // 初始化长度和容量都为 5 的切片slice := make([]int, 5, 10) // 初始化长度为 5, 容量为 10 的切片   使用 make 关键字创建">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2020/png/203997/1597226917625-e6fd77f5-c404-42f9-9bac-b6d2843a83a0.png#align=left&display=inline&height=384&margin=%5Bobject%20Object%5D&name=image.png&originHeight=384&originWidth=1021&size=99868&status=done&style=none&width=1021">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2021/png/203997/1610432798301-894e1282-7407-45b2-a289-75a1d0413c40.png#align=left&display=inline&height=334&margin=%5Bobject%20Object%5D&name=image.png&originHeight=334&originWidth=780&size=41790&status=done&style=none&width=780">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2021/png/203997/1610434197485-aab5e786-554b-430f-be79-46d9d2ca61ed.png#align=left&display=inline&height=144&margin=%5Bobject%20Object%5D&name=image.png&originHeight=287&originWidth=1280&size=34727&status=done&style=none&width=640">
+<meta property="og:updated_time" content="2021-03-16T13:57:19.095Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="golang 切片">
+<meta name="twitter:description" content="golang 切片切片是引用切片组成元素：  指针：指向底层数组 长度：切片中元素的长度，不能大于容量 容量：指针所指向的底层数组的总容量  初始化方式  使用make12slice := make([]int, 5)     // 初始化长度和容量都为 5 的切片slice := make([]int, 5, 10) // 初始化长度为 5, 容量为 10 的切片   使用 make 关键字创建">
+<meta name="twitter:image" content="https://cdn.nlark.com/yuque/0/2020/png/203997/1597226917625-e6fd77f5-c404-42f9-9bac-b6d2843a83a0.png#align=left&display=inline&height=384&margin=%5Bobject%20Object%5D&name=image.png&originHeight=384&originWidth=1021&size=99868&status=done&style=none&width=1021">
+    
+
+    
+
+    
+
+    <link rel="stylesheet" href="/libs/font-awesome/css/font-awesome.min.css">
+    <link rel="stylesheet" href="/libs/open-sans/styles.css">
+    <link rel="stylesheet" href="/libs/source-code-pro/styles.css">
+
+    <link rel="stylesheet" href="/css/style.css">
+
+    <script src="/libs/jquery/2.1.3/jquery.min.js"></script>
+    
+    
+        <link rel="stylesheet" href="/libs/lightgallery/css/lightgallery.min.css">
+    
+    
+        <link rel="stylesheet" href="/libs/justified-gallery/justifiedGallery.min.css">
+    
+    
+    
+    
+
+
+</head>
+
+<script async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+<body>
+    <div id="container">
+        <header id="header">
+    <div id="header-main" class="header-inner">
+        <div class="outer">
+            <a href="/" id="logo">
+                <i class="logo"></i>
+                <span class="site-title">梁友泽的博客</span>
+            </a>
+            <nav id="main-nav">
+                
+                    <a class="main-nav-link" href="/.">主页</a>
+                
+                    <a class="main-nav-link" href="/archives/">分类</a>
+                
+                    <a class="main-nav-link" href="/categories/">归档</a>
+                
+                    <a class="main-nav-link" href="/about">关于</a>
+                
+            </nav>
+            
+                
+                <nav id="sub-nav">
+                    <div class="profile" id="profile-nav">
+                        <a id="profile-anchor" href="javascript:;">
+                            <img class="avatar" src="/css/images/rolle.png" />
+                            <i class="fa fa-caret-down"></i>
+                        </a>
+                    </div>
+                </nav>
+            
+            <div id="search-form-wrap">
+
+    <form class="search-form">
+        <input type="text" class="ins-search-input search-form-input" placeholder="搜索" />
+        <button type="submit" class="search-form-submit"></button>
+    </form>
+    <div class="ins-search">
+    <div class="ins-search-mask"></div>
+    <div class="ins-search-container">
+        <div class="ins-input-wrapper">
+            <input type="text" class="ins-search-input" placeholder="想要查找什么..." />
+            <span class="ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: '文章',
+            PAGES: '页面',
+            CATEGORIES: '分类',
+            TAGS: '标签',
+            UNTITLED: '(未命名)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+<script src="/js/insight.js"></script>
+
+</div>
+        </div>
+    </div>
+    <div id="main-nav-mobile" class="header-sub header-inner">
+        <table class="menu outer">
+            <tr>
+                
+                    <td><a class="main-nav-link" href="/.">主页</a></td>
+                
+                    <td><a class="main-nav-link" href="/archives/">分类</a></td>
+                
+                    <td><a class="main-nav-link" href="/categories/">归档</a></td>
+                
+                    <td><a class="main-nav-link" href="/about">关于</a></td>
+                
+                <td>
+                    
+    <div class="search-form">
+        <input type="text" class="ins-search-input search-form-input" placeholder="搜索" />
+    </div>
+
+                </td>
+            </tr>
+        </table>
+    </div>
+</header>
+
+        <div class="outer">
+            
+                
+
+<aside id="profile" class="profile-fixed">
+    <div class="inner profile-inner">
+        <div class="base-info profile-block">
+            <img id="avatar" src="/css/images/rolle.png" />
+            <h2 id="name">梁友泽</h2>
+            <h3 id="title">Developer</h3>
+            <span id="location"><i class="fa fa-map-marker"></i>BeiJing, China</span>
+            <a id="follow" target="_blank" href="https://github.com/youzeliang">关注我</a>
+        </div>
+        <div class="article-info profile-block">
+            <div class="article-info-block">
+                19
+                <span>文章</span>
+            </div>
+            <div class="article-info-block">
+                14
+                <span>标签</span>
+            </div>
+        </div>
+        
+        <div class="profile-block social-links">
+            <table>
+                <tr>
+                    
+                    
+                    <td>
+                        <a href="http://github.com/youzeliang" target="_blank" title="github" class=tooltip>
+                            <i class="fa fa-github"></i>
+                        </a>
+                    </td>
+                    
+                    <td>
+                        <a href="/i@liangyouze.com" target="_blank" title="email" class=tooltip>
+                            <i class="fa fa-email"></i>
+                        </a>
+                    </td>
+                    
+                    <td>
+                        <a href="/css/images/rolle_wechat.jpg" target="_blank" title="wechat" class=tooltip>
+                            <i class="fa fa-wechat"></i>
+                        </a>
+                    </td>
+                    
+                </tr>
+            </table>
+        </div>
+        
+    </div>
+</aside>
+
+            
+            <section id="main"><article id="post-golang切片" class="article article-type-post" itemscope itemprop="blogPost">
+    <div class="article-inner">
+        
+        
+            <header class="article-header">
+                
+    
+        <h1 class="article-title" itemprop="name">
+            golang 切片
+        </h1>
+    
+
+                
+                    <div class="article-meta">
+                        
+    <div class="article-date">
+        <i class="fa fa-calendar"></i>
+        <a href="/2020/03/11/golang切片/">
+            <time datetime="2020-03-11T06:10:23.000Z" itemprop="datePublished">2020-03-11</time>
+        </a>
+    </div>
+
+
+                        
+    <div class="article-category">
+    	<i class="fa fa-folder"></i>
+        <a class="article-category-link" href="/categories/golang/">golang</a>
+    </div>
+
+                        
+    <div class="article-tag">
+        <i class="fa fa-tag"></i>
+        <a class="tag-link" href="/tags/golang/">golang</a>
+    </div>
+
+                    </div>
+                
+            </header>
+        
+        
+        <div class="article-entry" itemprop="articleBody">
+        
+            
+            <h3 id="golang-切片"><a href="#golang-切片" class="headerlink" title="golang 切片"></a>golang 切片</h3><p>切片是引用<br><br><br>切片组成元素：</p>
+<ul>
+<li>指针：指向底层数组</li>
+<li>长度：切片中元素的长度，不能大于容量</li>
+<li>容量：指针所指向的底层数组的总容量</li>
+</ul>
+<p><br>初始化方式</p>
+<ul>
+<li>使用make<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">slice := <span class="built_in">make</span>([]<span class="keyword">int</span>, <span class="number">5</span>)     <span class="comment">// 初始化长度和容量都为 5 的切片</span></span><br><span class="line">slice := <span class="built_in">make</span>([]<span class="keyword">int</span>, <span class="number">5</span>, <span class="number">10</span>) <span class="comment">// 初始化长度为 5, 容量为 10 的切片</span></span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<p><br>使用 <code>make</code> 关键字创建切片时，很多工作都需要运行时的参与；调用方必须在 <code>make</code> 函数中传入一个切片的大小以及可选的容量，<a href="https://github.com/golang/go/blob/b7d097a4cf6b8a9125e4770b54d33826fa803023/src/cmd/compile/internal/gc/typecheck.go#L327-L2126" target="_blank" rel="noopener"><code>cmd/compile/internal/gc.typecheck1</code></a> 会对参数进行校验：   <a id="more"></a><br><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">typecheck1</span><span class="params">(n *Node, top <span class="keyword">int</span>)</span> <span class="params">(res *Node)</span></span> &#123;</span><br><span class="line">	<span class="keyword">switch</span> n.Op &#123;</span><br><span class="line">	...</span><br><span class="line">	<span class="keyword">case</span> OMAKE:</span><br><span class="line">		args := n.List.Slice()</span><br><span class="line"></span><br><span class="line">		i := <span class="number">1</span></span><br><span class="line">		<span class="keyword">switch</span> t.Etype &#123;</span><br><span class="line">		<span class="keyword">case</span> TSLICE:</span><br><span class="line">			<span class="keyword">if</span> i &gt;= <span class="built_in">len</span>(args) &#123;</span><br><span class="line">				yyerror(<span class="string">"missing len argument to make(%v)"</span>, t)</span><br><span class="line">				<span class="keyword">return</span> n</span><br><span class="line">			&#125;</span><br><span class="line"></span><br><span class="line">			l = args[i]</span><br><span class="line">			i++</span><br><span class="line">			<span class="keyword">var</span> r *Node</span><br><span class="line">			<span class="keyword">if</span> i &lt; <span class="built_in">len</span>(args) &#123;</span><br><span class="line">				r = args[i]</span><br><span class="line">			&#125;</span><br><span class="line">			...</span><br><span class="line">			<span class="keyword">if</span> Isconst(l, CTINT) &amp;&amp; r != <span class="literal">nil</span> &amp;&amp; Isconst(r, CTINT) &amp;&amp; l.Val().U.(*Mpint).Cmp(r.Val().U.(*Mpint)) &gt; <span class="number">0</span> &#123;</span><br><span class="line">				yyerror(<span class="string">"len larger than cap in make(%v)"</span>, t)</span><br><span class="line">				<span class="keyword">return</span> n</span><br><span class="line">			&#125;</span><br><span class="line"></span><br><span class="line">			n.Left = l</span><br><span class="line">			n.Right = r</span><br><span class="line">			n.Op = OMAKESLICE</span><br><span class="line">		&#125;</span><br><span class="line">	...</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p><br>上述函数不仅会检查 <code>len</code> 是否传入，还会保证传入的容量 <code>cap</code> 一定大于或者等于 <code>len</code>，除了校验参数之外，当前函数会将 <code>OMAKE</code> 节点转换成 <code>OMAKESLICE</code>，随后的中间代码生成阶段在 <a href="https://github.com/golang/go/blob/4d5bb9c60905b162da8b767a8a133f6b4edcaa65/src/cmd/compile/internal/gc/walk.go#L439-L1532" target="_blank" rel="noopener"><code>cmd/compile/internal/gc.walkexpr</code></a> 函数中的 <a href="https://github.com/golang/go/blob/4d5bb9c60905b162da8b767a8a133f6b4edcaa65/src/cmd/compile/internal/gc/walk.go#L1315" target="_blank" rel="noopener"><code>OMAKESLICE</code></a> 分支依据两个重要条件对这里的 <code>OMAKESLICE</code> 进行转换：</p>
+<ol>
+<li>切片的大小和容量是否足够小；</li>
+<li>切片是否发生了逃逸，最终在堆上初始化</li>
+</ol>
+<p><br>虽然大多的错误都可以在编译期间被检查出来，但是在创建切片的过程中如果发生了以下错误就会直接导致程序触发运行时错误并崩溃：<br></p>
+<ol>
+<li>内存空间的大小发生了溢出；</li>
+<li>申请的内存大于最大可分配的内存；</li>
+<li>传入的长度小于 0 或者长度大于容量；</li>
+</ol>
+<p><br><a href="https://draveness.me/golang/tree/runtime.makeslice" target="_blank" rel="noopener"><code>runtime.makeslice</code></a> 在最后调用的 <a href="https://draveness.me/golang/tree/runtime.mallocgc" target="_blank" rel="noopener"><code>runtime.mallocgc</code></a> 是用于申请内存的函数，这个函数的实现还是比较复杂，如果遇到了比较小的对象会直接初始化在 Go 语言调度器里面的 P 结构中，而大于 32KB 的对象会在堆上初始化</p>
+<ul>
+<li>使用简短定义</li>
+</ul>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">slice := []<span class="keyword">int</span>&#123;<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>&#125;</span><br></pre></td></tr></table></figure>
+<p><br></p>
+<ul>
+<li>使用数组来初始化切片</li>
+</ul>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">arr := [<span class="number">5</span>]<span class="keyword">int</span>&#123;<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>, <span class="number">5</span>&#125;</span><br><span class="line">slice := arr[<span class="number">0</span>:<span class="number">3</span>] <span class="comment">// 左闭右开区间，最终切片为 [1,2,3]</span></span><br><span class="line"><span class="built_in">cap</span>(slice)  <span class="comment">// 长度为5,更通用的规则是：一个切片的容量可以被看作是透过这个窗口最多可以看到的底层数组中元素的个数。注意，切片代表的窗口是无法向左扩展的。</span></span><br></pre></td></tr></table></figure>
+<p><br></p>
+<ul>
+<li>使用切片来初始化切片</li>
+</ul>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">sliceA := []<span class="keyword">int</span>&#123;<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>, <span class="number">5</span>&#125;</span><br><span class="line">sliceB := sliceA[<span class="number">0</span>:<span class="number">3</span>] <span class="comment">// 左闭右开区间，sliceB 最终为 [1,2,3]</span></span><br></pre></td></tr></table></figure>
+<ul>
+<li>注意点<ul>
+<li>多个切片共享一个底层数组的情况，对底层数组的修改，将影响上层多个切片的值</li>
+<li>多个切片共享一个底层数组的情况，对底层数组的修改，原有的切片发生了扩容 底层数组被重新创建 ，和原来的切片已经没有关系了</li>
+<li>扩容的slice还和类型(其实是类型占的字节)有关</li>
+</ul>
+</li>
+</ul>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">e := []<span class="keyword">int32</span>&#123;<span class="number">1</span>,<span class="number">2</span>,<span class="number">3</span>&#125;</span><br><span class="line">	fmt.Println(<span class="string">"cap of e before:"</span>,<span class="built_in">cap</span>(e))</span><br><span class="line">	e = <span class="built_in">append</span>(e,<span class="number">4</span>)</span><br><span class="line">	fmt.Println(<span class="string">"cap of e after:"</span>,<span class="built_in">cap</span>(e))</span><br><span class="line"></span><br><span class="line">	f := []<span class="keyword">int</span>&#123;<span class="number">1</span>,<span class="number">2</span>,<span class="number">3</span>&#125;</span><br><span class="line">	fmt.Println(<span class="string">"cap of f before:"</span>,<span class="built_in">cap</span>(f))</span><br><span class="line">	f = <span class="built_in">append</span>(f,<span class="number">4</span>)</span><br><span class="line">    fmt.Println(<span class="string">"cap of f after:"</span>,<span class="built_in">cap</span>(f))</span><br><span class="line"> </span><br><span class="line"><span class="built_in">cap</span> of e before: <span class="number">3</span></span><br><span class="line"><span class="built_in">cap</span> of e after: <span class="number">8</span></span><br><span class="line"><span class="built_in">cap</span> of f before: <span class="number">3</span></span><br><span class="line"><span class="built_in">cap</span> of f after: <span class="number">6</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> main</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">    <span class="string">"fmt"</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">    slice := []<span class="keyword">int</span>&#123;<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>, <span class="number">5</span>&#125;</span><br><span class="line">    newSlice := slice[<span class="number">0</span>:<span class="number">3</span>]</span><br><span class="line">    fmt.Println(<span class="string">"before modifying underlying array:"</span>)</span><br><span class="line">    fmt.Println(<span class="string">"slice: "</span>, slice)</span><br><span class="line">    fmt.Println(<span class="string">"newSlice: "</span>, newSlice)</span><br><span class="line">    fmt.Println()</span><br><span class="line"></span><br><span class="line">    newSlice[<span class="number">0</span>] = <span class="number">6</span></span><br><span class="line">    fmt.Println(<span class="string">"after modifying underlying array:"</span>)</span><br><span class="line">    fmt.Println(<span class="string">"slice: "</span>, slice)</span><br><span class="line">    fmt.Println(<span class="string">"newSlice: "</span>, newSlice)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><br>以上代码预期输出如下：<br></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">before modify underlying array:</span><br><span class="line">slice:  [1 2 3 4 5]</span><br><span class="line">newSlice:  [1 2 3]</span><br><span class="line"></span><br><span class="line">after modify underlying array:</span><br><span class="line">slice:  [6 2 3 4 5]</span><br><span class="line">newSlice:  [6 2 3]</span><br></pre></td></tr></table></figure>
+<p><br>使用 copy 方法可以避免共享同一个底层数组<br></p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> main</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">    <span class="string">"fmt"</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">    slice := []<span class="keyword">int</span>&#123;<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>, <span class="number">5</span>&#125;</span><br><span class="line">    newSlice := <span class="built_in">make</span>([]<span class="keyword">int</span>, <span class="built_in">len</span>(slice))</span><br><span class="line">    <span class="built_in">copy</span>(newSlice, slice)</span><br><span class="line">    fmt.Println(<span class="string">"before modifying underlying array:"</span>)</span><br><span class="line">    fmt.Println(<span class="string">"slice: "</span>, slice)</span><br><span class="line">    fmt.Println(<span class="string">"newSlice: "</span>, newSlice)</span><br><span class="line">    fmt.Println()</span><br><span class="line"></span><br><span class="line">    newSlice[<span class="number">0</span>] = <span class="number">6</span></span><br><span class="line">    fmt.Println(<span class="string">"after modifying underlying array:"</span>)</span><br><span class="line">    fmt.Println(<span class="string">"slice: "</span>, slice)</span><br><span class="line">    fmt.Println(<span class="string">"newSlice: "</span>, newSlice)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><br>以上代码预期输出如下：<br></p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">before modifying underlying array:</span><br><span class="line">slice:  [<span class="number">1</span> <span class="number">2</span> <span class="number">3</span> <span class="number">4</span> <span class="number">5</span>]</span><br><span class="line">newSlice:  [<span class="number">1</span> <span class="number">2</span> <span class="number">3</span> <span class="number">4</span> <span class="number">5</span>]</span><br><span class="line"></span><br><span class="line">after modifying underlying array:</span><br><span class="line">slice:  [<span class="number">1</span> <span class="number">2</span> <span class="number">3</span> <span class="number">4</span> <span class="number">5</span>]</span><br><span class="line">newSlice:  [<span class="number">6</span> <span class="number">2</span> <span class="number">3</span> <span class="number">4</span> <span class="number">5</span>]</span><br></pre></td></tr></table></figure>
+<ul>
+<li>append函数的常见操作<ul>
+<li>删除位于索引 i 的元素：a = append(a[:i], a[i+1:]…)</li>
+<li>切除切片 a 中从索引 i 至 j 位置的元素：a = append(a[:i], a[j:]…)</li>
+<li>为切片 a 扩展 j 个元素长度：a = append(a, make([]T, j)…)</li>
+<li>索引 i 的位置插入切片 b 的所有元素：a = append(a[:i], append(b, a[i:]…)…)</li>
+</ul>
+</li>
+</ul>
+<p><br><strong>Go 语言的切片追加元素</strong><br>**<br>通过 <code>append</code> 关键字被转换的控制流了解了在切片容量足够时如何向切片中追加元素，但是当切片的容量不足时就会调用 <a href="https://github.com/golang/go/blob/440f7d64048cd94cba669e16fe92137ce6b84073/src/runtime/slice.go#L76-L191" target="_blank" rel="noopener"><code>runtime.growslice</code></a> 函数为切片扩容，扩容就是为切片分配一块新的内存空间并将原切片的元素全部拷贝过去，我们分几部分分析该方法：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">growslice</span><span class="params">(et *_type, old slice, <span class="built_in">cap</span> <span class="keyword">int</span>)</span> <span class="title">slice</span></span> &#123;</span><br><span class="line">    <span class="comment">// ……</span></span><br><span class="line">    newcap := old.<span class="built_in">cap</span></span><br><span class="line">    doublecap := newcap + newcap</span><br><span class="line">    <span class="keyword">if</span> <span class="built_in">cap</span> &gt; doublecap &#123;</span><br><span class="line">        newcap = <span class="built_in">cap</span></span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="keyword">if</span> old.<span class="built_in">cap</span> &lt; <span class="number">1024</span> &#123;</span><br><span class="line">            newcap = doublecap</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            <span class="keyword">for</span> newcap &lt; <span class="built_in">cap</span> &#123;</span><br><span class="line">                newcap += newcap / <span class="number">4</span></span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// ……</span></span><br><span class="line"></span><br><span class="line">    capmem = roundupsize(<span class="keyword">uintptr</span>(newcap) * ptrSize)</span><br><span class="line">    newcap = <span class="keyword">int</span>(capmem / ptrSize)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>后半部分还对 <code>newcap</code> 作了一个<code>内存对齐</code>，这个和内存分配策略相关。进行内存对齐之后，新 slice 的容量是要 <code>大于等于</code> 老 slice 容量的 <code>2倍</code>或者<code>1.25倍</code>。<br><br><br>举个例子，<a href="https://qcrao91.gitbook.io/go/shu-zu-he-qie-pian/qie-pian-de-rong-liang-shi-zen-yang-zeng-chang-de" target="_blank" rel="noopener">参考</a><br></p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> main</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> <span class="string">"fmt"</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">    s := []<span class="keyword">int</span>&#123;<span class="number">1</span>,<span class="number">2</span>&#125;</span><br><span class="line">    s = <span class="built_in">append</span>(s,<span class="number">4</span>,<span class="number">5</span>,<span class="number">6</span>)</span><br><span class="line">    fmt.Printf(<span class="string">"len=%d, cap=%d"</span>,<span class="built_in">len</span>(s),<span class="built_in">cap</span>(s))</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>运行结果是：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">len</span>=<span class="number">5</span>, <span class="built_in">cap</span>=<span class="number">6</span> （如果按照<span class="number">1.25</span>倍的说法就是<span class="number">5</span>，<span class="number">8</span>，但实际上是错误的）</span><br></pre></td></tr></table></figure>
+<p><br><br><br>这个函数的参数依次是 <code>元素的类型，老的 slice，新 slice 最小求的容量</code>。</p>
+<p>例子中 <code>s</code> 原来只有 2 个元素，<code>len</code> 和 <code>cap</code> 都为 2，<code>append</code> 了三个元素后，长度变为 5，容量最小要变成 5，即调用 <code>growslice</code> 函数时，传入的第三个参数应该为 5。即 <code>cap=5</code>。而一方面，<code>doublecap</code> 是原 <code>slice</code>容量的 2 倍，等于 4。满足第一个 <code>if</code> 条件，所以 <code>newcap</code> 变成了 5。<br>接着调用了 <code>roundupsize</code> 函数，传入 40。（代码中ptrSize是指一个指针的大小，在64位机上是8）<br>我们再看内存对齐，搬出 <code>roundupsize</code> 函数的代码：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">roundupsize</span><span class="params">(size <span class="keyword">uintptr</span>)</span> <span class="title">uintptr</span></span> &#123;</span><br><span class="line">    <span class="keyword">if</span> size &lt; _MaxSmallSize &#123;</span><br><span class="line">        <span class="keyword">if</span> size &lt;= smallSizeMax<span class="number">-8</span> &#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">uintptr</span>(class_to_size[size_to_class8[(size+smallSizeDiv<span class="number">-1</span>)/smallSizeDiv]])</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            <span class="comment">//……</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">//……</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> _MaxSmallSize = <span class="number">32768</span></span><br><span class="line"><span class="keyword">const</span> smallSizeMax = <span class="number">1024</span></span><br><span class="line"><span class="keyword">const</span> smallSizeDiv = <span class="number">8</span></span><br></pre></td></tr></table></figure>
+<p><br>最终返回<br><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">class_to_size[size_to_class8[(size+smallSizeDiv<span class="number">-1</span>)/smallSizeDiv]]</span><br></pre></td></tr></table></figure></p>
+<p><br>这是 Go 源码中有关内存分配的两个 slice。class_to_size通过 spanClass获取 span划分的 object大小。而 size_to_class8 表示通过 size 获取它的 spanClass。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> size_to_class8 = [smallSizeMax/smallSizeDiv + <span class="number">1</span>]<span class="keyword">uint8</span>&#123;<span class="number">0</span>, <span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">3</span>, <span class="number">4</span>, <span class="number">4</span>, <span class="number">5</span>, <span class="number">5</span>, <span class="number">6</span>, <span class="number">6</span>, <span class="number">7</span>, <span class="number">7</span>, <span class="number">8</span>, <span class="number">8</span>, <span class="number">9</span>, <span class="number">9</span>, <span class="number">10</span>, <span class="number">10</span>, <span class="number">11</span>, <span class="number">11</span>, <span class="number">12</span>, <span class="number">12</span>, <span class="number">13</span>, <span class="number">13</span>, <span class="number">14</span>, <span class="number">14</span>, <span class="number">15</span>, <span class="number">15</span>, <span class="number">16</span>, <span class="number">16</span>, <span class="number">17</span>, <span class="number">17</span>, <span class="number">18</span>, <span class="number">18</span>, <span class="number">18</span>, <span class="number">18</span>, <span class="number">19</span>, <span class="number">19</span>, <span class="number">19</span>, <span class="number">19</span>, <span class="number">20</span>, <span class="number">20</span>, <span class="number">20</span>, <span class="number">20</span>, <span class="number">21</span>, <span class="number">21</span>, <span class="number">21</span>, <span class="number">21</span>, <span class="number">22</span>, <span class="number">22</span>, <span class="number">22</span>, <span class="number">22</span>, <span class="number">23</span>, <span class="number">23</span>, <span class="number">23</span>, <span class="number">23</span>, <span class="number">24</span>, <span class="number">24</span>, <span class="number">24</span>, <span class="number">24</span>, <span class="number">25</span>, <span class="number">25</span>, <span class="number">25</span>, <span class="number">25</span>, <span class="number">26</span>, <span class="number">26</span>, <span class="number">26</span>, <span class="number">26</span>, <span class="number">26</span>, <span class="number">26</span>, <span class="number">26</span>, <span class="number">26</span>, <span class="number">27</span>, <span class="number">27</span>, <span class="number">27</span>, <span class="number">27</span>, <span class="number">27</span>, <span class="number">27</span>, <span class="number">27</span>, <span class="number">27</span>, <span class="number">28</span>, <span class="number">28</span>, <span class="number">28</span>, <span class="number">28</span>, <span class="number">28</span>, <span class="number">28</span>, <span class="number">28</span>, <span class="number">28</span>, <span class="number">29</span>, <span class="number">29</span>, <span class="number">29</span>, <span class="number">29</span>, <span class="number">29</span>, <span class="number">29</span>, <span class="number">29</span>, <span class="number">29</span>, <span class="number">30</span>, <span class="number">30</span>, <span class="number">30</span>, <span class="number">30</span>, <span class="number">30</span>, <span class="number">30</span>, <span class="number">30</span>, <span class="number">30</span>, <span class="number">30</span>, <span class="number">30</span>, <span class="number">30</span>, <span class="number">30</span>, <span class="number">30</span>, <span class="number">30</span>, <span class="number">30</span>, <span class="number">30</span>, <span class="number">31</span>, <span class="number">31</span>, <span class="number">31</span>, <span class="number">31</span>, <span class="number">31</span>, <span class="number">31</span>, <span class="number">31</span>, <span class="number">31</span>, <span class="number">31</span>, <span class="number">31</span>, <span class="number">31</span>, <span class="number">31</span>, <span class="number">31</span>, <span class="number">31</span>, <span class="number">31</span>, <span class="number">31</span>&#125;</span><br><span class="line">​</span><br><span class="line"><span class="keyword">var</span> class_to_size = [_NumSizeClasses]<span class="keyword">uint16</span>&#123;<span class="number">0</span>, <span class="number">8</span>, <span class="number">16</span>, <span class="number">32</span>, <span class="number">48</span>, <span class="number">64</span>, <span class="number">80</span>, <span class="number">96</span>, <span class="number">112</span>, <span class="number">128</span>, <span class="number">144</span>, <span class="number">160</span>, <span class="number">176</span>, <span class="number">192</span>, <span class="number">208</span>, <span class="number">224</span>, <span class="number">240</span>, <span class="number">256</span>, <span class="number">288</span>, <span class="number">320</span>, <span class="number">352</span>, <span class="number">384</span>, <span class="number">416</span>, <span class="number">448</span>, <span class="number">480</span>, <span class="number">512</span>, <span class="number">576</span>, <span class="number">640</span>, <span class="number">704</span>, <span class="number">768</span>, <span class="number">896</span>, <span class="number">1024</span>, <span class="number">1152</span>, <span class="number">1280</span>, <span class="number">1408</span>, <span class="number">1536</span>, <span class="number">1792</span>, <span class="number">2048</span>, <span class="number">2304</span>, <span class="number">2688</span>, <span class="number">3072</span>, <span class="number">3200</span>, <span class="number">3456</span>, <span class="number">4096</span>, <span class="number">4864</span>, <span class="number">5376</span>, <span class="number">6144</span>, <span class="number">6528</span>, <span class="number">6784</span>, <span class="number">6912</span>, <span class="number">8192</span>, <span class="number">9472</span>, <span class="number">9728</span>, <span class="number">10240</span>, <span class="number">10880</span>, <span class="number">12288</span>, <span class="number">13568</span>, <span class="number">14336</span>, <span class="number">16384</span>, <span class="number">18432</span>, <span class="number">19072</span>, <span class="number">20480</span>, <span class="number">21760</span>, <span class="number">24576</span>, <span class="number">27264</span>, <span class="number">28672</span>, <span class="number">32768</span>&#125;</span><br></pre></td></tr></table></figure>
+<p><br>我们传进去的 size 等于 40。所以 (size+smallSizeDiv-1)/smallSizeDiv = 5；获取 size_to_class8 数组中索引为 5 的元素为 4；获取 class_to_size 中索引为 4 的元素为 48。<br>最终，新的 slice 的容量为 6：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">newcap = <span class="keyword">int</span>(capmem / ptrSize) <span class="comment">// 6</span></span><br></pre></td></tr></table></figure>
+<p><br>向一个nil的slice添加元素会发生什么？为什么？</p>
+<p>其实 nil slice 或者 empty slice 都是可以通过调用 append 函数来获得底层数组的扩容。最终都是调用 mallocgc 来向 Go 的内存管理器申请到一块内存，然后再赋给原来的nil slice 或 empty slice，然后摇身一变，成为“真正”的 slice 了。<br><br><br></p>
+<p><a name="cWlkt"></a></p>
+<h3 id="拷贝切片"><a href="#拷贝切片" class="headerlink" title="拷贝切片"></a>拷贝切片</h3><p><br>当我们使用 <code>copy(a, b)</code> 的形式对切片进行拷贝时，编译期间的 <a href="https://github.com/golang/go/blob/bf4990522263503a1219372cd8f1ee9422b51324/src/cmd/compile/internal/gc/walk.go#L2980-L3040" target="_blank" rel="noopener"><code>cmd/compile/internal/gc.copyany</code></a> 函数也会分两种情况进行处理，如果当前 <code>copy</code> 不是在运行时调用的，<code>copy(a, b)</code> 会被直接转换成下面的代码：</p>
+<p>之后，向 Go 内存管理器申请内存，将老 slice 中的数据复制过去，并且将 append 的元素添加到新的底层数组中。<br>最后，向 <code>growslice</code> 函数调用者返回一个新的 slice，这个 slice 的长度并没有变化，而容量却增大了。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">n := <span class="built_in">len</span>(a)</span><br><span class="line"><span class="keyword">if</span> n &gt; <span class="built_in">len</span>(b) &#123;</span><br><span class="line">    n = <span class="built_in">len</span>(b)</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">if</span> a.ptr != b.ptr &#123;</span><br><span class="line">    memmove(a.ptr, b.ptr, n*sizeof(elem(a))) </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><br>例子<br><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">arr := [<span class="number">10</span>]<span class="keyword">int</span>&#123;<span class="number">0</span>, <span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>, <span class="number">5</span>, <span class="number">6</span>, <span class="number">7</span>, <span class="number">8</span>, <span class="number">9</span>&#125;</span><br><span class="line"><span class="keyword">var</span> sl []<span class="keyword">int</span> = arr[<span class="number">1</span>:<span class="number">4</span>]</span><br><span class="line"><span class="keyword">var</span> s2  []<span class="keyword">int</span> = arr[<span class="number">7</span>:]</span><br><span class="line">fmt.Println(<span class="built_in">len</span>(sl),<span class="built_in">cap</span>(sl))  <span class="comment">// 3,9 </span></span><br><span class="line">fmt.Println(<span class="built_in">len</span>(s2),<span class="built_in">cap</span>(s2))  <span class="comment">// 3,3</span></span><br></pre></td></tr></table></figure></p>
+<p><br>使用技巧<br></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">a = a[:len(a)-1]   // 删除尾部1个元素</span><br><span class="line">a = a[:len(a)-N]   // 删除尾部N个元素</span><br><span class="line">a = a[1:] // 删除开头1个元素</span><br><span class="line">a = a[N:] // 删除开头N个元素</span><br></pre></td></tr></table></figure>
+<p><br><br><br>假设切片里存放的是指针对象，那么下面删除末尾的元素后，被删除的元素依然被切片底层数组引用，从而导致不能及时被自动垃圾回收器回收（这要依赖回收器的实现方式）：</p>
+<p>保险的方式是先将需要自动内存回收的元素设置为<code>nil</code>，保证自动回收器可以发现需要回收的对象，然后再进行切片的删除操作：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">var a []*int&#123; ... &#125;</span><br><span class="line">a[len(a)-1] = nil // GC回收最后一个元素内存</span><br><span class="line">a = a[:len(a)-1]  // 从切片删除最后一个元素</span><br></pre></td></tr></table></figure>
+<p><br></p>
+<p><a name="wWCBS"></a></p>
+<h3 id="关于扩容"><a href="#关于扩容" class="headerlink" title="关于扩容"></a>关于扩容</h3><ol>
+<li>预估容量（预估”元素个数”）</li>
+</ol>
+<p><img src="https://cdn.nlark.com/yuque/0/2020/png/203997/1597226917625-e6fd77f5-c404-42f9-9bac-b6d2843a83a0.png#align=left&amp;display=inline&amp;height=384&amp;margin=%5Bobject%20Object%5D&amp;name=image.png&amp;originHeight=384&amp;originWidth=1021&amp;size=99868&amp;status=done&amp;style=none&amp;width=1021" alt="image.png"><br>注意：(官方代码在2020-09-25 换成了 if old.cap &lt; 1024{} )<br></p>
+<ol start="2">
+<li>分配内存 = 预估容量 * 元素类型大小 </li>
+</ol>
+<p><br><strong>申请分配内存是语言自身实现的内存管理模块向操作系统申请(合适的内存规格:8,16,32,48,64,80,96,112……字节，64位下每个元素占16字节。32位下占8字节,其中查看类型占多少字节用unsafe.Sizeof()来判断，但是又如何得知当前平台是在处于多少为的系统。可以用以下来判断(比如int在64为下占8个字节，string在64为下占10个字节)</strong><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">32 &lt;&lt; (^uint(0) &gt;&gt; 63)</span><br></pre></td></tr></table></figure></p>
+<p><br>^uint(0)在32位系统上返回的是0XFFFFFFFF, 也就是2^32, 在64位系统上返回的是0xFFFFFFFFFFFFFFFF, 也就是2^64<br><br><br>申请分配内存会匹配到最接近的规格<br><br><br></p>
+<ol start="3">
+<li>newCap = 申请分配内存 /  元素类型大小</li>
+</ol>
+<p><br></p>
+<p><a name="onQ2C"></a></p>
+<h3 id="切片中的三种特殊状态"><a href="#切片中的三种特殊状态" class="headerlink" title="切片中的三种特殊状态"></a>切片中的三种特殊状态</h3><p>切片的三种特殊状态 —— 「零切片」、「空切片」和「nil 切片」。<br><br><br><br><br><img src="https://cdn.nlark.com/yuque/0/2021/png/203997/1610432798301-894e1282-7407-45b2-a289-75a1d0413c40.png#align=left&amp;display=inline&amp;height=334&amp;margin=%5Bobject%20Object%5D&amp;name=image.png&amp;originHeight=334&amp;originWidth=780&amp;size=41790&amp;status=done&amp;style=none&amp;width=780" alt="image.png"><br><br><br>空切片和 nil 切片的区别在于，空切片指向的地址不是nil，指向的是一个内存地址，但是它没有分配任何内存空间，即底层元素包含0个元素。</p>
+<p>不管是使用 nil 切片还是空切片，对其调用内置函数 append，len 和 cap 的效果都是一样的。<br><br><br>通过 unsafe.Pointer 来转换 Go 语言的任意变量类型。<br><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> s1 []<span class="keyword">int</span></span><br><span class="line"><span class="keyword">var</span> s2 = []<span class="keyword">int</span>&#123;&#125;</span><br><span class="line"><span class="keyword">var</span> s3 = <span class="built_in">make</span>([]<span class="keyword">int</span>, <span class="number">0</span>)</span><br><span class="line"><span class="keyword">var</span> s4 = *<span class="built_in">new</span>([]<span class="keyword">int</span>)</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> a1 = *(*[<span class="number">3</span>]<span class="keyword">int</span>)(unsafe.Pointer(&amp;s1))</span><br><span class="line"><span class="keyword">var</span> a2 = *(*[<span class="number">3</span>]<span class="keyword">int</span>)(unsafe.Pointer(&amp;s2))</span><br><span class="line"><span class="keyword">var</span> a3 = *(*[<span class="number">3</span>]<span class="keyword">int</span>)(unsafe.Pointer(&amp;s3))</span><br><span class="line"><span class="keyword">var</span> a4 = *(*[<span class="number">3</span>]<span class="keyword">int</span>)(unsafe.Pointer(&amp;s4))</span><br><span class="line">fmt.Println(a1)</span><br><span class="line">fmt.Println(a2)</span><br><span class="line">fmt.Println(a3)</span><br><span class="line">fmt.Println(a4)</span><br><span class="line"></span><br><span class="line">---------------------</span><br><span class="line">[<span class="number">0</span> <span class="number">0</span> <span class="number">0</span>]</span><br><span class="line">[<span class="number">824634355296</span> <span class="number">0</span> <span class="number">0</span>]</span><br><span class="line">[<span class="number">824634355296</span> <span class="number">0</span> <span class="number">0</span>]</span><br><span class="line">[<span class="number">0</span> <span class="number">0</span> <span class="number">0</span>]</span><br></pre></td></tr></table></figure></p>
+<p><br>其中输出为 [0 0 0] 的 s1 和 s4 变量就是「 nil 切片」，s2 和 s3 变量就是「空切片」。824634199592 这个值是一个特殊的内存地址，所有类型的「空切片」都共享这一个内存地址。<br><img src="https://cdn.nlark.com/yuque/0/2021/png/203997/1610434197485-aab5e786-554b-430f-be79-46d9d2ca61ed.png#align=left&amp;display=inline&amp;height=144&amp;margin=%5Bobject%20Object%5D&amp;name=image.png&amp;originHeight=287&amp;originWidth=1280&amp;size=34727&amp;status=done&amp;style=none&amp;width=640" alt="image.png"><br>空切片指向的 zerobase 内存地址是一个神奇的地址<br><br><br><br><br>「 nil 切片」和 「空切片」在使用上有什么区别么？</p>
+<p>最好办法是不要创建「 空切片」，统一使用「 nil 切片」，同时要避免将切片和 nil 进行比较来执行某些逻辑。这是官方的标准建议。（正确选择 var res []int ）</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">package main</span><br><span class="line"></span><br><span class="line">import "fmt"</span><br><span class="line"></span><br><span class="line">func main() &#123;</span><br><span class="line">	var s1 []int</span><br><span class="line">	var s2 = []int&#123;&#125;</span><br><span class="line"></span><br><span class="line">	fmt.Println(s1 == nil)</span><br><span class="line">	fmt.Println(s2 == nil)</span><br><span class="line"></span><br><span class="line">	fmt.Printf("%#v\n", s1)</span><br><span class="line">	fmt.Printf("%#v\n", s2)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">-------</span><br><span class="line">true</span><br><span class="line">false</span><br><span class="line">[]int(nil)</span><br><span class="line">[]int&#123;&#125;</span><br></pre></td></tr></table></figure>
+<p>「空切片」和「 nil 切片」有时候会隐藏在结构体中，这时候它们的区别就被太多的人忽略了，看个例子<br><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> Something <span class="keyword">struct</span> &#123;</span><br><span class="line">	values []<span class="keyword">int</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> s1 = Something&#123;&#125;</span><br><span class="line"><span class="keyword">var</span> s2 = Something&#123;[]<span class="keyword">int</span>&#123;&#125;&#125;</span><br><span class="line">fmt.Println(s1.values == <span class="literal">nil</span>)</span><br><span class="line">fmt.Println(s2.values == <span class="literal">nil</span>)</span><br><span class="line"></span><br><span class="line">--------</span><br><span class="line"><span class="literal">true</span></span><br><span class="line"><span class="literal">false</span></span><br></pre></td></tr></table></figure></p>
+<p><br>「空切片」和「 nil 切片」还有一个极为不同的地方在于 JSON 序列化</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">type Something struct &#123;</span><br><span class="line">	Values []int</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">var s1 = Something&#123;&#125;</span><br><span class="line">var s2 = Something&#123;[]int&#123;&#125;&#125;</span><br><span class="line">bs1, _ := json.Marshal(s1)</span><br><span class="line">bs2, _ := json.Marshal(s2)</span><br><span class="line">fmt.Println(string(bs1))</span><br><span class="line">fmt.Println(string(bs2))</span><br><span class="line"></span><br><span class="line">---------</span><br><span class="line">&#123;"Values":null&#125;</span><br><span class="line">&#123;"Values":[]&#125;</span><br></pre></td></tr></table></figure>
+<p><br>参考</p>
+<ol>
+<li><a href="https://stackoverflow.com/questions/36393806/why-go-vet-report-uint0-might-be-too-small-for-shift-of-63" target="_blank" rel="noopener">why-go-vet-report-uint0-might-be-too-small-for-shift-of-63</a></li>
+<li><a href="https://www.bilibili.com/video/BV1CV411d7W8" target="_blank" rel="noopener">slice类型存什么？make和new？slice和数组？扩容规则？</a></li>
+<li><a href="https://qcrao91.gitbook.io/go/shu-zu-he-qie-pian/qie-pian-de-rong-liang-shi-zen-yang-zeng-chang-de" target="_blank" rel="noopener">切片的容量是怎样增长的</a></li>
+<li><a href="https://draveness.me/golang/docs/part2-foundation/ch03-datastructure/golang-array-and-slice/" target="_blank" rel="noopener">3.2 切片</a></li>
+<li><a href="https://juejin.cn/post/6844903712654098446" target="_blank" rel="noopener">深度解析 Go 语言中「切片」的三种特殊状态</a></li>
+</ol>
+
+        
+        </div>
+        <footer class="article-footer">
+            <div class="share-container">
+
+
+
+</div>
+
+    <a data-url="https://www.liangyouze.com/2020/03/11/golang切片/" data-id="ckmc2yf10000phlu3f9mvk6nl" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
+<script>
+    (function ($) {
+        // Prevent duplicate binding
+        if (typeof(__SHARE_BUTTON_BINDED__) === 'undefined' || !__SHARE_BUTTON_BINDED__) {
+            __SHARE_BUTTON_BINDED__ = true;
+        } else {
+            return;
+        }
+        $('body').on('click', function() {
+            $('.article-share-box.on').removeClass('on');
+        }).on('click', '.article-share-link', function(e) {
+            e.stopPropagation();
+
+            var $this = $(this),
+                url = $this.attr('data-url'),
+                encodedUrl = encodeURIComponent(url),
+                id = 'article-share-box-' + $this.attr('data-id'),
+                offset = $this.offset(),
+                box;
+
+            if ($('#' + id).length) {
+                box = $('#' + id);
+
+                if (box.hasClass('on')){
+                    box.removeClass('on');
+                    return;
+                }
+            } else {
+                var html = [
+                    '<div id="' + id + '" class="article-share-box">',
+                        '<input class="article-share-input" value="' + url + '">',
+                        '<div class="article-share-links">',
+                            '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="fa fa-twitter article-share-twitter" target="_blank" title="Twitter"></a>',
+                            '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="fa fa-facebook article-share-facebook" target="_blank" title="Facebook"></a>',
+                            '<a href="http://pinterest.com/pin/create/button/?url=' + encodedUrl + '" class="fa fa-pinterest article-share-pinterest" target="_blank" title="Pinterest"></a>',
+                            '<a href="https://plus.google.com/share?url=' + encodedUrl + '" class="fa fa-google article-share-google" target="_blank" title="Google+"></a>',
+                        '</div>',
+                    '</div>'
+                ].join('');
+
+              box = $(html);
+
+              $('body').append(box);
+            }
+
+            $('.article-share-box.on').hide();
+
+            box.css({
+                top: offset.top + 25,
+                left: offset.left
+            }).addClass('on');
+
+        }).on('click', '.article-share-box', function (e) {
+            e.stopPropagation();
+        }).on('click', '.article-share-box-input', function () {
+            $(this).select();
+        }).on('click', '.article-share-box-link', function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            window.open(this.href, 'article-share-box-window-' + Date.now(), 'width=500,height=450');
+        });
+    })(jQuery);
+</script>
+
+            
+    
+        <a href="https://www.liangyouze.com/2020/03/11/golang切片/#comments" class="article-comment-link disqus-comment-count" data-disqus-url="https://www.liangyouze.com/2020/03/11/golang切片/">评论</a>
+    
+
+        </footer>
+    </div>
+    
+        
+<nav id="article-nav">
+    
+        <a href="/2020/08/11/内存对齐/" id="article-nav-newer" class="article-nav-link-wrap">
+            <strong class="article-nav-caption">上一篇</strong>
+            <div class="article-nav-title">
+                
+                    内存对齐
+                
+            </div>
+        </a>
+    
+    
+        <a href="/2020/02/11/给字符串加索引/" id="article-nav-older" class="article-nav-link-wrap">
+            <strong class="article-nav-caption">下一篇</strong>
+            <div class="article-nav-title">给字符串加索引</div>
+        </a>
+    
+</nav>
+
+
+    
+</article>
+
+
+    
+    
+        <section id="comments">
+    <div id="disqus_thread">
+        <noscript>Please enable JavaScript to view the <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+    </div>
+</section>
+    
+
+</section>
+            
+                
+<aside id="sidebar">
+   
+        
+    <div class="widget-wrap">
+        <h3 class="widget-title">最新文章</h3>
+        <div class="widget">
+            <ul id="recent-post" class="">
+                
+                    <li>
+                        
+                        <!-- <div class="item-thumbnail">
+                            <a href="/2020/08/11/内存对齐/" class="thumbnail">
+    
+    
+        <span class="thumbnail-image thumbnail-none"></span>
+    
+</a>
+
+                        </div> -->
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/golang/">golang</a></p>
+                            <p class="item-title"><a href="/2020/08/11/内存对齐/" class="title">内存对齐</a></p>
+                            <p class="item-date"><time datetime="2020-08-11T06:10:23.000Z" itemprop="datePublished">2020-08-11</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <!-- <div class="item-thumbnail">
+                            <a href="/2020/03/11/golang切片/" class="thumbnail">
+    
+    
+        <span class="thumbnail-image thumbnail-none"></span>
+    
+</a>
+
+                        </div> -->
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/golang/">golang</a></p>
+                            <p class="item-title"><a href="/2020/03/11/golang切片/" class="title">golang 切片</a></p>
+                            <p class="item-date"><time datetime="2020-03-11T06:10:23.000Z" itemprop="datePublished">2020-03-11</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <!-- <div class="item-thumbnail">
+                            <a href="/2020/02/11/给字符串加索引/" class="thumbnail">
+    
+    
+        <span class="thumbnail-image thumbnail-none"></span>
+    
+</a>
+
+                        </div> -->
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/mysql/">mysql</a></p>
+                            <p class="item-title"><a href="/2020/02/11/给字符串加索引/" class="title">给字符串加索引</a></p>
+                            <p class="item-date"><time datetime="2020-02-11T06:10:23.000Z" itemprop="datePublished">2020-02-11</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <!-- <div class="item-thumbnail">
+                            <a href="/2020/01/01/2019年总结/" class="thumbnail">
+    
+    
+        <span class="thumbnail-image thumbnail-none"></span>
+    
+</a>
+
+                        </div> -->
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/杂谈/">杂谈</a></p>
+                            <p class="item-title"><a href="/2020/01/01/2019年总结/" class="title">2019年总结</a></p>
+                            <p class="item-date"><time datetime="2020-01-01T09:10:23.000Z" itemprop="datePublished">2020-01-01</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <!-- <div class="item-thumbnail">
+                            <a href="/2019/12/17/数据删掉一半，表的大小不变/" class="thumbnail">
+    
+    
+        <span class="thumbnail-image thumbnail-none"></span>
+    
+</a>
+
+                        </div> -->
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/MySQL/">MySQL</a></p>
+                            <p class="item-title"><a href="/2019/12/17/数据删掉一半，表的大小不变/" class="title">数据删掉一半，表的大小不变</a></p>
+                            <p class="item-date"><time datetime="2019-12-17T06:10:23.000Z" itemprop="datePublished">2019-12-17</time></p>
+                        </div>
+                    </li>
+                
+            </ul>
+        </div>
+    </div>
+
+    
+        
+    <div class="widget-wrap">
+        <h3 class="widget-title">分类</h3>
+        <div class="widget">
+            <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/MySQL/">MySQL</a><span class="category-list-count">4</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/docker/">docker</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/golang/">golang</a><span class="category-list-count">4</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/mysql/">mysql</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/vim/">vim</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/杂谈/">杂谈</a><span class="category-list-count">2</span></li></ul>
+        </div>
+    </div>
+
+    
+        
+    <div class="widget-wrap">
+        <h3 class="widget-title">归档</h3>
+        <div class="widget">
+            <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/08/">八月 2020</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/03/">三月 2020</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/02/">二月 2020</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/01/">一月 2020</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/12/">十二月 2019</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/10/">十月 2019</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/09/">九月 2019</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/06/">六月 2019</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/01/">一月 2019</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/12/">十二月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/10/">十月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/09/">九月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/08/">八月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/07/">七月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/05/">五月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/04/">四月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/03/">三月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/11/">十一月 2017</a><span class="archive-list-count">1</span></li></ul>
+        </div>
+    </div>
+
+    
+        
+    <div class="widget-wrap">
+        <h3 class="widget-title">标签</h3>
+        <div class="widget">
+            <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Docker/">Docker</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/MySQL/">MySQL</a><span class="tag-list-count">4</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/elasticsearch/">elasticsearch</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/golang/">golang</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/iframe/">iframe</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/vim/">vim</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/内存对齐/">内存对齐</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/字符串/">字符串</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/杂谈/">杂谈</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/索引/">索引</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/规则/">规则</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/订单号/">订单号</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/读书/">读书</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/跨域/">跨域</a><span class="tag-list-count">1</span></li></ul>
+        </div>
+    </div>
+
+    
+        
+    <div class="widget-wrap">
+        <h3 class="widget-title">标签云</h3>
+        <div class="widget tagcloud">
+            <a href="/tags/Docker/" style="font-size: 10px;">Docker</a> <a href="/tags/MySQL/" style="font-size: 20px;">MySQL</a> <a href="/tags/elasticsearch/" style="font-size: 10px;">elasticsearch</a> <a href="/tags/golang/" style="font-size: 16.67px;">golang</a> <a href="/tags/iframe/" style="font-size: 10px;">iframe</a> <a href="/tags/vim/" style="font-size: 10px;">vim</a> <a href="/tags/内存对齐/" style="font-size: 10px;">内存对齐</a> <a href="/tags/字符串/" style="font-size: 13.33px;">字符串</a> <a href="/tags/杂谈/" style="font-size: 13.33px;">杂谈</a> <a href="/tags/索引/" style="font-size: 10px;">索引</a> <a href="/tags/规则/" style="font-size: 10px;">规则</a> <a href="/tags/订单号/" style="font-size: 10px;">订单号</a> <a href="/tags/读书/" style="font-size: 10px;">读书</a> <a href="/tags/跨域/" style="font-size: 10px;">跨域</a>
+        </div>
+    </div>
+
+    
+        
+    <div class="widget-wrap widget-list">
+        <h3 class="widget-title">链接</h3>
+        <div class="widget">
+            <ul>
+                
+                    <li>
+                        <a href="http://www.liangyongrui.com">梁永锐</a>
+                    </li>
+                
+            </ul>
+        </div>
+    </div>
+
+
+    
+    <div id="toTop" class="fa fa-angle-up"></div>
+</aside>
+
+            
+        </div>
+        <footer id="footer">
+    <div class="outer">
+        <div id="footer-info" class="inner">
+			<!--不蒜子统计-->
+           <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+            <span id="busuanzi_container_site_pv">本站总访问量:<span id="busuanzi_value_site_pv"></span>&nbsp;本站总访次数:<span id="busuanzi_value_site_uv"></span></span><br>
+		
+            &copy; 2021 梁友泽<br>
+            Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>. Theme by <a href="http://github.com/ppoffice">PPOffice</a>
+        </div>
+    </div>
+</footer>
+        
+    
+    <script>
+    var disqus_config = function () {
+        
+            this.page.url = 'https://www.liangyouze.com/2020/03/11/golang切片/';
+        
+        this.page.identifier = 'golang切片';
+    };
+    (function() { 
+        var d = document, s = d.createElement('script');  
+        s.src = '//' + 'hexo-theme-icarus' + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+
+
+
+
+    
+        <script src="/libs/lightgallery/js/lightgallery.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-thumbnail.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-pager.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-autoplay.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-fullscreen.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-zoom.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-hash.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-share.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-video.min.js"></script>
+    
+    
+        <script src="/libs/justified-gallery/jquery.justifiedGallery.min.js"></script>
+    
+    
+
+
+
+<!-- Custom Scripts -->
+<script src="/js/main.js"></script>
+
+    </div>
+</body>
+</html>
