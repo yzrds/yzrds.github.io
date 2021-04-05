@@ -1,0 +1,635 @@
+<!DOCTYPE html>
+<html lang=zh>
+<head>
+    <meta charset="utf-8">
+    
+    <title>深入理解go map | 梁友泽的博客</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+    <meta name="description" content="哈希查找表一般会存在“碰撞”的问题，就是说不同的 key 被哈希到了同一个 bucket。一般有两种应对方法：链表法和开放地址法。链表法将一个 bucket 实现成一个链表，落在同一个 bucket 中的 key 都会插入这个链表。开放地址法则是碰撞发生后，通过一定的规律，在数组的后面挑选“空位”，用来放置新的 key。">
+<meta name="keywords" content="go">
+<meta property="og:type" content="article">
+<meta property="og:title" content="深入理解go map">
+<meta property="og:url" content="https://www.liangyouze.com/2020/07/11/go-map/index.html">
+<meta property="og:site_name" content="梁友泽的博客">
+<meta property="og:description" content="哈希查找表一般会存在“碰撞”的问题，就是说不同的 key 被哈希到了同一个 bucket。一般有两种应对方法：链表法和开放地址法。链表法将一个 bucket 实现成一个链表，落在同一个 bucket 中的 key 都会插入这个链表。开放地址法则是碰撞发生后，通过一定的规律，在数组的后面挑选“空位”，用来放置新的 key。">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2021/png/203997/1613972575215-53411dab-ef72-4808-a196-9701a015473e.png#align=left&display=inline&height=779&margin=%5Bobject%20Object%5D&name=image.png&originHeight=1558&originWidth=2248&size=249988&status=done&style=none&width=1124">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2020/png/203997/1588421414889-3d9f6c7d-7321-408b-a152-7cd68df126bb.png#align=left&display=inline&height=370&margin=%5Bobject%20Object%5D&name=image.png&originHeight=740&originWidth=1200&size=69377&status=done&style=none&width=600">
+<meta property="og:updated_time" content="2021-04-05T09:24:55.090Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="深入理解go map">
+<meta name="twitter:description" content="哈希查找表一般会存在“碰撞”的问题，就是说不同的 key 被哈希到了同一个 bucket。一般有两种应对方法：链表法和开放地址法。链表法将一个 bucket 实现成一个链表，落在同一个 bucket 中的 key 都会插入这个链表。开放地址法则是碰撞发生后，通过一定的规律，在数组的后面挑选“空位”，用来放置新的 key。">
+<meta name="twitter:image" content="https://cdn.nlark.com/yuque/0/2021/png/203997/1613972575215-53411dab-ef72-4808-a196-9701a015473e.png#align=left&display=inline&height=779&margin=%5Bobject%20Object%5D&name=image.png&originHeight=1558&originWidth=2248&size=249988&status=done&style=none&width=1124">
+    
+
+    
+
+    
+
+    <link rel="stylesheet" href="/libs/font-awesome/css/font-awesome.min.css">
+    <link rel="stylesheet" href="/libs/open-sans/styles.css">
+    <link rel="stylesheet" href="/libs/source-code-pro/styles.css">
+
+    <link rel="stylesheet" href="/css/style.css">
+
+    <script src="/libs/jquery/2.1.3/jquery.min.js"></script>
+    
+    
+        <link rel="stylesheet" href="/libs/lightgallery/css/lightgallery.min.css">
+    
+    
+        <link rel="stylesheet" href="/libs/justified-gallery/justifiedGallery.min.css">
+    
+    
+    
+    
+
+
+</head>
+
+<script async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+<body>
+    <div id="container">
+        <header id="header">
+    <div id="header-main" class="header-inner">
+        <div class="outer">
+            <a href="/" id="logo">
+                <i class="logo"></i>
+                <span class="site-title">梁友泽的博客</span>
+            </a>
+            <nav id="main-nav">
+                
+                    <a class="main-nav-link" href="/.">主页</a>
+                
+                    <a class="main-nav-link" href="/archives/">分类</a>
+                
+                    <a class="main-nav-link" href="/categories/">归档</a>
+                
+                    <a class="main-nav-link" href="/about">关于</a>
+                
+            </nav>
+            
+                
+                <nav id="sub-nav">
+                    <div class="profile" id="profile-nav">
+                        <a id="profile-anchor" href="javascript:;">
+                            <img class="avatar" src="/css/images/rolle.png" />
+                            <i class="fa fa-caret-down"></i>
+                        </a>
+                    </div>
+                </nav>
+            
+            <div id="search-form-wrap">
+
+    <form class="search-form">
+        <input type="text" class="ins-search-input search-form-input" placeholder="搜索" />
+        <button type="submit" class="search-form-submit"></button>
+    </form>
+    <div class="ins-search">
+    <div class="ins-search-mask"></div>
+    <div class="ins-search-container">
+        <div class="ins-input-wrapper">
+            <input type="text" class="ins-search-input" placeholder="想要查找什么..." />
+            <span class="ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: '文章',
+            PAGES: '页面',
+            CATEGORIES: '分类',
+            TAGS: '标签',
+            UNTITLED: '(未命名)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+<script src="/js/insight.js"></script>
+
+</div>
+        </div>
+    </div>
+    <div id="main-nav-mobile" class="header-sub header-inner">
+        <table class="menu outer">
+            <tr>
+                
+                    <td><a class="main-nav-link" href="/.">主页</a></td>
+                
+                    <td><a class="main-nav-link" href="/archives/">分类</a></td>
+                
+                    <td><a class="main-nav-link" href="/categories/">归档</a></td>
+                
+                    <td><a class="main-nav-link" href="/about">关于</a></td>
+                
+                <td>
+                    
+    <div class="search-form">
+        <input type="text" class="ins-search-input search-form-input" placeholder="搜索" />
+    </div>
+
+                </td>
+            </tr>
+        </table>
+    </div>
+</header>
+
+        <div class="outer">
+            
+                
+
+<aside id="profile" class="profile-fixed">
+    <div class="inner profile-inner">
+        <div class="base-info profile-block">
+            <img id="avatar" src="/css/images/rolle.png" />
+            <h2 id="name">梁友泽</h2>
+            <h3 id="title">Developer</h3>
+            <span id="location"><i class="fa fa-map-marker"></i>BeiJing, China</span>
+            <a id="follow" target="_blank" href="https://github.com/youzeliang">关注我</a>
+        </div>
+        <div class="article-info profile-block">
+            <div class="article-info-block">
+                21
+                <span>文章</span>
+            </div>
+            <div class="article-info-block">
+                15
+                <span>标签</span>
+            </div>
+        </div>
+        
+        <div class="profile-block social-links">
+            <table>
+                <tr>
+                    
+                    
+                    <td>
+                        <a href="http://github.com/youzeliang" target="_blank" title="github" class=tooltip>
+                            <i class="fa fa-github"></i>
+                        </a>
+                    </td>
+                    
+                    <td>
+                        <a href="/i@liangyouze.com" target="_blank" title="email" class=tooltip>
+                            <i class="fa fa-email"></i>
+                        </a>
+                    </td>
+                    
+                    <td>
+                        <a href="/css/images/rolle_wechat.jpg" target="_blank" title="wechat" class=tooltip>
+                            <i class="fa fa-wechat"></i>
+                        </a>
+                    </td>
+                    
+                </tr>
+            </table>
+        </div>
+        
+    </div>
+</aside>
+
+            
+            <section id="main"><article id="post-go-map" class="article article-type-post" itemscope itemprop="blogPost">
+    <div class="article-inner">
+        
+        
+            <header class="article-header">
+                
+    
+        <h1 class="article-title" itemprop="name">
+            深入理解go map
+        </h1>
+    
+
+                
+                    <div class="article-meta">
+                        
+    <div class="article-date">
+        <i class="fa fa-calendar"></i>
+        <a href="/2020/07/11/go-map/">
+            <time datetime="2020-07-11T06:10:23.000Z" itemprop="datePublished">2020-07-11</time>
+        </a>
+    </div>
+
+
+                        
+    <div class="article-category">
+    	<i class="fa fa-folder"></i>
+        <a class="article-category-link" href="/categories/map/">map</a>
+    </div>
+
+                        
+    <div class="article-tag">
+        <i class="fa fa-tag"></i>
+        <a class="tag-link" href="/tags/go/">go</a>
+    </div>
+
+                    </div>
+                
+            </header>
+        
+        
+        <div class="article-entry" itemprop="articleBody">
+        
+            
+            <p><br>哈希查找表一般会存在“碰撞”的问题，就是说不同的 key 被哈希到了同一个 bucket。一般有两种应对方法：<code>链表法</code>和<code>开放地址法</code>。<code>链表法</code>将一个 bucket 实现成一个链表，落在同一个 bucket 中的 key 都会插入这个链表。<code>开放地址法</code>则是碰撞发生后，通过一定的规律，在数组的后面挑选“空位”，用来放置新的 key。<br><a id="more"></a></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">装载因子 := 元素数量 / 桶数量</span><br></pre></td></tr></table></figure>
+<p><br>与开放地址法一样，拉链法的装载因子越大，哈希的读写性能就越差，在一般情况下使用拉链法的哈希表装载因子都不会超过 1，当哈希表的装载因子较大时就会触发哈希的扩容，创建更多的桶来存储哈希中的元素，保证性能不会出现严重的下降。如果有 1000 个桶的哈希表存储了 10000 个键值对，它的性能是保存 1000 个键值对的 1/10，但是仍然比在链表中直接读写好 1000 倍。</p>
+<p><a name="5Eibl"></a></p>
+<h2 id="数据结构"><a href="#数据结构" class="headerlink" title="数据结构"></a>数据结构</h2><p><br>Go中Map是一个KV对集合。底层使用<code>hash table</code>，用链表来解决冲突 ，出现冲突时，不是每一个Key都申请一个结构通过链表串起来，而是以bmap为最小粒度挂载，一个bmap可以放8个kv。<br><br><br>在哈希函数的选择上，会在程序启动时，检测 cpu 是否支持 <code>aes</code>，如果支持，则使用<code>aes hash</code>，否则使用<code>memhash</code>。<br><br><br>每个map的底层结构是hmap，是有若干个结构为bmap的bucket组成的数组。每个bucket底层都采用链表结构。<br><br><br>Go 语言运行时同时使用了多个数据结构组合表示哈希表，其中使用 <a href="https://github.com/golang/go/blob/ed15e82413c7b16e21a493f5a647f68b46e965ee/src/runtime/map.go#L115-L129" target="_blank" rel="noopener"><code>hmap</code></a> 结构体来表示哈希，<br></p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> hmap <span class="keyword">struct</span> &#123;</span><br><span class="line">	count     <span class="keyword">int</span>    <span class="comment">// 元素个数</span></span><br><span class="line">	flags     <span class="keyword">uint8</span>  <span class="comment">// 用来标记状态</span></span><br><span class="line">	B         <span class="keyword">uint8</span>  <span class="comment">// 扩容常量相关字段B是buckets数组的长度的对数 2^B</span></span><br><span class="line">	noverflow <span class="keyword">uint16</span> <span class="comment">// noverflow是溢出桶的数量，当B&lt;16时，为精确值,当B&gt;=16时，为估计值                   	</span></span><br><span class="line">	hash0     <span class="keyword">uint32</span> <span class="comment">// 是哈希的种子，它能为哈希函数的结果引入随机性，这个值在创建哈希表时确定，并在调用哈希函数时作为参数传入</span></span><br><span class="line"></span><br><span class="line">	buckets    unsafe.Pointer <span class="comment">// 桶的地址 </span></span><br><span class="line">	oldbuckets unsafe.Pointer <span class="comment">// 旧桶的地址，用于扩容 </span></span><br><span class="line">	nevacuate  <span class="keyword">uintptr</span>        <span class="comment">// 搬迁进度，扩容需要将旧数据搬迁至新数据，这里是利用指针来比较判断有没有迁移 </span></span><br><span class="line"></span><br><span class="line">	extra *mapextra <span class="comment">// 用于扩容的指针</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span> mapextra <span class="keyword">struct</span> &#123;</span><br><span class="line">	overflow    *[]*bmap</span><br><span class="line">	oldoverflow *[]*bmap</span><br><span class="line">	<span class="comment">// nextOverflow holds a pointer to a free overflow bucket.</span></span><br><span class="line">	nextOverflow *bmap</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// A bucket for a Go map.</span></span><br><span class="line"><span class="keyword">type</span> bmap <span class="keyword">struct</span> &#123;</span><br><span class="line">    tophash [bucketCnt]<span class="keyword">uint8</span>  <span class="comment">// tophash用于记录8个key哈希值的高8位，这样在寻找对应key的时候可以更快，不必每次都对key做全等判断</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//实际上编辑期间会动态生成一个新的结构体</span></span><br><span class="line"><span class="keyword">type</span> bmap <span class="keyword">struct</span> &#123;</span><br><span class="line">    topbits  [<span class="number">8</span>]<span class="keyword">uint8</span></span><br><span class="line">    keys     [<span class="number">8</span>]keytype</span><br><span class="line">    values   [<span class="number">8</span>]valuetype</span><br><span class="line">    pad      <span class="keyword">uintptr</span></span><br><span class="line">    overflow <span class="keyword">uintptr</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><br><strong>bmap 就是我们常说的“桶”，桶里面会最多装 8 个 key，这些 key之所以会落入同一个桶，是因为它们经过哈希计算后，哈希结果是“一类”的，在桶内，又会根据key计算出来的hash值的高8位来决定 key到底落入桶内的哪个位置（一个桶内最多有8个位置)。</strong><br><strong><br><img src="https://cdn.nlark.com/yuque/0/2021/png/203997/1613972575215-53411dab-ef72-4808-a196-9701a015473e.png#align=left&amp;display=inline&amp;height=779&amp;margin=%5Bobject%20Object%5D&amp;name=image.png&amp;originHeight=1558&amp;originWidth=2248&amp;size=249988&amp;status=done&amp;style=none&amp;width=1124" alt="image.png"><br></strong>当map的key和value都不是指针，并且 size都小于128字节的情况下，会把bmap标记为不含指针，这样可以避免gc时扫描整个hmap。<strong><br><br><br>但是，bmap其实有一个overflow的字段，是指针类型的，破坏了 bmap 不含指针的设想，这时会把overflow移动到 hmap的extra 字段来。</strong><br><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> mapextra <span class="keyword">struct</span> &#123;</span><br><span class="line">	overflow    *[]*bmap</span><br><span class="line">	oldoverflow *[]*bmap</span><br><span class="line">	<span class="comment">// nextOverflow holds a pointer to a free overflow bucket.</span></span><br><span class="line">	nextOverflow *bmap</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p><br>bmap 是存放 k-v 的地方<br>key 和 value 是各自放在一起的，并不是 <code>key/value/key/value/...</code> 这样的形式。源码里说明这样的好处是在某些情况下可以省略掉 padding 字段，<strong>节省内存空间</strong>。减少内存对齐的内存消耗</p>
+<p>如果按照 <code>key/value/key/value/...</code> 这样的模式存储，那在每一个 key/value 对之后都要额外 padding 7 个字节；而将所有的 key，value 分别绑定到一起，这种形式 <code>key/key/.../value/value/...</code>，则只需要在最后添加 padding。</p>
+<p>每个 bucket 设计成最多只能放 8 个 key-value 对，如果有第 9 个 key-value 落入当前的 bucket，那就需要再构建一个 bucket ，通过 <code>overflow</code> 指针连接起来。<br><br><br>这样随着哈希表存储的数据逐渐增多，会扩容哈希表或者使用额外的桶存储溢出的数据，不会让单个桶中的数据超过 8 个，不过溢出桶只是临时的解决方案，创建过多的溢出桶最终也会导致哈希的扩容。</p>
+<p><a name="oC5H0"></a></p>
+<h2 id="插入过程"><a href="#插入过程" class="headerlink" title="插入过程"></a>插入过程</h2><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">maplit</span><span class="params">(n *Node, m *Node, init *Nodes)</span></span> &#123;</span><br><span class="line">	a := nod(OMAKE, <span class="literal">nil</span>, <span class="literal">nil</span>)</span><br><span class="line">	a.Esc = n.Esc</span><br><span class="line">	a.List.Set2(typenod(n.Type), nodintconst(<span class="keyword">int64</span>(n.List.Len())))</span><br><span class="line">	litas(m, a, init)</span><br><span class="line"></span><br><span class="line">	entries := n.List.Slice()</span><br><span class="line">	<span class="keyword">if</span> <span class="built_in">len</span>(entries) &gt; <span class="number">25</span> &#123;</span><br><span class="line">		...</span><br><span class="line">		<span class="keyword">return</span></span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="comment">// Build list of var[c] = expr.</span></span><br><span class="line">	<span class="comment">// Use temporaries so that mapassign1 can have addressable key, elem.</span></span><br><span class="line">	...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><br>当哈希表中的元素数量少于或者等于 25 个时，编译器会将字面量初始化的结构体转换成以下的代码，将所有的键值对一次加入到哈希表中：<br><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">hash := <span class="built_in">make</span>(<span class="keyword">map</span>[<span class="keyword">string</span>]<span class="keyword">int</span>, <span class="number">3</span>)</span><br><span class="line">hash[<span class="string">"1"</span>] = <span class="number">2</span></span><br><span class="line">hash[<span class="string">"3"</span>] = <span class="number">4</span></span><br><span class="line">hash[<span class="string">"5"</span>] = <span class="number">6</span></span><br></pre></td></tr></table></figure></p>
+<p><br>一旦哈希表中元素的数量超过了 25 个，编译器会创建两个数组分别存储键和值，这些键值对会通过如下所示的 for 循环加入哈希：<br><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">hash := <span class="built_in">make</span>(<span class="keyword">map</span>[<span class="keyword">string</span>]<span class="keyword">int</span>, <span class="number">26</span>)</span><br><span class="line">vstatk := []<span class="keyword">string</span>&#123;<span class="string">"1"</span>, <span class="string">"2"</span>, <span class="string">"3"</span>, ... ， <span class="string">"26"</span>&#125;</span><br><span class="line">vstatv := []<span class="keyword">int</span>&#123;<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, ... , <span class="number">26</span>&#125;</span><br><span class="line"><span class="keyword">for</span> i := <span class="number">0</span>; i &lt; <span class="built_in">len</span>(vstak); i++ &#123;</span><br><span class="line">    hash[vstatk[i]] = vstatv[i]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p><br>对 key 计算 hash 值，找到要赋值的位置（可能是插入新 key，也可能是更新老 key），对相应位置进行赋值。</p>
+<p><strong>函数首先会检查 map 的标志位 flags。如果 flags 的写标志位此时被置 1 了，说明有其他协程在执行“写”操作，进而导致程序 panic。这也说明了 map 对协程是不安全的。</strong><br><br><br><strong>不过因为 Go 语言哈希的扩容不是一个原子的过程，所以<code>mapassign</code> 还需要判断当前哈希是否已经处于扩容状态，避免二次扩容造成混乱。</strong><br><img src="https://cdn.nlark.com/yuque/0/2020/png/203997/1588421414889-3d9f6c7d-7321-408b-a152-7cd68df126bb.png#align=left&amp;display=inline&amp;height=370&amp;margin=%5Bobject%20Object%5D&amp;name=image.png&amp;originHeight=740&amp;originWidth=1200&amp;size=69377&amp;status=done&amp;style=none&amp;width=600" alt="image.png"></p>
+<p><a name="mJsMy"></a></p>
+<h2 id="遍历过程"><a href="#遍历过程" class="headerlink" title="遍历过程"></a>遍历过程</h2><p><br>map 遍历的核心在于理解 2 倍扩容时，老 bucket 会分裂到 2 个新 bucket 中去。而遍历操作，会按照新 bucket 的序号顺序进行，碰到老 bucket 未搬迁的情况时，要在老 bucket 中找到将来要搬迁到新 bucket 来的 key。</p>
+<p><a name="delC6"></a></p>
+<h2 id="删除过程"><a href="#删除过程" class="headerlink" title="删除过程"></a>删除过程</h2><p><br><code>mapdelete</code> 函数。它首先会检查 h.flags 标志，如果发现写标位是 1，直接 panic，因为这表明有其他协程同时在进行写操作。</p>
+<p>计算 key 的哈希，找到落入的 bucket。检查此 map 如果正在扩容的过程中，直接触发一次搬迁操作。</p>
+<p>将 count 值减 1，将对应位置的 tophash 值置成 <code>Empty</code>。</p>
+<p>如果在删除期间遇到了哈希表的扩容，就会分流桶中的元素，分流结束之后会找到桶中的目标元素完成键值对的删除工作。</p>
+<p><a name="nNBzM"></a></p>
+<h2 id="扩容过程"><a href="#扩容过程" class="headerlink" title="扩容过程"></a>扩容过程</h2><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">loadFactor := count / (2^B)  # count 就是 map 的元素个数，2^B 表示 bucket 数量。</span><br></pre></td></tr></table></figure>
+<p>触发 map 扩容的时机：在向 map 插入新 key 的时候，会进行条件检测，符合下面这 2 个条件，就会触发扩容：</p>
+<ol>
+<li>装载因子超过阈值，源码里定义的阈值是 6.5。<ol>
+<li>翻倍扩容</li>
+</ol>
+</li>
+<li>哈希使用了太多溢出桶（造成这种现象的原因是不停地插入、删除元素） , overflow 的 bucket 数量过多：当 B 小于 15，也就是 bucket 总数 2^B 小于 2^15 时，如果 overflow 的 bucket 数量超过 2^B；当 B &gt;= 15，也就是 bucket 总数 2^B 大于等于 2^15，如果 overflow 的 bucket 数量超过 2^15。map的扩容不是一个原子的扩容，所以他虽然具备扩容条件，而先要判断该map是否处在扩容状态。<ol>
+<li>等量扩容 <code>sameSizeGrow，</code>等量扩容创建的新桶数量只是和旧桶一样，该函数中只是创建了新的桶，并没有对数据进行拷贝和转移</li>
+</ol>
+</li>
+</ol>
+<p>因为 Go 语言哈希的扩容不是一个原子的过程，所以 <a href="https://draveness.me/golang/tree/runtime.mapassign" target="_blank" rel="noopener"><code>runtime.mapassign</code></a> 还需要判断当前哈希是否已经处于扩容状态，避免二次扩容造成混乱。<br><br><br>扩容的入口是 <a href="https://draveness.me/golang/tree/runtime.hashGrow" target="_blank" rel="noopener"><code>runtime.hashGrow</code></a>：<br><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">hashGrow</span><span class="params">(t *maptype, h *hmap)</span></span> &#123;</span><br><span class="line">	bigger := <span class="keyword">uint8</span>(<span class="number">1</span>)</span><br><span class="line">	<span class="keyword">if</span> !overLoadFactor(h.count+<span class="number">1</span>, h.B) &#123;</span><br><span class="line">		bigger = <span class="number">0</span></span><br><span class="line">		h.flags |= sameSizeGrow</span><br><span class="line">	&#125;</span><br><span class="line">	oldbuckets := h.buckets</span><br><span class="line">	newbuckets, nextOverflow := makeBucketArray(t, h.B+bigger, <span class="literal">nil</span>)</span><br><span class="line"></span><br><span class="line">	h.B += bigger</span><br><span class="line">	h.flags = flags</span><br><span class="line">	h.oldbuckets = oldbuckets</span><br><span class="line">	h.buckets = newbuckets</span><br><span class="line">	h.nevacuate = <span class="number">0</span></span><br><span class="line">	h.noverflow = <span class="number">0</span></span><br><span class="line"></span><br><span class="line">	h.extra.oldoverflow = h.extra.overflow</span><br><span class="line">	h.extra.overflow = <span class="literal">nil</span></span><br><span class="line">	h.extra.nextOverflow = nextOverflow</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>哈希在扩容的过程中会通过 <a href="https://draveness.me/golang/tree/runtime.makeBucketArray" target="_blank" rel="noopener"><code>runtime.makeBucketArray</code></a> 创建一组新桶和预创建的溢出桶，随后将原有的桶数组设置到 <code>oldbuckets</code> 上并将新的空桶设置到 <code>buckets</code> 上，溢出桶也使用了相同的逻辑更新<br><br><br>哈希在存储元素过多时会触发扩容操作，每次都会将桶的数量翻倍，扩容过程不是原子的，而是通过 <a href="https://draveness.me/golang/tree/runtime.growWork" target="_blank" rel="noopener"><code>runtime.growWork</code></a> 增量触发的，在扩容期间访问哈希表时会使用旧桶，向哈希表写入数据时会触发旧桶元素的分流。除了这种正常的扩容之外，为了解决大量写入、删除造成的内存泄漏问题，哈希引入了 <code>sameSizeGrow</code> 这一机制，在出现较多溢出桶时会整理哈希的内存减少空间的占用。<br><br><br>扩容是渐进式的，如果 map 处在扩容的过程中，那么当 key 定位到了某个 bucket 后，需要确保这个 bucket 对应的老 bucket 完成了迁移过程。即老 bucket 里的 key 都要迁移到新的 bucket 中来（分裂到 2 个新 bucket），才能在新的 bucket 中进行插入或者更新的操作。<br><br><br>现在到了定位 key 应该放置的位置了，所谓找准自己的位置很重要。准备两个指针，一个（<code>inserti</code>）指向 key 的 hash 值在 tophash 数组所处的位置，另一个(<code>insertk</code>)指向 cell 的位置（也就是 key 最终放置的地址），当然，对应 value 的位置就很容易定位出来了。这三者实际上都是关联的，在 tophash 数组中的索引位置决定了 key 在整个 bucket 中的位置（共 8 个 key），而 value 的位置需要“跨过” 8 个 key 的长度。<br><br><br>在循环的过程中，inserti 和 insertk 分别指向第一个找到的空闲的 cell。如果之后在 map 没有找到 key 的存在，也就是说原来 map 中没有此 key，这意味着插入新 key。那最终 key 的安置地址就是第一次发现的“空位”（tophash 是 empty）。<br><br><br>如果这个 bucket 的 8 个 key 都已经放置满了，那在跳出循环后，发现 inserti 和 insertk 都是空，这时候需要在 bucket 后面挂上 overflow bucket。当然，也有可能是在 overflow bucket 后面再挂上一个 overflow bucket。这就说明，太多 key hash 到了此 bucket。<br><br><br>在正式安置 key 之前，还要检查 map 的状态，看它是否需要进行扩容。如果满足扩容的条件，就主动触发一次扩容操作。<br><br><br>这之后，整个之前的查找定位 key 的过程，还得再重新走一次。因为扩容之后，key 的分布都发生了变化。<br>最后，会更新 map 相关的值，如果是插入新 key，map 的元素数量字段 count 值会加 1；在函数之初设置的 <code>hashWriting</code> 写标志出会清零。<br><br><br>再来看一下扩容具体是怎么做的。由于 map 扩容需要将原有的 key/value 重新搬迁到新的内存地址，如果有大量的 key/value 需要搬迁，会非常影响性能。因此 Go map 的扩容采取了一种称为“渐进式”地方式，原有的 key 并不会一次性搬迁完毕，每次最多只会搬迁 2 个 bucket。<br><br><br><code>hashGrow()</code> 函数实际上并没有真正地“搬迁”，它只是分配好了新的 buckets，并将老的 buckets 挂到了 oldbuckets 字段上。真正搬迁 buckets 的动作在 <code>growWork()</code> 函数中，而调用 <code>growWork()</code> 函数的动作是在 mapassign 和 mapdelete 函数中。也就是<strong>插入或修改、删除 key 的时候</strong>，都会尝试进行搬迁 buckets 的工作。先检查 oldbuckets 是否搬迁完毕，具体来说就是检查 oldbuckets 是否为 nil。<br><br><br><code>hashGrow()</code> 函数所做的工作，再来看具体的搬迁 buckets 是如何进行的。<br><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">hashGrow</span><span class="params">(t *maptype, h *hmap)</span></span> &#123;</span><br><span class="line">	<span class="comment">// B+1 相当于是原来 2 倍的空间</span></span><br><span class="line">	bigger := <span class="keyword">uint8</span>(<span class="number">1</span>)</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 对应条件 2</span></span><br><span class="line">	<span class="keyword">if</span> !overLoadFactor(<span class="keyword">int64</span>(h.count), h.B) &#123;</span><br><span class="line">		<span class="comment">// 进行等量的内存扩容，所以 B 不变</span></span><br><span class="line">		bigger = <span class="number">0</span></span><br><span class="line">		h.flags |= sameSizeGrow</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="comment">// 将老 buckets 挂到 buckets 上</span></span><br><span class="line">	oldbuckets := h.buckets</span><br><span class="line">	<span class="comment">// 申请新的 buckets 空间</span></span><br><span class="line">	newbuckets, nextOverflow := makeBucketArray(t, h.B+bigger)</span><br><span class="line"></span><br><span class="line">	flags := h.flags &amp;^ (iterator | oldIterator)</span><br><span class="line">	<span class="keyword">if</span> h.flags&amp;iterator != <span class="number">0</span> &#123;</span><br><span class="line">		flags |= oldIterator</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="comment">// 提交 grow 的动作</span></span><br><span class="line">	h.B += bigger</span><br><span class="line">	h.flags = flags</span><br><span class="line">	h.oldbuckets = oldbuckets</span><br><span class="line">	h.buckets = newbuckets</span><br><span class="line">	<span class="comment">// 搬迁进度为 0</span></span><br><span class="line">	h.nevacuate = <span class="number">0</span></span><br><span class="line">	<span class="comment">// overflow buckets 数为 0</span></span><br><span class="line">	h.noverflow = <span class="number">0</span></span><br><span class="line"></span><br><span class="line">	<span class="comment">// ……</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p><br>主要是申请到了新的 buckets 空间，把相关的标志位都进行了处理：例如标志 nevacuate 被置为 0， 表示当前搬迁进度为 0。<br><br><br>真正执行搬迁工作的 growWork() 函数。<br><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">growWork</span><span class="params">(t *maptype, h *hmap, bucket <span class="keyword">uintptr</span>)</span></span> &#123;</span><br><span class="line">	<span class="comment">// 确认搬迁老的 bucket 对应正在使用的 bucket</span></span><br><span class="line">	evacuate(t, h, bucket&amp;h.oldbucketmask())</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 再搬迁一个 bucket，以加快搬迁进程</span></span><br><span class="line">	<span class="keyword">if</span> h.growing() &#123;</span><br><span class="line">		evacuate(t, h, h.nevacuate)</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p><a name="0XkBG"></a></p>
+<h2 id="map为什么是无序的"><a href="#map为什么是无序的" class="headerlink" title="map为什么是无序的"></a>map为什么是无序的</h2><p><br>map 在扩容后，会发生 key 的搬迁，原来落在同一个 bucket 中的 key，搬迁后，有些 key 就要远走高飞了（bucket 序号加上了 2^B）。而遍历的过程，就是按顺序遍历 bucket，同时按顺序遍历 bucket 中的 key。搬迁后，key 的位置发生了重大的变化，有些 key 飞上高枝，有些 key 则原地不动。这样，遍历 map 的结果就不可能按原来的顺序了。<br><br><br><strong>在遍历 map 时，并不是固定地从 0 号 bucket 开始遍历，每次都是从一个随机值序号的 bucket 开始遍历，并且是从这个 bucket 的一个随机序号的 cell 开始遍历。这样，即使你是一个写死的 map，仅仅只是遍历它，也不太可能会返回一个固定序列的 key/value 对了。</strong><br><br><br>“迭代 map 的结果是无序的”这个特性是从 go 1.0 开始加入的。<br><br><br></p>
+<p><a name="O4XGf"></a></p>
+<h2 id="可以边遍历边删除吗"><a href="#可以边遍历边删除吗" class="headerlink" title="可以边遍历边删除吗"></a>可以边遍历边删除吗</h2><p><br>map 并不是一个线程安全的数据结构。同时读写一个 map 是未定义的行为，如果被检测到，会直接 panic。<br><br><br>上面说的是发生在多个协程同时读写同一个 map 的情况下。 如果在同一个协程内边遍历边删除，并不会检测到同时读写，理论上是可以这样做的。但是，遍历的结果就可能不会是相同的了，有可能结果遍历结果集中包含了删除的 key，也有可能不包含，这取决于删除 key 的时间：是在遍历到 key 所在的 bucket 时刻前或者后。<br><br><br>一般而言，这可以通过读写锁来解决：<code>sync.RWMutex</code>。<br><br><br>读之前调用 <code>RLock()</code> 函数，读完之后调用 <code>RUnlock()</code> 函数解锁；写之前调用 <code>Lock()</code> 函数，写完之后，调用 <code>Unlock()</code> 解锁。<br><br><br>另外，<code>sync.Map</code> 是线程安全的 map，也可以使用。<br><br><br></p>
+<p><a name="q5Jv8"></a></p>
+<h2 id="可以对map元素取地址么"><a href="#可以对map元素取地址么" class="headerlink" title="可以对map元素取地址么"></a>可以对map元素取地址么</h2><p><br>不可以，因为一旦发生扩容，key 和 value 的位置就会改变，之前保存的地址也就失效了。<br><br><br></p>
+<p><a name="Dtxtd"></a></p>
+<h2 id="map是线程安全的吗"><a href="#map是线程安全的吗" class="headerlink" title="map是线程安全的吗"></a>map是线程安全的吗</h2><p><br>在查找、赋值、遍历、删除的过程中都会检测写标志，一旦发现写标志置位（等于1），则直接 panic。赋值和删除函数在检测完写标志是复位之后，先将写标志位置位，才会进行之后的操作。</p>
+<p>参考</p>
+<p><a href="https://draveness.me/golang/docs/part2-foundation/ch03-datastructure/golang-hashmap/" target="_blank" rel="noopener">面向信仰编程</a><br><a href="https://cloud.tencent.com/developer/article/1468799" target="_blank" rel="noopener">深入Go的Map使用和实现原理</a><br><a href="https://github.com/KeKe-Li/data-structures-questions/blob/master/src/chapter05/golang.01.md#Go%E4%B8%AD%E7%9A%84map%E7%9A%84%E5%AE%9E%E7%8E%B0" target="_blank" rel="noopener">Go中的map的实现</a><br><a href="https://golang.design/go-questions/map/principal/" target="_blank" rel="noopener">map的实现原理</a><br></p>
+
+        
+        </div>
+        <footer class="article-footer">
+            <div class="share-container">
+
+
+
+</div>
+
+    <a data-url="https://www.liangyouze.com/2020/07/11/go-map/" data-id="ckn4e1mro000ch5u3mvvarze0" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
+<script>
+    (function ($) {
+        // Prevent duplicate binding
+        if (typeof(__SHARE_BUTTON_BINDED__) === 'undefined' || !__SHARE_BUTTON_BINDED__) {
+            __SHARE_BUTTON_BINDED__ = true;
+        } else {
+            return;
+        }
+        $('body').on('click', function() {
+            $('.article-share-box.on').removeClass('on');
+        }).on('click', '.article-share-link', function(e) {
+            e.stopPropagation();
+
+            var $this = $(this),
+                url = $this.attr('data-url'),
+                encodedUrl = encodeURIComponent(url),
+                id = 'article-share-box-' + $this.attr('data-id'),
+                offset = $this.offset(),
+                box;
+
+            if ($('#' + id).length) {
+                box = $('#' + id);
+
+                if (box.hasClass('on')){
+                    box.removeClass('on');
+                    return;
+                }
+            } else {
+                var html = [
+                    '<div id="' + id + '" class="article-share-box">',
+                        '<input class="article-share-input" value="' + url + '">',
+                        '<div class="article-share-links">',
+                            '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="fa fa-twitter article-share-twitter" target="_blank" title="Twitter"></a>',
+                            '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="fa fa-facebook article-share-facebook" target="_blank" title="Facebook"></a>',
+                            '<a href="http://pinterest.com/pin/create/button/?url=' + encodedUrl + '" class="fa fa-pinterest article-share-pinterest" target="_blank" title="Pinterest"></a>',
+                            '<a href="https://plus.google.com/share?url=' + encodedUrl + '" class="fa fa-google article-share-google" target="_blank" title="Google+"></a>',
+                        '</div>',
+                    '</div>'
+                ].join('');
+
+              box = $(html);
+
+              $('body').append(box);
+            }
+
+            $('.article-share-box.on').hide();
+
+            box.css({
+                top: offset.top + 25,
+                left: offset.left
+            }).addClass('on');
+
+        }).on('click', '.article-share-box', function (e) {
+            e.stopPropagation();
+        }).on('click', '.article-share-box-input', function () {
+            $(this).select();
+        }).on('click', '.article-share-box-link', function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            window.open(this.href, 'article-share-box-window-' + Date.now(), 'width=500,height=450');
+        });
+    })(jQuery);
+</script>
+
+            
+    
+        <a href="https://www.liangyouze.com/2020/07/11/go-map/#comments" class="article-comment-link disqus-comment-count" data-disqus-url="https://www.liangyouze.com/2020/07/11/go-map/">评论</a>
+    
+
+        </footer>
+    </div>
+    
+        
+<nav id="article-nav">
+    
+        <a href="/2020/08/11/内存对齐/" id="article-nav-newer" class="article-nav-link-wrap">
+            <strong class="article-nav-caption">上一篇</strong>
+            <div class="article-nav-title">
+                
+                    内存对齐
+                
+            </div>
+        </a>
+    
+    
+        <a href="/2020/03/11/golang切片/" id="article-nav-older" class="article-nav-link-wrap">
+            <strong class="article-nav-caption">下一篇</strong>
+            <div class="article-nav-title">golang 切片</div>
+        </a>
+    
+</nav>
+
+
+    
+</article>
+
+
+    
+    
+        <section id="comments">
+    <div id="disqus_thread">
+        <noscript>Please enable JavaScript to view the <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+    </div>
+</section>
+    
+
+</section>
+            
+                
+<aside id="sidebar">
+   
+        
+    <div class="widget-wrap">
+        <h3 class="widget-title">最新文章</h3>
+        <div class="widget">
+            <ul id="recent-post" class="">
+                
+                    <li>
+                        
+                        <!-- <div class="item-thumbnail">
+                            <a href="/2021/01/01/2020年总结/" class="thumbnail">
+    
+    
+        <span class="thumbnail-image thumbnail-none"></span>
+    
+</a>
+
+                        </div> -->
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/杂谈/">杂谈</a></p>
+                            <p class="item-title"><a href="/2021/01/01/2020年总结/" class="title">2020年总结</a></p>
+                            <p class="item-date"><time datetime="2021-01-01T09:10:23.000Z" itemprop="datePublished">2021-01-01</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <!-- <div class="item-thumbnail">
+                            <a href="/2020/08/11/内存对齐/" class="thumbnail">
+    
+    
+        <span class="thumbnail-image thumbnail-none"></span>
+    
+</a>
+
+                        </div> -->
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/golang/">golang</a></p>
+                            <p class="item-title"><a href="/2020/08/11/内存对齐/" class="title">内存对齐</a></p>
+                            <p class="item-date"><time datetime="2020-08-11T06:10:23.000Z" itemprop="datePublished">2020-08-11</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <!-- <div class="item-thumbnail">
+                            <a href="/2020/07/11/go-map/" class="thumbnail">
+    
+    
+        <span class="thumbnail-image thumbnail-none"></span>
+    
+</a>
+
+                        </div> -->
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/map/">map</a></p>
+                            <p class="item-title"><a href="/2020/07/11/go-map/" class="title">深入理解go map</a></p>
+                            <p class="item-date"><time datetime="2020-07-11T06:10:23.000Z" itemprop="datePublished">2020-07-11</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <!-- <div class="item-thumbnail">
+                            <a href="/2020/03/11/golang切片/" class="thumbnail">
+    
+    
+        <span class="thumbnail-image thumbnail-none"></span>
+    
+</a>
+
+                        </div> -->
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/golang/">golang</a></p>
+                            <p class="item-title"><a href="/2020/03/11/golang切片/" class="title">golang 切片</a></p>
+                            <p class="item-date"><time datetime="2020-03-11T06:10:23.000Z" itemprop="datePublished">2020-03-11</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <!-- <div class="item-thumbnail">
+                            <a href="/2020/02/11/给字符串加索引/" class="thumbnail">
+    
+    
+        <span class="thumbnail-image thumbnail-none"></span>
+    
+</a>
+
+                        </div> -->
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/mysql/">mysql</a></p>
+                            <p class="item-title"><a href="/2020/02/11/给字符串加索引/" class="title">给字符串加索引</a></p>
+                            <p class="item-date"><time datetime="2020-02-11T06:10:23.000Z" itemprop="datePublished">2020-02-11</time></p>
+                        </div>
+                    </li>
+                
+            </ul>
+        </div>
+    </div>
+
+    
+        
+    <div class="widget-wrap">
+        <h3 class="widget-title">分类</h3>
+        <div class="widget">
+            <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/MySQL/">MySQL</a><span class="category-list-count">4</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/docker/">docker</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/golang/">golang</a><span class="category-list-count">4</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/map/">map</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/mysql/">mysql</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/vim/">vim</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/杂谈/">杂谈</a><span class="category-list-count">3</span></li></ul>
+        </div>
+    </div>
+
+    
+        
+    <div class="widget-wrap">
+        <h3 class="widget-title">归档</h3>
+        <div class="widget">
+            <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/01/">一月 2021</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/08/">八月 2020</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/07/">七月 2020</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/03/">三月 2020</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/02/">二月 2020</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/01/">一月 2020</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/12/">十二月 2019</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/10/">十月 2019</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/09/">九月 2019</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/06/">六月 2019</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/01/">一月 2019</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/12/">十二月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/10/">十月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/09/">九月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/08/">八月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/07/">七月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/05/">五月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/04/">四月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/03/">三月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/11/">十一月 2017</a><span class="archive-list-count">1</span></li></ul>
+        </div>
+    </div>
+
+    
+        
+    <div class="widget-wrap">
+        <h3 class="widget-title">标签</h3>
+        <div class="widget">
+            <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Docker/">Docker</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/MySQL/">MySQL</a><span class="tag-list-count">4</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/elasticsearch/">elasticsearch</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/go/">go</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/golang/">golang</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/iframe/">iframe</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/vim/">vim</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/内存对齐/">内存对齐</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/字符串/">字符串</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/杂谈/">杂谈</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/索引/">索引</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/规则/">规则</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/订单号/">订单号</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/读书/">读书</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/跨域/">跨域</a><span class="tag-list-count">1</span></li></ul>
+        </div>
+    </div>
+
+    
+        
+    <div class="widget-wrap">
+        <h3 class="widget-title">标签云</h3>
+        <div class="widget tagcloud">
+            <a href="/tags/Docker/" style="font-size: 10px;">Docker</a> <a href="/tags/MySQL/" style="font-size: 20px;">MySQL</a> <a href="/tags/elasticsearch/" style="font-size: 10px;">elasticsearch</a> <a href="/tags/go/" style="font-size: 10px;">go</a> <a href="/tags/golang/" style="font-size: 16.67px;">golang</a> <a href="/tags/iframe/" style="font-size: 10px;">iframe</a> <a href="/tags/vim/" style="font-size: 10px;">vim</a> <a href="/tags/内存对齐/" style="font-size: 10px;">内存对齐</a> <a href="/tags/字符串/" style="font-size: 13.33px;">字符串</a> <a href="/tags/杂谈/" style="font-size: 16.67px;">杂谈</a> <a href="/tags/索引/" style="font-size: 10px;">索引</a> <a href="/tags/规则/" style="font-size: 10px;">规则</a> <a href="/tags/订单号/" style="font-size: 10px;">订单号</a> <a href="/tags/读书/" style="font-size: 10px;">读书</a> <a href="/tags/跨域/" style="font-size: 10px;">跨域</a>
+        </div>
+    </div>
+
+    
+        
+    <div class="widget-wrap widget-list">
+        <h3 class="widget-title">链接</h3>
+        <div class="widget">
+            <ul>
+                
+                    <li>
+                        <a href="http://www.liangyongrui.com">梁永锐</a>
+                    </li>
+                
+            </ul>
+        </div>
+    </div>
+
+
+    
+    <div id="toTop" class="fa fa-angle-up"></div>
+</aside>
+
+            
+        </div>
+        <footer id="footer">
+    <div class="outer">
+        <div id="footer-info" class="inner">
+			<!--不蒜子统计-->
+           <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+            <span id="busuanzi_container_site_pv">本站总访问量:<span id="busuanzi_value_site_pv"></span>&nbsp;本站总访次数:<span id="busuanzi_value_site_uv"></span></span><br>
+		
+            &copy; 2021 梁友泽<br>
+            Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>. Theme by <a href="http://github.com/ppoffice">PPOffice</a>
+        </div>
+    </div>
+</footer>
+        
+    
+    <script>
+    var disqus_config = function () {
+        
+            this.page.url = 'https://www.liangyouze.com/2020/07/11/go-map/';
+        
+        this.page.identifier = 'go-map';
+    };
+    (function() { 
+        var d = document, s = d.createElement('script');  
+        s.src = '//' + 'hexo-theme-icarus' + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+
+
+
+
+    
+        <script src="/libs/lightgallery/js/lightgallery.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-thumbnail.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-pager.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-autoplay.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-fullscreen.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-zoom.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-hash.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-share.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-video.min.js"></script>
+    
+    
+        <script src="/libs/justified-gallery/jquery.justifiedGallery.min.js"></script>
+    
+    
+
+
+
+<!-- Custom Scripts -->
+<script src="/js/main.js"></script>
+
+    </div>
+</body>
+</html>
